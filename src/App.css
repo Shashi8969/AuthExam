@@ -481,7 +481,7 @@ tr:hover {
 }
 
 /* Responsive Styles for Navbar */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 900px) {
   .menu-icon {
     display: block;
   }
