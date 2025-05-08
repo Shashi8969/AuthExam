@@ -85,11 +85,11 @@ const Navbar = () => {
                   Login
                 </Link>
               </li>
-              {/* <li className="nav-item">
+              <li className="nav-item">
                 <Link to="/signup" className="nav-links signup-btn" onClick={() => setMenuOpen(false)}>
                   Sign Up
                 </Link>
-              </li> */}
+              </li>
             </>
           )}
         </ul>
