@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { onValue, ref } from 'firebase/database'; // Using firebase/database as per your code
 import { db } from '../config/firebase'; // Ensure your Firebase config is set up correctly
+import { remove, ref as dbRef } from 'firebase/database';
+
 import EditEmployee from './EditEmployee';
 import EmployeeDetails from './EmployeeDetails'; // Import the EmployeeDetails component
 import Employee from '../models/Employee'; // Make sure you have this model defined
@@ -60,6 +62,20 @@ const EmployeeList = () => {
   const handleEmployeeClick = (employeeId) => {
     setSelectedEmployeeId(employeeId);
   };
+
+  const deleteEmployee = (employeeId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this employee?");
+    if (confirmDelete) {
+      remove(dbRef(db, `Employees/${employeeId}`))
+        .then(() => {
+          console.log("Employee deleted successfully");
+        })
+        .catch((error) => {
+          console.error("Error deleting employee:", error);
+        });
+    }
+  };
+  
 
   const handleCloseDetails = () => {
     setSelectedEmployeeId(null);
@@ -126,6 +142,16 @@ const EmployeeList = () => {
                     >
                       Edit
                     </button>
+                    <button
+    onClick={(e) => {
+      e.stopPropagation();
+      deleteEmployee(employee.empId);
+    }}
+    className="delete-btn"
+    style={{marginTop:'8px', backgroundColor: 'red', color:'white'}}
+  >
+    Delete
+  </button>
                   </td>
                 </tr>
               ))}

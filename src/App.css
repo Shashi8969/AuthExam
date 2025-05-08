@@ -528,6 +528,7 @@ tr:hover {
     padding: 1rem 2rem;
     color: var(--text-color);
   }
+  
 }
 
 /* Admin Profile Page (Basic Styling - Customize as needed) */
@@ -546,4 +547,31 @@ tr:hover {
 .profile-info strong {
   font-weight: bold;
   margin-right: 5px;
+}
+.delete-btn {
+  background-color: var(red);
+  color: white;
+  border: none;
+  padding: 10px 5px;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1rem;
+  box-shadow: var(--box-shadow);
+  margin-top: 8px;
+}
+@media  (min-width: 900px) {
+  
+.delete-btn {
+  background-color: var(red);
+  color: white;
+  border: none;
+  padding: 10px 5px;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1rem;
+  box-shadow: var(--box-shadow);
+  margin-left: 8px;
+}
 }
