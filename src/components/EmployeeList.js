@@ -1,23 +1,33 @@
 // src/components/EmployeeList.js
 import { useState, useEffect } from 'react';
-import { onValue, ref } from 'firebase/database'; // Using firebase/database as per your code
-import { db } from '../config/firebase'; // Ensure your Firebase config is set up correctly
-import { remove, ref as dbRef } from 'firebase/database';
+import { onValue, ref, remove } from 'firebase/database';
+import { db } from '../config/firebase';
+import { ref as dbRef } from 'firebase/database';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 import EditEmployee from './EditEmployee';
-import EmployeeDetails from './EmployeeDetails'; // Import the EmployeeDetails component
-import Employee from '../models/Employee'; // Make sure you have this model defined
+import EmployeeDetails from './EmployeeDetails';
+import Employee from '../models/Employee';
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingEmployee, setEditingEmployee] = useState(null);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null); // State to track selected employee ID
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
+  const { currentUser, loading: authLoading } = useAuth(); // Get currentUser and loading state from AuthContext
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
+    if (!authLoading && !currentUser) {
+      alert('Please log in to view the employee list.'); // Show a popup message
+      navigate('/login'); // Redirect to the login page
+      return; // Prevent further execution of this useEffect
+    }
+
     const unsubscribe = onValue(ref(db, 'Employees'), (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -30,7 +40,7 @@ const EmployeeList = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [authLoading, currentUser, navigate]); // Add authLoading, currentUser, and navigate to the dependency array
 
   const filteredEmployees = employees.filter(employee =>
     employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -75,13 +85,13 @@ const EmployeeList = () => {
         });
     }
   };
-  
+
 
   const handleCloseDetails = () => {
     setSelectedEmployeeId(null);
   };
 
-  if (loading) return <div className="loading">Loading employees...</div>;
+  if (loading || authLoading) return <div className="loading">Loading...</div>; // Show loading indicator while either data or auth status is loading
 
   return (
     <div className="employee-list">
@@ -114,7 +124,7 @@ const EmployeeList = () => {
             </thead>
             <tbody>
               {sortedEmployees.map(employee => (
-                <tr key={employee.empId} onClick={() => handleEmployeeClick(employee.empId)} style={{ cursor: 'pointer' }}> {/* Added onClick here */}
+                <tr key={employee.empId} onClick={() => handleEmployeeClick(employee.empId)} style={{ cursor: 'pointer' }}>
                   <td>
                     {employee.imageUrl && (
                       <img
@@ -135,7 +145,7 @@ const EmployeeList = () => {
                   <td>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent row click when editing
+                        e.stopPropagation();
                         setEditingEmployee(employee.empId);
                       }}
                       className="edit-btn"
@@ -143,15 +153,15 @@ const EmployeeList = () => {
                       Edit
                     </button>
                     <button
-    onClick={(e) => {
-      e.stopPropagation();
-      deleteEmployee(employee.empId);
-    }}
-    className="delete-btn"
-    style={{marginTop:'8px', backgroundColor: 'red', color:'white'}}
-  >
-    Delete
-  </button>
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteEmployee(employee.empId);
+                      }}
+                      className="delete-btn"
+                      style={{ marginTop: '8px', backgroundColor: 'red', color: 'white' }}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
