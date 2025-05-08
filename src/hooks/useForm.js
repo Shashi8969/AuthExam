@@ -60,14 +60,19 @@ const useForm = () => {
 
   return {
     formData,
+    setFormData,
     empId,
+    setEmpId,
     error,
+    setError,
     loading,
+    setLoading,
     handleChange,
     handleSubmit,
     handleImageUpload,
-    resetForm,
+    resetForm
   };
+  
 };
 
 export default useForm;

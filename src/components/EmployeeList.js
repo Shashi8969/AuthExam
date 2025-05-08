@@ -1,14 +1,16 @@
 // src/components/EmployeeList.js
 import { useState, useEffect } from 'react';
-import { onValue, ref } from 'firebase/database';
-import { db } from '../config/firebase';
+import { onValue, ref } from 'firebase/database'; // Using firebase/database as per your code
+import { db } from '../config/firebase'; // Ensure your Firebase config is set up correctly
 import EditEmployee from './EditEmployee';
-import Employee from '../models/Employee';
+import EmployeeDetails from './EmployeeDetails'; // Import the EmployeeDetails component
+import Employee from '../models/Employee'; // Make sure you have this model defined
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null); // State to track selected employee ID
   const [searchTerm, setSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -55,12 +57,20 @@ const EmployeeList = () => {
     }
   };
 
+  const handleEmployeeClick = (employeeId) => {
+    setSelectedEmployeeId(employeeId);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedEmployeeId(null);
+  };
+
   if (loading) return <div className="loading">Loading employees...</div>;
 
   return (
     <div className="employee-list">
       <h2>Employee List</h2>
-      
+
       <div className="search-bar">
         <input
           type="text"
@@ -88,13 +98,13 @@ const EmployeeList = () => {
             </thead>
             <tbody>
               {sortedEmployees.map(employee => (
-                <tr key={employee.empId}>
+                <tr key={employee.empId} onClick={() => handleEmployeeClick(employee.empId)} style={{ cursor: 'pointer' }}> {/* Added onClick here */}
                   <td>
                     {employee.imageUrl && (
-                      <img 
-                        src={employee.imageUrl} 
-                        alt={employee.name} 
-                        className="thumbnail" 
+                      <img
+                        src={employee.imageUrl}
+                        alt={employee.name}
+                        className="thumbnail"
                         onError={(e) => {
                           e.target.src = 'https://via.placeholder.com/50';
                         }}
@@ -107,8 +117,11 @@ const EmployeeList = () => {
                   <td>{employee.address}</td>
                   <td>{employee.referenceName || '-'}</td>
                   <td>
-                    <button 
-                      onClick={() => setEditingEmployee(employee.empId)}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent row click when editing
+                        setEditingEmployee(employee.empId);
+                      }}
                       className="edit-btn"
                     >
                       Edit
@@ -122,9 +135,16 @@ const EmployeeList = () => {
       )}
 
       {editingEmployee && (
-        <EditEmployee 
-          employeeId={editingEmployee} 
-          onClose={() => setEditingEmployee(null)} 
+        <EditEmployee
+          employeeId={editingEmployee}
+          onClose={() => setEditingEmployee(null)}
+        />
+      )}
+
+      {selectedEmployeeId && (
+        <EmployeeDetails
+          employeeId={selectedEmployeeId}
+          onClose={handleCloseDetails}
         />
       )}
     </div>

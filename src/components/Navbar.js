@@ -49,12 +49,17 @@ const Navbar = () => {
             <>
               <li className="nav-item">
                 <Link to="/employees" className="nav-links" onClick={() => setMenuOpen(false)}>
-                  Employees
+                  Operator List
                 </Link>
               </li>
               <li className="nav-item">
                 <Link to="/add-employee" className="nav-links" onClick={() => setMenuOpen(false)}>
-                  Add Employee
+                  Add Operator
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/reference-names" className="nav-links" onClick={() => setMenuOpen(false)}>
+                  Add Supervisior
                 </Link>
               </li>
               <li className="nav-item">
