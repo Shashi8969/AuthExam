@@ -574,4 +574,11 @@ tr:hover {
   box-shadow: var(--box-shadow);
   margin-left: 8px;
 }
+
+}
+.logo-image {
+  width: 40px; /* Adjust as needed */
+  height: auto;
+  margin-right: 8px;
+  border-radius: 50%;
 }

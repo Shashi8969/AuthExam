@@ -30,9 +30,10 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <Link to="/" className="navbar-logo">
-          EmployeePortal
-        </Link>
+      <Link to="/" className="navbar-logo">
+  <img src="/logo192.png" alt="Company Logo" className="logo-image" />
+  AuthExam
+</Link>
 
         <div className="menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <FaTimes /> : <FaBars />}
@@ -84,11 +85,11 @@ const Navbar = () => {
                   Login
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link to="/signup" className="nav-links signup-btn" onClick={() => setMenuOpen(false)}>
                   Sign Up
                 </Link>
-              </li>
+              </li> */}
             </>
           )}
         </ul>
