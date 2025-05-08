@@ -1,23 +1,21 @@
-import logo from './logo.svg';
+// src/App.js
+import React from 'react';
 import './App.css';
+import EmployeeForm from './components/EmployeeForm';  // Add this import
+import EmployeeList from './components/EmployeeList'; // Add this import
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="app">
+      <header>
+        <h1>Employee Management System</h1>
       </header>
+      <main>
+        <div className="container">
+          <EmployeeForm />
+          <EmployeeList />
+        </div>
+      </main>
     </div>
   );
 }
