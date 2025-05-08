@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { signUp, logIn } from '../config/firebase';
 import { FaEnvelope, FaLock, FaArrowRight } from 'react-icons/fa';
+import './AuthForm.css';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 
 const AuthForm = ({ type }) => {
