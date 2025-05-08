@@ -1,22 +1,23 @@
+// src/components/EmployeeList.js
 import { useState, useEffect } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { db } from '../config/firebase';
 import EditEmployee from './EditEmployee';
+import Employee from '../models/Employee';
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortColumn, setSortColumn] = useState('name');
+  const [sortDirection, setSortDirection] = useState('asc');
 
   useEffect(() => {
     const unsubscribe = onValue(ref(db, 'Employees'), (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const employeesArray = Object.keys(data).map(key => ({
-          id: key,
-          ...data[key]
-        }));
+        const employeesArray = Object.keys(data).map(key => Employee.fromFirebase({ ...data[key], empId: key }));
         setEmployees(employeesArray);
       } else {
         setEmployees([]);
@@ -33,6 +34,27 @@ const EmployeeList = () => {
     employee.addharNo.includes(searchTerm)
   );
 
+  const sortedEmployees = filteredEmployees.sort((a, b) => {
+    if (sortColumn === 'name') {
+      return sortDirection === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    } else if (sortColumn === 'phoneNo') {
+      return sortDirection === 'asc' ? a.phoneNo.localeCompare(b.phoneNo) : b.phoneNo.localeCompare(a.phoneNo);
+    } else if (sortColumn === 'addharNo') {
+      return sortDirection === 'asc' ? a.addharNo.localeCompare(b.addharNo) : b.addharNo.localeCompare(a.addharNo);
+    } else {
+      return 0;
+    }
+  });
+
+  const handleSort = (column) => {
+    if (column === sortColumn) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
+    }
+  };
+
   if (loading) return <div className="loading">Loading employees...</div>;
 
   return (
@@ -48,7 +70,7 @@ const EmployeeList = () => {
         />
       </div>
 
-      {filteredEmployees.length === 0 ? (
+      {sortedEmployees.length === 0 ? (
         <p className="no-results">No employees found</p>
       ) : (
         <div className="table-container">
@@ -56,17 +78,17 @@ const EmployeeList = () => {
             <thead>
               <tr>
                 <th>Profile</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Aadhar</th>
+                <th onClick={() => handleSort('name')}>Name {sortColumn === 'name' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('phoneNo')}>Phone {sortColumn === 'phoneNo' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                <th onClick={() => handleSort('addharNo')}>Aadhar {sortColumn === 'addharNo' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
                 <th>Address</th>
                 <th>Reference</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredEmployees.map(employee => (
-                <tr key={employee.id}>
+              {sortedEmployees.map(employee => (
+                <tr key={employee.empId}>
                   <td>
                     {employee.imageUrl && (
                       <img 
@@ -86,7 +108,7 @@ const EmployeeList = () => {
                   <td>{employee.referenceName || '-'}</td>
                   <td>
                     <button 
-                      onClick={() => setEditingEmployee(employee.id)}
+                      onClick={() => setEditingEmployee(employee.empId)}
                       className="edit-btn"
                     >
                       Edit

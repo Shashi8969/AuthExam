@@ -1,129 +1,121 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
-
-const FileUpload = ({ label, onUpload, employeeId }) => {
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+const FileUpload = ({ label, onUpload, employeeId, cropType = 'profile' }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-  const [preview, setPreview] = useState('');
+  const [src, setSrc] = useState(null);
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const imgRef = useRef(null);
+  const previewCanvasRef = useRef(null);
 
-  // Validate file size (20KB-100KB)
-  const validateFile = (file) => {
-    const minSize = 20 * 1024; // 20KB
-    const maxSize = 100 * 1024; // 100KB
-    
-    if (file.size < minSize) {
-      setError(`Image too small (minimum ${minSize/1024}KB)`);
-      return false;
+  // Dimensions in pixels (assuming 300 DPI for print quality)
+  const DPI = 300;
+  const cropDimensions = {
+    profile: {
+      width: (30 / 25.4) * DPI,   // 30mm to inches then to pixels
+      height: (40 / 25.4) * DPI,   // 40mm to inches then to pixels
+      aspect: 3/4
+    },
+    aadhar: {
+      width: 3.3 * DPI,           // 3.3 inches to pixels
+      height: 2.1 * DPI,           // 2.1 inches to pixels
+      aspect: 3.3/2.1
     }
-    
-    if (file.size > maxSize) {
-      setError(`Image too large (maximum ${maxSize/1024}KB). Compressing...`);
-      return true; // We'll compress it
-    }
-    
-    return true;
   };
 
-  // Compress image while maintaining quality
-  const compressImage = async (file) => {
-    return new Promise((resolve) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+  const onSelectFile = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Please select a valid image file (jpeg, png, gif)');
+        return;
+      }
+      setError('');
       const reader = new FileReader();
+      reader.addEventListener('load', () => setSrc(reader.result));
       reader.readAsDataURL(file);
-      
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-
-          // Calculate new dimensions while maintaining aspect ratio
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height *= MAX_WIDTH / width;
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width *= MAX_HEIGHT / height;
-              height = MAX_HEIGHT;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Show preview of compressed image
-          setPreview(canvas.toDataURL('image/jpeg', 0.7));
-
-          // Convert to blob with quality adjustment
-          canvas.toBlob((blob) => {
-            // Verify compressed size meets requirements
-            if (blob.size > 100 * 1024) {
-              // If still too large, reduce quality further
-              canvas.toBlob((smallerBlob) => {
-                resolve(smallerBlob);
-              }, 'image/jpeg', 0.5);
-            } else {
-              resolve(blob);
-            }
-          }, 'image/jpeg', 0.7);
-        };
-      };
-    });
+    }
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const onImageLoad = (img) => {
+    imgRef.current = img;
+    console.log("Crop Type:", cropType); // Add this line
+    console.log("Crop Dimensions:", cropDimensions[cropType]); // Add this line
+    const { width, height, aspect } = cropDimensions[cropType];
+    const initialCropWidth = Math.min(width, img.width);
+    const initialCropHeight = Math.min(height, img.height);
+  
+    const initialCrop = {
+      unit: 'px',
+      width: initialCropWidth,
+      height: initialCropHeight,
+      x: (img.width - initialCropWidth) / 2,
+      y: (img.height - initialCropHeight) / 2,
+      aspect
+    };
+    console.log("Initial Crop:", initialCrop); // Add this line
+    setCrop(initialCrop);
+  };
 
-    setError('');
-    setPreview('');
-    
-    if (!file.type.match('image.*')) {
-      setError('Please select an image file');
-      return;
-    }
+  const getCroppedImg = () => {
+    const canvas = previewCanvasRef.current;
+    const image = imgRef.current;
+    const crop = completedCrop;
 
-    if (!validateFile(file)) {
+    if (!image || !crop || !canvas) return;
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    const ctx = canvas.getContext('2d');
+    const pixelRatio = window.devicePixelRatio;
+
+    canvas.width = crop.width * pixelRatio;
+    canvas.height = crop.height * pixelRatio;
+
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.imageSmoothingQuality = 'high';
+
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+  };
+
+  const handleUpload = async () => {
+    if (!completedCrop || !imgRef.current) {
+      setError('Please crop the image first');
       return;
     }
 
     setUploading(true);
     try {
-      let fileToUpload = file;
-      
-      // Compress if over 100KB or if we want to optimize all images
-      if (file.size > 100 * 1024) {
-        fileToUpload = await compressImage(file);
-      } else {
-        // Create preview for smaller images too
-        const reader = new FileReader();
-        reader.onload = (e) => setPreview(e.target.result);
-        reader.readAsDataURL(file);
-      }
-
-      // Check final size
-      if (fileToUpload.size < 20 * 1024) {
-        setError('After compression, image is too small (minimum 20KB)');
-        return;
-      }
-
-      const fileRef = storageRef(storage, `images/${employeeId}/${Date.now()}_${file.name}`);
-      await uploadBytes(fileRef, fileToUpload);
-      const downloadURL = await getDownloadURL(fileRef);
-      onUpload(downloadURL);
-    } catch (error) {
-      console.error("Upload error:", error);
-      setError("Failed to process image");
-    } finally {
+      previewCanvasRef.current.toBlob(async (blob) => {
+        const fileRef = storageRef(
+          storage,
+          `images/${employeeId}/${cropType}_${Date.now()}.jpg`
+        );
+        await uploadBytes(fileRef, blob);
+        const downloadURL = await getDownloadURL(fileRef);
+        onUpload(downloadURL);
+        setUploading(false);
+        setSrc(null); // Reset after upload
+      }, 'image/jpeg', 0.9);
+    } catch (err) {
+      console.error('Upload failed:', err);
+      setError('Failed to upload image');
       setUploading(false);
     }
   };
@@ -132,24 +124,61 @@ const FileUpload = ({ label, onUpload, employeeId }) => {
     <div className="file-upload">
       <label>
         {label}
-        <input 
-          type="file" 
-          onChange={handleFileChange} 
-          disabled={uploading}
+        <input
+          type="file"
+          onChange={onSelectFile}
           accept="image/*"
+          disabled={uploading}
         />
-        {uploading && <span>Processing image...</span>}
-        {error && <div className="error" style={{color: 'red'}}>{error}</div>}
       </label>
-      
-      {preview && (
-        <div className="preview-container" style={{marginTop: '10px'}}>
-          <p>Preview (compressed):</p>
-          <img 
-            src={preview} 
-            alt="Preview" 
-            style={{maxWidth: '200px', maxHeight: '200px', border: '1px solid #ddd'}}
-          />
+
+      {error && <div className="error">{error}</div>}
+
+      {src && (
+        <div className="crop-container">
+          <ReactCrop
+            crop={crop}
+            onChange={(c) => setCrop(c)}
+            onComplete={(c) => {
+              setCompletedCrop(c);
+              getCroppedImg();
+            }}
+            aspect={cropDimensions[cropType].aspect}
+            minWidth={50}
+            minHeight={50}
+          >
+            <img
+              ref={imgRef}
+              src={src}
+              onLoad={(e) => onImageLoad(e.currentTarget)}
+              alt="Crop preview"
+              style={{ maxWidth: '100%', maxHeight: '70vh' }}
+            />
+          </ReactCrop>
+
+          <div className="preview-section">
+            <h4>Cropped Preview</h4>
+            <canvas
+              ref={previewCanvasRef}
+              style={{
+                width: '100%',
+                maxWidth: '300px',
+                border: '1px solid #ddd'
+              }}
+            />
+            <p>
+              Required size: {cropType === 'profile'
+                ? '30mm × 40mm (3:4 ratio)'
+                : '3.3" × 2.1" (Aadhar card size)'}
+            </p>
+            <button
+              onClick={handleUpload}
+              disabled={uploading}
+              className="upload-btn"
+            >
+              {uploading ? 'Uploading...' : 'Upload Cropped Image'}
+            </button>
+          </div>
         </div>
       )}
     </div>

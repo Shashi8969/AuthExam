@@ -1,0 +1,88 @@
+/* src/components/AdminProfile.css */
+.admin-profile-container {
+    font-family: sans-serif;
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .avatar-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .profile-avatar-icon {
+    font-size: 2.5rem;
+    color: #999;
+  }
+  
+  .profile-info {
+    flex-grow: 1;
+  }
+  
+  .profile-name {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  .profile-email {
+    margin-bottom: 5px;
+    color: #666;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .profile-email .icon {
+    margin-right: 5px;
+  }
+  
+  .profile-id {
+    color: #777;
+    font-size: 0.9rem;
+  }
+  
+  .contact-info {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  
+  .contact-info h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 1.2rem;
+  }
+  
+  .contact-info ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .contact-info li {
+    margin-bottom: 8px;
+    color: #444;
+  }
+  
+  

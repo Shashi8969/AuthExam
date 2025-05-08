@@ -152,6 +152,8 @@ const EditEmployee = ({ employeeId, onClose }) => {
             <label>Aadhar Front Image:</label>
             <FileUpload 
               label="Update Aadhar Front"
+              imageType="aadhar"
+              cropType="aadhar"
               onUpload={handleImageUpdate('addharFrontImageUrl')}
               employeeId={employeeId}
             />
@@ -164,11 +166,15 @@ const EditEmployee = ({ employeeId, onClose }) => {
             <label>Aadhar Back Image:</label>
             <FileUpload 
               label="Update Aadhar Back"
+              imageType="aadhar"
+              cropType="aadhar"
               onUpload={handleImageUpdate('addharBackImageUrl')}
               employeeId={employeeId}
             />
             {formData.addharBackImageUrl && (
-              <img src={formData.addharBackImageUrl} alt="Current Aadhar Back" className="preview-image" />
+              <img src={formData.addharBackImageUrl} alt="Current Aadhar Back" 
+              className="preview-image" 
+              />
             )}
           </div>
 

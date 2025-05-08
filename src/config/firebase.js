@@ -2,6 +2,8 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref } from "firebase/database";
 import { getStorage } from "firebase/storage";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyB1psChXyrky7o5TOJbd5xwvLvsv0dqDFM",
@@ -15,9 +17,23 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 const db = getDatabase(app);
 const storage = getStorage(app);
 
 const employeesRef = ref(db, 'Employees');
 
 export { db, storage, employeesRef };
+
+// Auth functions
+export const signUp = (email, password) => {
+  return createUserWithEmailAndPassword(auth, email, password);
+};
+
+export const logIn = (email, password) => {
+  return signInWithEmailAndPassword(auth, email, password);
+};
+
+export const logOut = () => {
+  return signOut(auth);
+};

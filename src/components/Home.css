@@ -1,0 +1,69 @@
+/* src/components/Home.css */
+.home-container {
+    font-family: sans-serif;
+  }
+  
+  .slider-section {
+    width: 100%;
+    overflow: hidden; /* To hide slides that are not active */
+  }
+  
+  .slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out; /* For smooth slide transitions */
+  }
+  
+  .slide {
+    min-width: 100%; /* Each slide takes full width */
+  }
+  
+  .slide img {
+    display: block;
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+  }
+  
+  .about-section {
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #f9f9f9; /* Example background color */
+  }
+  
+  .about-section .container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  
+  .works-section {
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .works-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 20px;
+    margin-top: 30px;
+  }
+  
+  .work-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    text-align: left;
+  }
+  
+  .work-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  
+  /* Add more CSS to style headings, paragraphs, etc. */
