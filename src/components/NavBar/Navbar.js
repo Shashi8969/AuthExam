@@ -1,9 +1,9 @@
 // src/components/Navbar.js
 import { useState, useEffect } from 'react';
-import '../App.css';
+import './Navbar.css';
+import '../../App.css'
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../config/firebase';
-import { logOut } from '../config/firebase';
+import { auth,logOut } from '../../config/firebase';
 import { FaUserCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 
 const Navbar = () => {

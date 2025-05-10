@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Home.css';
+import Footer from '../Footer/Footer';
 
 const images = [
   "./banner1.jpg",
@@ -57,13 +58,8 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* ✅ Footer Section */}
-      <footer className="footer">
-        <div className="container">
-          <p>&copy; 2025 AuthExam. All rights reserved.</p>
-        </div>
-      </footer>
+<Footer></Footer>          
+      
     </div>
   );
 };

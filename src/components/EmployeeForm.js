@@ -4,7 +4,7 @@ import useForm from '../hooks/useForm';
 import FileUpload from './FileUpload';
 import { formFields as initialFormFields } from '../constants/formFields'; // Rename initial import
 import { imageUploadFields } from '../constants/imageUploadFields';
-import { ref, onValue, push, set } from 'firebase/database'; // Import Firebase functions
+import { ref, onValue, push, set, query, orderByChild, equalTo, get } from 'firebase/database'; // Import Firebase functions
 import { db } from '../config/firebase'; // Your Firebase configuration
 
 const EmployeeForm = () => {
@@ -18,11 +18,11 @@ const EmployeeForm = () => {
     error,
     loading,
     handleChange,
-    handleSubmit: 
-    handleImageUpload,
+    handleSubmit: handleImageUpload,
     setLoading,
     setError,
-    resetForm // Import resetForm from the hook
+    resetForm, // Import resetForm from the hook
+    setFormData // Import setFormData to clear images
   } = useForm();
 
   useEffect(() => {
@@ -62,7 +62,24 @@ const EmployeeForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null); // Clear any previous errors
+
     try {
+      const aadharQuery = query(ref(db, 'Employees'), orderByChild('aadharNo'), equalTo(formData.aadharNo));
+      const aadharSnapshot = await get(aadharQuery);
+
+      if (aadharSnapshot.exists()) {
+        setError(new Error('Aadhar number already exists.'));
+        setLoading(false);
+        setMakeReferencable(true);
+        setFormFields(prevFields =>
+          prevFields.map(field =>
+            field.name === 'referenceName' ? { ...field, required: false } : field
+          )
+        );
+        return; // Stop further submission
+      }
+
       const newEmployeeRef = push(ref(db, 'Employees'));
       const generatedEmpId = newEmployeeRef.key;
       const employeeData = { ...formData, empId: generatedEmpId };
@@ -80,6 +97,12 @@ const EmployeeForm = () => {
       resetForm(); // Use the resetForm function from the hook
       setMakeReferencable(false); // Reset the toggle
       setFormFields(initialFormFields); // Reset form fields to initial state
+      setFormData(prevData => ({ // Clear image URLs
+        ...prevData,
+        profileImage: '',
+        aadharFront: '',
+        aadharBack: ''
+      }));
     } catch (error) {
       setError(error);
       setLoading(false);

@@ -1,9 +1,9 @@
 // src/App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import AuthForm from './components/AuthForm';
+import Navbar from './components/NavBar/Navbar';
+import AuthForm from './components/AuthForm/AuthForm';
 import EmployeeList from './components/EmployeeList';
-import Home from './components/Home';
+import Home from './components/Home/Home';
 import { AuthProvider } from './context/AuthContext';
 import EmployeeForm from './components/EmployeeForm';
 import AdminProfilePage from './pages/AdminProfilePage';
@@ -15,6 +15,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+
           <Route path="/employees" element={<EmployeeList />} />
           <Route path="/add-employee" element={<EmployeeForm />} />
           <Route path="/login" element={<AuthForm type="login" />} />

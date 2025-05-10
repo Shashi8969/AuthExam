@@ -1,0 +1,150 @@
+/* src/components/Footer/Footer.css */
+.footer {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #7db3f5 100%); /* Brighter primary gradient */
+  color: var(--light-gray);
+  padding: 30px 10px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  position: relative; /* For pseudo-element background */
+  overflow: hidden; /* Clip the pseudo-element */
+}
+
+/* Subtle pattern overlay */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0L6 6M0 6L6 0' stroke='rgba(255,255,255,0.05)' stroke-width='1'/%3E%3C/svg%3E"); /* Very subtle diagonal lines */
+  opacity: 0.8;
+  z-index: 1; /* Behind the text content */
+}
+
+.footer-container {
+  position: relative; /* Bring content above the pattern */
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* Slightly more visible border */
+}
+
+.footer-section h3 {
+  color: var(--light-gray);
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+}
+
+.footer-section p {
+  margin-bottom: 15px;
+  opacity: 0.85;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+  color: var(--light-gray);
+  text-decoration: none;
+  transition: color var(--transition);
+  opacity: 0.75;
+}
+
+.footer-section ul li a:hover {
+  color: #a7c9f5; /* Lighter shade of primary */
+  opacity: 1;
+}
+
+.company-info .social-links {
+  margin-top: 25px;
+}
+
+.company-info .social-links a {
+  display: inline-block;
+  margin-right: 15px;
+  font-size: 1.5rem;
+  color: var(--light-gray);
+  transition: transform 0.2s ease-in-out, color var(--transition); /* Added transform for hover */
+  opacity: 0.7;
+}
+
+.company-info .social-links a:hover {
+  color: #a7c9f5; /* Lighter shade of primary */
+  opacity: 1;
+  transform: translateY(-2px); /* Subtle lift on hover */
+}
+
+.contact-info p {
+  margin-bottom: 20px;
+}
+
+.footer-bottom {
+  position: relative; /* Keep above the pattern */
+  z-index: 2;
+  text-align: center;
+  padding-top: 10px;
+  font-size: 0.9rem;
+  color: #d1d5db;
+}
+
+.footer-bottom p {
+  margin-bottom: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .footer {
+    padding: 10px 10px;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 30px;
+  }
+
+  .footer-section.navigation ul,
+  .footer-section.legal ul {
+    text-align: center;
+  }
+
+  .footer-section.navigation ul li,
+  .footer-section.legal ul li {
+    display: block;
+    margin-right: 0;
+    margin-bottom: 12px;
+  }
+
+  .company-info {
+    text-align: center;
+  }
+
+  .company-info .social-links {
+    justify-content: center;
+    display: flex;
+  }
+
+  .contact-info {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-bottom p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+}

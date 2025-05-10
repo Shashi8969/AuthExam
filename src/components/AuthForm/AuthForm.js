@@ -1,12 +1,11 @@
 // src/components/AuthForm.js
 import { useState } from 'react';
-import { signUp as firebaseSignUp, logIn, auth } from '../config/firebase'; // Import auth for deleteUser
+import { signUp as firebaseSignUp, logIn,db, auth} from '../../config/firebase'; // Import auth for deleteUser
 import { deleteUser } from 'firebase/auth'; // Import deleteUser
-import { db } from '../config/firebase'; // Import the db object
 import { ref, set } from 'firebase/database'; // Import the necessary database functions
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import './AuthForm.css';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const AuthForm = ({ type }) => {
   const [email, setEmail] = useState('');

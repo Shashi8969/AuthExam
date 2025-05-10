@@ -1,10 +1,11 @@
 // src/components/EmployeeList.js
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { onValue, ref, remove } from 'firebase/database';
 import { db } from '../config/firebase';
 import { ref as dbRef } from 'firebase/database';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useAuth } from '../context/AuthContext'; // Import useAuth
+import * as XLSX from 'xlsx'; // Import the xlsx library
 
 import EditEmployee from './EditEmployee';
 import EmployeeDetails from './EmployeeDetails';
@@ -20,6 +21,11 @@ const EmployeeList = () => {
   const [sortDirection, setSortDirection] = useState('asc');
   const { currentUser, loading: authLoading } = useAuth(); // Get currentUser and loading state from AuthContext
   const navigate = useNavigate(); // Initialize useNavigate
+
+  // New states for biometric operator selection and assignment
+  const [selectedOperators, setSelectedOperators] = useState([]);
+  const [centerAssignments, setCenterAssignments] = useState({});
+  const [showOnlyBiometricOperators, setShowOnlyBiometricOperators] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !currentUser) {
@@ -43,9 +49,10 @@ const EmployeeList = () => {
   }, [authLoading, currentUser, navigate]); // Add authLoading, currentUser, and navigate to the dependency array
 
   const filteredEmployees = employees.filter(employee =>
-    employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    employee.phoneNo.includes(searchTerm) ||
-    employee.addharNo.includes(searchTerm)
+    (employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.phoneNo.includes(searchTerm) ||
+      employee.addharNo.includes(searchTerm)) &&
+    (!showOnlyBiometricOperators || employee.isBiometricOperator) // Apply biometric operator filter
   );
 
   const sortedEmployees = filteredEmployees.sort((a, b) => {
@@ -86,9 +93,63 @@ const EmployeeList = () => {
     }
   };
 
-
   const handleCloseDetails = () => {
     setSelectedEmployeeId(null);
+  };
+
+  const handleBiometricOperatorFilterChange = (e) => {
+    setShowOnlyBiometricOperators(e.target.checked);
+  };
+
+  const handleOperatorSelect = (employeeId, isChecked) => {
+  console.log('handleOperatorSelect called for:', employeeId, 'isChecked:', isChecked);
+  if (isChecked) {
+    setSelectedOperators([...selectedOperators, employeeId]);
+    console.log('selectedOperators after adding:', [...selectedOperators, employeeId]);
+  } else {
+    setSelectedOperators(selectedOperators.filter(id => id !== employeeId));
+    console.log('selectedOperators after removing:', selectedOperators.filter(id => id !== employeeId));
+    // Also remove assignment if unselected
+    const newAssignments = { ...centerAssignments };
+    delete newAssignments[employeeId];
+    setCenterAssignments(newAssignments);
+  }
+};
+
+  const handleAssignmentChange = (operatorId, field, value) => {
+    setCenterAssignments(prevAssignments => ({
+      ...prevAssignments,
+      [operatorId]: {
+        ...prevAssignments[operatorId],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleGenerateExcel = () => {
+    const selectedAndAssignedOperators = selectedOperators.map(operatorId => {
+      const operator = employees.find(emp => emp.empId === operatorId);
+      const assignment = centerAssignments[operatorId] || {};
+      return {
+        sNo: '', // Will be filled later
+        name: operator?.name || '',
+        aadharNo: operator?.addharNo || '',
+        phoneNo: operator?.phoneNo || '',
+        centerCode: assignment.centerCode || '',
+        centerName: assignment.centerName || '',
+      };
+    });
+
+    if (selectedAndAssignedOperators.length === 0) {
+      alert('Please select operators and assign them to centers.');
+      return;
+    }
+
+    const data = selectedAndAssignedOperators.map((item, index) => ({ ...item, sNo: index + 1 }));
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Biometric Operators');
+    XLSX.writeFile(workbook, 'biometric_operator_assignments.xlsx');
   };
 
   if (loading || authLoading) return <div className="loading">Loading...</div>; // Show loading indicator while either data or auth status is loading
@@ -96,6 +157,17 @@ const EmployeeList = () => {
   return (
     <div className="employee-list">
       <h2>Employee List</h2>
+
+      <div className="filter-section">
+        <label>
+          Show Only Biometric Operators:
+          <input
+            type="checkbox"
+            checked={showOnlyBiometricOperators}
+            onChange={handleBiometricOperatorFilterChange}
+          />
+        </label>
+      </div>
 
       <div className="search-bar">
         <input
@@ -113,6 +185,7 @@ const EmployeeList = () => {
           <table>
             <thead>
               <tr>
+                <th>Select</th>
                 <th>Profile</th>
                 <th onClick={() => handleSort('name')}>Name {sortColumn === 'name' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
                 <th onClick={() => handleSort('phoneNo')}>Phone {sortColumn === 'phoneNo' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
@@ -125,6 +198,17 @@ const EmployeeList = () => {
             <tbody>
               {sortedEmployees.map(employee => (
                 <tr key={employee.empId} onClick={() => handleEmployeeClick(employee.empId)} style={{ cursor: 'pointer' }}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedOperators.includes(employee.empId)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        handleOperatorSelect(employee.empId, e.target.checked);
+                      }}
+                      disabled={!employee.isBiometricOperator} // Assuming you have 'isBiometricOperator' in your Employee model
+                    />
+                  </td>
                   <td>
                     {employee.imageUrl && (
                       <img
@@ -169,6 +253,53 @@ const EmployeeList = () => {
           </table>
         </div>
       )}
+
+      {selectedOperators.length > 0 && (
+        <div className="center-assignment">
+          <h3>Assign Centers to Selected Operators</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Center Code</th>
+                <th>Center Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {selectedOperators.map(operatorId => {
+                const operator = employees.find(emp => emp.empId === operatorId);
+                const assignment = centerAssignments[operatorId] || { centerCode: '', centerName: '' };
+
+                return (
+                  <tr key={operatorId}>
+                    <td>{operator ? operator.name : 'N/A'}</td>
+                    <td>
+                      <input
+                        type="text"
+                        placeholder="Enter Center Code"
+                        value={assignment.centerCode}
+                        onChange={(e) => handleAssignmentChange(operatorId, 'centerCode', e.target.value)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        placeholder="Enter Center Name"
+                        value={assignment.centerName}
+                        onChange={(e) => handleAssignmentChange(operatorId, 'centerName', e.target.value)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <button onClick={handleGenerateExcel} disabled={selectedOperators.length === 0}>
+        Generate Biometric Operator List
+      </button>
 
       {editingEmployee && (
         <EditEmployee

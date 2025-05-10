@@ -10,6 +10,7 @@ class Employee {
       imageUrl,
       addharFrontImageUrl,
       addharBackImageUrl,
+      isBiometricOperator
     }) {
       this.empId = empId;
       this.name = name;
@@ -20,6 +21,7 @@ class Employee {
       this.imageUrl = imageUrl;
       this.addharFrontImageUrl = addharFrontImageUrl;
       this.addharBackImageUrl = addharBackImageUrl;
+      this.isBiometricOperator = isBiometricOperator;
     }
   
     static fromFirebase(data) {
@@ -33,6 +35,7 @@ class Employee {
         imageUrl: data.imageUrl,
         addharFrontImageUrl: data.addharFrontImageUrl,
         addharBackImageUrl: data.addharBackImageUrl,
+        isBiometricOperator: data.isBiometricOperator
       });
     }
   
@@ -47,6 +50,7 @@ class Employee {
         imageUrl: this.imageUrl,
         addharFrontImageUrl: this.addharFrontImageUrl,
         addharBackImageUrl: this.addharBackImageUrl,
+        isBiometricOperator: this.isBiometricOperator
       };
     }
   }
