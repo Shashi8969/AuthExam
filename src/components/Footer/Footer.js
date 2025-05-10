@@ -34,8 +34,8 @@ const Footer = () => {
         <div className="footer-section contact-info">
           <h3>Contact Us</h3>
           <p><FaEnvelope className="contact-icon" /> Email: info@authexam.com</p>
-          <p><FaPhone className="contact-icon" /> Phone: +91 1234567890</p>
-          <p>Address: 123 Exam Street, Secure City, India</p>
+          <p><FaPhone className="contact-icon" /> Phone: +91 9801902516</p>
+          <p>Address: Kurhani, Muzaffarpur,Bihar, India</p>
         </div>
 
         <div className="footer-section legal">
@@ -49,7 +49,7 @@ const Footer = () => {
       </div>
       <div className="footer-bottom">
         <p>&copy; {new Date().getFullYear()} AuthExam. All rights reserved.</p>
-        <p>Designed & Developed by YourName/CompanyName</p>
+        <p>Designed & Developed by AuthExam.Pvt.Ltd</p>
       </div>
     </footer>
   );
