@@ -13,8 +13,8 @@ const Footer = () => {
           <p>Your trusted portal for secure exam authentication.</p>
           <p>We are committed to ensuring integrity and fairness in every assessment through advanced biometric technology.</p>
           <div className="social-links">
-            <a href="#" aria-label="Facebook"><FaFacebook /></a>
-            <a href="#" aria-label="Twitter"><FaTwitter /></a>
+            <a href="www.facebook.com" aria-label="Facebook"><FaFacebook /></a>
+            <a href="www.instagram.com" aria-label="Twitter"><FaTwitter /></a>
             <a href="#" aria-label="LinkedIn"><FaLinkedin /></a>
             <a href="#" aria-label="Instagram"><FaInstagram /></a>
           </div>

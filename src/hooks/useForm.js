@@ -1,19 +1,9 @@
-// src/hooks/useForm.js
-import { useState } from 'react';
-import { push, set } from 'firebase/database';
-import { employeesRef } from '../config/firebase';
-import Employee from '../models/Employee';
+import { useState } from "react";
+import { push, set } from "firebase/database";
+import { employeesRef } from "../config/firebase";
+import Employee from "../models/Employee";
 
-const initialState = new Employee({
-  name: '',
-  phoneNo: '',
-  addharNo: '',
-  address: '',
-  referenceName: '',
-  imageUrl: '',
-  addharFrontImageUrl: '',
-  addharBackImageUrl: '',
-});
+const initialState = new Employee({});
 
 const useForm = () => {
   const [formData, setFormData] = useState(initialState);
@@ -33,20 +23,31 @@ const useForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
+
     try {
       const newEmployeeRef = push(employeesRef);
       const generatedEmpId = newEmployeeRef.key;
+
+      if (!generatedEmpId) {
+        throw new Error("Failed to generate Employee ID");
+      }
+
       setEmpId(generatedEmpId);
+
       const employee = new Employee({
         ...formData,
         empId: generatedEmpId,
       });
+
       await set(newEmployeeRef, employee.toFirebase());
+
       setFormData(initialState);
       setEmpId(null);
       setLoading(false);
     } catch (error) {
       setError(error);
+    } finally {
       setLoading(false);
     }
   };

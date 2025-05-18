@@ -65,7 +65,7 @@ const EmployeeForm = () => {
     setError(null); // Clear any previous errors
 
     try {
-      const aadharQuery = query(ref(db, 'Employees'), orderByChild('aadharNo'), equalTo(formData.aadharNo));
+      const aadharQuery = query(ref(db, 'Employees'), orderByChild('addharNo'), equalTo(formData.addharNo));
       const aadharSnapshot = await get(aadharQuery);
 
       if (aadharSnapshot.exists()) {
@@ -84,6 +84,7 @@ const EmployeeForm = () => {
       const generatedEmpId = newEmployeeRef.key;
       const employeeData = { ...formData, empId: generatedEmpId };
       await set(newEmployeeRef, employeeData);
+      alert('Employee added successfully!');
 
       if (makeReferencable && formData.name.trim() !== '') {
         const referenceNamesRef = ref(db, 'ReferenceNames');
@@ -174,6 +175,7 @@ const EmployeeForm = () => {
 
       <button type="submit" className="submit-btn" disabled={loading}>
         {loading ? 'Submitting...' : 'Add Employee'}
+        
       </button>
 
       {error && <p style={{ color: 'red' }}>{error.message}</p>}

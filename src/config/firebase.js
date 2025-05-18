@@ -22,8 +22,9 @@ const db = getDatabase(app);
 const storage = getStorage(app);
 
 const employeesRef = ref(db, 'Employees');
+const referenceNamesRef = ref(db, 'ReferenceNames')
 
-export { db, storage, employeesRef };
+export { db, storage, employeesRef, referenceNamesRef };
 
 // Auth functions
 export const signUp = (email, password) => {

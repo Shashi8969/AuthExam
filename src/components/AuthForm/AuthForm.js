@@ -1,6 +1,6 @@
 // src/components/AuthForm.js
 import { useState } from 'react';
-import { signUp as firebaseSignUp, logIn,db, auth} from '../../config/firebase'; // Import auth for deleteUser
+import { signUp as firebaseSignUp, logIn,db} from '../../config/firebase'; // Import auth for deleteUser
 import { deleteUser } from 'firebase/auth'; // Import deleteUser
 import { ref, set } from 'firebase/database'; // Import the necessary database functions
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
