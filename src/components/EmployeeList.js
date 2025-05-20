@@ -29,7 +29,11 @@ const EmployeeList = () => {
   const [bulkCenterCode, setBulkCenterCode] = useState('');
   const [bulkCenterName, setBulkCenterName] = useState('');
 
-  const [showOnlyBiometricOperators, setShowOnlyBiometricOperators] = useState(false);
+  // Renamed state for the new toggle functionality
+  const [showUnassignedOnly, setShowUnassignedOnly] = useState(false);
+
+  // State for predefined centers
+  const [predefinedCenters, setPredefinedCenters] = useState({});
 
   // New state for groups: array of { id, name }
   const [groups, setGroups] = useState([]);
@@ -58,12 +62,31 @@ const EmployeeList = () => {
     return () => unsubscribe();
   }, [authLoading, currentUser, navigate]); // Add authLoading, currentUser, and navigate to the dependency array
 
-  const filteredEmployees = employees.filter(employee =>
-    (employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  useEffect(() => {
+    // Fetch predefined centers
+    const centersRef = ref(db, 'PredefinedCenters');
+    const unsubscribeCenters = onValue(centersRef, (snapshot) => {
+      setPredefinedCenters(snapshot.val() || {});
+    });
+    return () => unsubscribeCenters();
+  }, []);
+
+
+  const filteredEmployees = employees.filter(employee => { // Add opening curly brace
+    const matchesSearch =
+      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.phoneNo.includes(searchTerm) ||
-      employee.addharNo.includes(searchTerm)) &&
-    (!showOnlyBiometricOperators || employee.isBiometricOperator) // Apply biometric operator filter
-  );
+      employee.addharNo.includes(searchTerm);
+
+    if (!matchesSearch) {
+      return false;
+    }
+
+    if (showUnassignedOnly) {
+      return employee.isBiometricOperator && !centerAssignments[employee.empId];
+    }
+    return true; // If toggle is off, show all employees matching search (and the search criteria)
+  });
 
   const sortedEmployees = filteredEmployees.sort((a, b) => {
     if (sortColumn === 'name') {
@@ -108,8 +131,9 @@ const handleEmployeeClick = (employeeId) => {
     setSelectedEmployeeId(null);
   };
 
-  const handleBiometricOperatorFilterChange = (e) => {
-    setShowOnlyBiometricOperators(e.target.checked);
+  // Renamed handler for the new toggle
+  const handleUnassignedFilterChange = (e) => {
+    setShowUnassignedOnly(e.target.checked);
   };
 
   const handleOperatorSelect = (employeeId, isChecked) => {
@@ -127,13 +151,43 @@ const handleEmployeeClick = (employeeId) => {
 };
 
   const handleAssignmentChange = (operatorId, field, value) => {
-    setCenterAssignments(prevAssignments => ({
-      ...prevAssignments,
-      [operatorId]: {
-        ...prevAssignments[operatorId],
-        [field]: value,
-      },
-    }));
+    setCenterAssignments(prevAssignments => {
+      // Check for operator count limit if assigning a new center code
+      if (field === 'centerCode' && value) {
+        const targetCenter = predefinedCenters[value];
+        if (targetCenter && typeof targetCenter.count === 'number') {
+          let currentAssignedToTargetCenter = 0;
+          Object.values(prevAssignments).forEach(assignment => {
+            if (assignment.centerCode === value) {
+              currentAssignedToTargetCenter++;
+            }
+          });
+          // If the operator is not already assigned to this center, count them as one more
+          if (!prevAssignments[operatorId] || prevAssignments[operatorId].centerCode !== value) {
+            if (currentAssignedToTargetCenter >= targetCenter.count) {
+              alert(`Cannot assign to ${targetCenter.name} (${value}). Maximum operator count of ${targetCenter.count} reached. Please remove an existing operator from this center first or choose a different center.`);
+              return prevAssignments; // Revert to previous assignments
+            }
+          }
+        }
+      }
+      const newAssignmentForOperator = { ...(prevAssignments[operatorId] || {}), [field]: value };
+      if (field === 'centerCode') {
+        const selectedPredefinedCenter = predefinedCenters[value];
+        newAssignmentForOperator.centerName = selectedPredefinedCenter ? selectedPredefinedCenter.name : '';
+      }
+      return {
+        ...prevAssignments,
+        [operatorId]: newAssignmentForOperator,
+      };
+    });
+  };
+
+  const handleBulkCenterCodeChange = (e) => {
+    const code = e.target.value;
+    setBulkCenterCode(code);
+    const selectedPredefinedCenter = predefinedCenters[code];
+    setBulkCenterName(selectedPredefinedCenter ? selectedPredefinedCenter.name : '');
   };
 
   const handleBulkAssign = () => {
@@ -141,14 +195,36 @@ const handleEmployeeClick = (employeeId) => {
       alert('Please enter a Center Code or Center Name for bulk assignment.');
       return;
     }
-    const newAssignments = { ...centerAssignments };
+
+    // Check for operator count limit in bulk assignment
+    const targetCenter = predefinedCenters[bulkCenterCode];
+    if (targetCenter && typeof targetCenter.count === 'number') {
+      let currentAssignedToTargetCenter = 0;
+      Object.values(centerAssignments).forEach(assignment => {
+        if (assignment.centerCode === bulkCenterCode) {
+          currentAssignedToTargetCenter++;
+        }
+      });
+
+      // Count how many *newly* selected operators are being assigned (not already in this center)
+      const newlyAssignedCount = selectedOperators.filter(opId => !centerAssignments[opId] || centerAssignments[opId].centerCode !== bulkCenterCode).length;
+
+      if (currentAssignedToTargetCenter + newlyAssignedCount > targetCenter.count) {
+        alert(`Cannot assign ${selectedOperators.length} operators to ${targetCenter.name} (${bulkCenterCode}). It would exceed the maximum operator count of ${targetCenter.count}. Current assigned: ${currentAssignedToTargetCenter}. You are trying to add ${newlyAssignedCount} more. Please select fewer operators or remove existing ones from this center.`);
+        return;
+      }
+    }
+
+
+    const newAssignments = { ...centerAssignments }; // Declare newAssignments here
     selectedOperators.forEach(operatorId => {
       newAssignments[operatorId] = {
         centerCode: bulkCenterCode,
         centerName: bulkCenterName,
       };
     });
-    setCenterAssignments(newAssignments);
+    setCenterAssignments(newAssignments); // Use the populated newAssignments
+
     // --- New: Deselect operators and clear bulk inputs after assignment ---
     setSelectedOperators([]); // Clear selected operators
     setBulkCenterCode(''); // Clear bulk code input
@@ -290,10 +366,15 @@ const handleEmployeeClick = (employeeId) => {
     return (
       <div className="assignment-preview-section" style={{ marginTop: '30px', borderTop: '2px solid #007bff', paddingTop: '20px' }}>
         <h3>Assignment Preview</h3>
-        {Object.values(groupedByCenter).map((group, groupIndex) => (
-          <div key={`${group.centerCode}-${group.centerName}-${groupIndex}`} style={{ marginBottom: '20px', padding: '10px', border: '1px solid #eee', borderRadius: '5px' }}>
+        {Object.values(groupedByCenter).map((group, groupIndex) => {
+          const centerInfo = predefinedCenters[group.centerCode];
+          const maxOperators = centerInfo ? centerInfo.count : Infinity; // Default to Infinity if no count defined
+          const isOverAssigned = group.operators.length > maxOperators;
+          return (
+          <div key={`${group.centerCode}-${group.centerName}-${groupIndex}`} style={{ marginBottom: '20px', padding: '10px', border: isOverAssigned ? '2px solid red' : '1px solid #eee', borderRadius: '5px' }}>
             <h4 style={{ borderBottom: '1px solid #ddd', paddingBottom: '5px', marginBottom: '10px' }}>
-              Center: {group.centerName} (Code: {group.centerCode})
+              Center: {group.centerName} (Code: {group.centerCode}) - Assigned: {group.operators.length}{centerInfo && typeof centerInfo.count === 'number' ? ` / Max: ${centerInfo.count}` : ''}
+              {isOverAssigned && <span style={{color: 'red', marginLeft: '10px', fontWeight: 'bold'}}> (Over Limit!)</span>}
             </h4>
             <table className="preview-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -321,7 +402,8 @@ const handleEmployeeClick = (employeeId) => {
               </tbody>
             </table>
           </div>
-        ))}
+          );
+        })}
         <button 
           onClick={handleClearAllAssignments} 
           style={{ marginTop: '10px', backgroundColor: '#dc3545', color: 'white', padding: '8px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
@@ -338,14 +420,15 @@ const handleEmployeeClick = (employeeId) => {
     <div className="employee-list">
       <h2>Employee List</h2>
 
-      <div className="filter-section">
-        <label>
-          Show Only Biometric Operators:
+      <div className="filter-section" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+        <span style={{ marginRight: '10px' }}>Show Only Unassigned Biometric Operators:</span>
+        <label className="toggle-switch">
           <input
             type="checkbox"
-            checked={showOnlyBiometricOperators}
-            onChange={handleBiometricOperatorFilterChange}
+            checked={showUnassignedOnly}
+            onChange={handleUnassignedFilterChange}
           />
+          <span className="slider round"></span>
         </label>
       </div>
 
@@ -442,21 +525,26 @@ const handleEmployeeClick = (employeeId) => {
             <h4>Bulk Assign to All Selected Operators</h4>
             <div style={{ marginBottom: '10px' }}>
               <label htmlFor="bulkCenterCode" style={{ marginRight: '10px' }}>Center Code:</label>
-              <input
-                type="text"
+              <select
                 id="bulkCenterCode"
-                placeholder="Enter Bulk Center Code"
                 value={bulkCenterCode}
-                onChange={(e) => setBulkCenterCode(e.target.value)}
-                style={{ marginRight: '20px' }}
-              />
+                onChange={handleBulkCenterCodeChange} // Use the correct handler here
+                style={{ marginRight: '20px', padding: '8px' }}
+              >
+                <option value="">Select Center Code</option>
+                {Object.keys(predefinedCenters).map(code => (
+                  <option key={code} value={code}>{code} - {predefinedCenters[code].name}</option>
+                ))}
+              </select>
+
               <label htmlFor="bulkCenterName" style={{ marginRight: '10px' }}>Center Name:</label>
               <input
                 type="text"
                 id="bulkCenterName"
                 placeholder="Enter Bulk Center Name"
                 value={bulkCenterName}
-                onChange={(e) => setBulkCenterName(e.target.value)}
+                onChange={(e) => setBulkCenterName(e.target.value)} // Allow manual edit if needed, though mostly auto-filled
+                readOnly={!!(bulkCenterCode && predefinedCenters[bulkCenterCode])} // Make read-only if a predefined code is selected
               />
             </div>
             <button onClick={handleBulkAssign} style={{ padding: '8px 15px' }}>
@@ -483,20 +571,25 @@ const handleEmployeeClick = (employeeId) => {
                     <tr key={operatorId}>
                       <td>{operator ? operator.name : 'N/A'}</td>
                       <td>
-                        <input
-                          type="text"
-                          placeholder="Enter Center Code"
+                        <select
                           value={assignment.centerCode}
                           onChange={(e) => handleAssignmentChange(operatorId, 'centerCode', e.target.value)}
-                        />
+                          style={{ padding: '8px' }}
+                        >
+                          <option value="">Select Center Code</option>
+                          {Object.keys(predefinedCenters).map(code => (
+                            <option key={code} value={code}>{code} - {predefinedCenters[code].name}</option>
+                          ))}
+                        </select>
                       </td>
                       <td>
                         <input
                           type="text"
                           placeholder="Enter Center Name"
                           value={assignment.centerName}
-                          onChange={(e) => handleAssignmentChange(operatorId, 'centerName', e.target.value)}
-                        />
+                          onChange={(e) => handleAssignmentChange(operatorId, 'centerName', e.target.value)} // Allow manual edit
+                          readOnly={!!(assignment.centerCode && predefinedCenters[assignment.centerCode])} // Make read-only if predefined code selected
+                       />
                       </td>
                     </tr>
                   );

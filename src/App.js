@@ -8,6 +8,8 @@ import { AuthProvider } from './context/AuthContext';
 import EmployeeForm from './components/EmployeeForm';
 import AdminProfilePage from './pages/AdminProfilePage';
 import ReferenceNameManager from './components/ReferenceNameManager';
+import CenterManager from './components/CenterManager';
+
 function App() {
   return (
     <AuthProvider>
@@ -21,7 +23,8 @@ function App() {
           <Route path="/login" element={<AuthForm type="login" />} />
           <Route path="/signup" element={<AuthForm type="signup" />} />
           <Route path="/profile" element={<AdminProfilePage type="profile-page" />} />
-          <Route path="/reference-names" element={<ReferenceNameManager />} /> {/* Add this route */}
+          <Route path="/reference-names" element={<ReferenceNameManager />} />
+          <Route path="/admin/manage-centers" element={<CenterManager />} />
         </Routes>
       </Router>
     </AuthProvider>
