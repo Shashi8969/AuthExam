@@ -4,7 +4,19 @@ import './Navbar.css';
 import '../../App.css'
 import { Link, useNavigate } from 'react-router-dom';
 import { auth,logOut } from '../../config/firebase';
-import { FaUserCircle, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+  FaBars,
+  FaTimes,
+  FaHome,
+  FaListAlt,
+  FaPlusCircle,
+  FaUserPlus,
+  FaUsersCog,
+  FaSignInAlt
+} from 'react-icons/fa';
+
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
@@ -27,6 +39,17 @@ const Navbar = () => {
     }
   };
 
+  // Determine display name
+  let displayName = "User"; // Default
+  if (user) {
+    if (user.displayName) {
+      displayName = user.displayName;
+    } else if (user.email) {
+      // Use part before @, or full email if no @ (though unlikely)
+      displayName = user.email.includes('@') ? user.email.split('@')[0] : user.email;
+    }
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -42,7 +65,7 @@ const Navbar = () => {
         <ul className={`nav-menu ${menuOpen ? 'active' : ''}`}>
           <li className="nav-item">
             <Link to="/" className="nav-links" onClick={() => setMenuOpen(false)}>
-              Home
+              <FaHome style={{ marginRight: '8px' }} /> <span>Home</span>
             </Link>
           </li>
 
@@ -50,29 +73,34 @@ const Navbar = () => {
             <>
               <li className="nav-item">
                 <Link to="/employees" className="nav-links" onClick={() => setMenuOpen(false)}>
-                  Operator List
+                  <FaListAlt style={{ marginRight: '8px' }} /> <span>Operator List</span>
                 </Link>
               </li>
               <li className="nav-item">
                 <Link to="/add-employee" className="nav-links" onClick={() => setMenuOpen(false)}>
-                  Add Operator
+                  <FaPlusCircle style={{ marginRight: '8px' }} /> <span>Add Operator</span>
                 </Link>
               </li>
               <li className="nav-item">
                 <Link to="/reference-names" className="nav-links" onClick={() => setMenuOpen(false)}>
-                  Add Supervisior
+                  <FaUserPlus style={{ marginRight: '8px' }} /> <span>Reference Names</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/admin/manage-centers" className="nav-links" onClick={() => setMenuOpen(false)}>
+                  <FaUsersCog style={{ marginRight: '8px' }} /> <span>Manage Centers</span>
                 </Link>
               </li>
               <li className="nav-item">
                 <Link to="/profile"
                 className="nav-links" onClick={() => setMenuOpen(false)}>
                   <FaUserCircle className="user-icon" />
-                  <span>{user.email}</span>
+                  <span className="user-display-name">{displayName}</span>
                 </Link>
               </li>
               <li className="nav-item">
                 <button className="logout-btn" onClick={handleLogout}>
-                  <FaSignOutAlt /> Logout
+                  <FaSignOutAlt style={{ marginRight: '5px' }} /> <span>Logout</span>
                 </button>
               </li>
             </>
@@ -82,12 +110,12 @@ const Navbar = () => {
             <>
               <li className="nav-item">
                 <Link to="/login" className="nav-links" onClick={() => setMenuOpen(false)}>
-                  Login
+                  <FaSignInAlt style={{ marginRight: '8px' }} /> Login
                 </Link>
               </li>
               <li className="nav-item">
                 <Link to="/signup" className="nav-links signup-btn" onClick={() => setMenuOpen(false)}>
-                  Sign Up
+                  <FaUserPlus style={{ marginRight: '8px' }} /> Sign Up
                 </Link>
               </li>
             </>
@@ -97,5 +125,7 @@ const Navbar = () => {
     </nav>
   );
 };
+
+
 
 export default Navbar;
