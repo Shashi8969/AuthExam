@@ -163,6 +163,16 @@ const handleEmployeeClick = (employeeId) => {
     setBulkCenterName('');
     alert('All center assignments have been cleared.');
   };
+
+  const handleRemoveOperatorFromPreview = (operatorIdToRemove) => {
+    setCenterAssignments(prevAssignments => {
+      const newAssignments = { ...prevAssignments };
+      delete newAssignments[operatorIdToRemove];
+      return newAssignments;
+    });
+    // Optionally, you might want to add a confirmation or notification here
+    // alert(`Operator removed from assignment.`);
+  };
   const handleGenerateExcel = () => {
     const assignedOperatorIds = Object.keys(centerAssignments);
 
@@ -272,6 +282,7 @@ const handleEmployeeClick = (employeeId) => {
       groupedByCenter[groupKey].operators.push({
         name: operator.name || '',
         addharNo: operator.addharNo || '',
+        empId: operator.empId, // <-- Add empId here
         phoneNo: operator.phoneNo || '',
       });
     });
@@ -291,6 +302,7 @@ const handleEmployeeClick = (employeeId) => {
                   <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Name</th>
                   <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Aadhar No.</th>
                   <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Mobile No.</th>
+                  <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -300,6 +312,10 @@ const handleEmployeeClick = (employeeId) => {
                     <td style={{border: '1px solid #ddd', padding: '8px'}}>{op.name}</td>
                     <td style={{border: '1px solid #ddd', padding: '8px'}}>{op.addharNo}</td>
                     <td style={{border: '1px solid #ddd', padding: '8px'}}>{op.phoneNo}</td>
+                    <td style={{border: '1px solid #ddd', padding: '8px', textAlign: 'center'}}>
+                      <button
+                        onClick={() => handleRemoveOperatorFromPreview(op.empId)} // <-- Use op.empId directly
+                        style={{backgroundColor: '#ffc107', color: 'black', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer'}}>Remove</button></td>
                   </tr>
                 ))}
               </tbody>
