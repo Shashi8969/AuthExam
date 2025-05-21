@@ -1,0 +1,141 @@
+/* src/components/EmployeeDetails.module.css */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.modalContent {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 600px; /* Increased max-width for more content */
+  max-height: 90vh; /* Increased max-height */
+  overflow-y: auto;
+  position: relative; /* For positioning the close button */
+}
+
+.modalContent h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+.imageContainer { /* For profile image and its download button */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.largeProfileImage {
+  display: block;
+  max-width: 150px;
+  max-height: 200px;
+  margin: 0 auto 10px auto; /* Adjusted margin for button below */
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  object-fit: cover;
+}
+
+.downloadButton {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+}
+
+.downloadButton:hover {
+  background-color: #0056b3;
+}
+
+.aadharImagesSection {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.aadharImagesSection h4 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.aadharImageContainer {
+  display: flex;
+  gap: 20px;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.imageWrapper {
+  text-align: center;
+  flex-basis: calc(50% - 10px); /* Aim for two images per row, considering gap */
+  max-width: 200px;
+}
+
+.imageWrapper p {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.aadharImage {
+  display: block;
+  width: 100%;
+  max-height: 150px;
+  margin: 0 auto 10px auto;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  object-fit: contain; /* Use contain for Aadhar cards */
+}
+
+.modalContent p {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.modalContent p strong {
+  color: #333;
+}
+
+.loading, .error {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.2em;
+}
+.closeButtonError {
+    margin-left: 15px;
+    padding: 5px 10px;
+    cursor: pointer;
+}

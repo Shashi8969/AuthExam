@@ -109,10 +109,10 @@ const EmployeeList = () => {
     }
   };
 
-const handleEmployeeClick = (employeeId) => {
-  // Prevent opening details if clicking on checkbox or buttons
-  setSelectedEmployeeId(employeeId);
-};
+  const handleEmployeeClick = (employeeId) => {
+    // Prevent opening details if clicking on checkbox or buttons
+    setSelectedEmployeeId(employeeId);
+  };
 
   const deleteEmployee = (employeeId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this employee?");
@@ -137,18 +137,39 @@ const handleEmployeeClick = (employeeId) => {
   };
 
   const handleOperatorSelect = (employeeId, isChecked) => {
-  console.log('handleOperatorSelect called for:', employeeId, 'isChecked:', isChecked);
+    console.log('handleOperatorSelect called for:', employeeId, 'isChecked:', isChecked);
     // Only allow selecting if not already assigned, or if unchecking
-    if (isChecked && !centerAssignments[employeeId]) {
-      setSelectedOperators([...selectedOperators, employeeId]);
-    } else if (!isChecked) {
-      setSelectedOperators(selectedOperators.filter(id => id !== employeeId));
-      // Also remove assignment if unselected
-      const newAssignments = { ...centerAssignments };
-      delete newAssignments[employeeId];
-      setCenterAssignments(newAssignments);
+
+    // The `disabled` attribute on the checkbox should prevent invalid calls.
+    // `employee.isBiometricOperator` is implicitly handled by the `disabled` state.
+
+    if (isChecked) {
+      // Intention is to select this operator.
+      // The checkbox should only be checkable if !centerAssignments[employeeId] (handled by disabled state).
+      if (!centerAssignments[employeeId]) { 
+        setSelectedOperators(prevSelected => {
+          if (!prevSelected.includes(employeeId)) {
+            return [...prevSelected, employeeId];
+          }
+          return prevSelected;
+        });
+      }
+    } else {
+      // Intention is to unselect this operator.
+      setSelectedOperators(prevSelected => prevSelected.filter(id => id !== employeeId));
+      
+      // If unselected, also remove any center assignment for this operator.
+      setCenterAssignments(prevAssignments => {
+        if (prevAssignments[employeeId]) {
+          const newAssignments = { ...prevAssignments };
+          delete newAssignments[employeeId];
+          return newAssignments;
+        }
+        return prevAssignments; // No change if no assignment existed
+      });
+
     }
-};
+  };
 
   const handleAssignmentChange = (operatorId, field, value) => {
     setCenterAssignments(prevAssignments => {
@@ -371,41 +392,41 @@ const handleEmployeeClick = (employeeId) => {
           const maxOperators = centerInfo ? centerInfo.count : Infinity; // Default to Infinity if no count defined
           const isOverAssigned = group.operators.length > maxOperators;
           return (
-          <div key={`${group.centerCode}-${group.centerName}-${groupIndex}`} style={{ marginBottom: '20px', padding: '10px', border: isOverAssigned ? '2px solid red' : '1px solid #eee', borderRadius: '5px' }}>
-            <h4 style={{ borderBottom: '1px solid #ddd', paddingBottom: '5px', marginBottom: '10px' }}>
-              Center: {group.centerName} (Code: {group.centerCode}) - Assigned: {group.operators.length}{centerInfo && typeof centerInfo.count === 'number' ? ` / Max: ${centerInfo.count}` : ''}
-              {isOverAssigned && <span style={{color: 'red', marginLeft: '10px', fontWeight: 'bold'}}> (Over Limit!)</span>}
-            </h4>
-            <table className="preview-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>S. No.</th>
-                  <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Name</th>
-                  <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Aadhar No.</th>
-                  <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Mobile No.</th>
-                  <th style={{border: '1px solid #ddd', padding: '8px', textAlign: 'left'}}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {group.operators.map((op, index) => (
-                  <tr key={`${group.centerCode}-${op.name}-${index}`}>
-                    <td style={{border: '1px solid #ddd', padding: '8px'}}>{index + 1}</td>
-                    <td style={{border: '1px solid #ddd', padding: '8px'}}>{op.name}</td>
-                    <td style={{border: '1px solid #ddd', padding: '8px'}}>{op.addharNo}</td>
-                    <td style={{border: '1px solid #ddd', padding: '8px'}}>{op.phoneNo}</td>
-                    <td style={{border: '1px solid #ddd', padding: '8px', textAlign: 'center'}}>
-                      <button
-                        onClick={() => handleRemoveOperatorFromPreview(op.empId)} // <-- Use op.empId directly
-                        style={{backgroundColor: '#ffc107', color: 'black', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer'}}>Remove</button></td>
+            <div key={`${group.centerCode}-${group.centerName}-${groupIndex}`} style={{ marginBottom: '20px', padding: '10px', border: isOverAssigned ? '2px solid red' : '1px solid #eee', borderRadius: '5px' }}>
+              <h4 style={{ borderBottom: '1px solid #ddd', paddingBottom: '5px', marginBottom: '10px' }}>
+                Center: {group.centerName} (Code: {group.centerCode}) - Assigned: {group.operators.length}{centerInfo && typeof centerInfo.count === 'number' ? ` / Max: ${centerInfo.count}` : ''}
+                {isOverAssigned && <span style={{ color: 'red', marginLeft: '10px', fontWeight: 'bold' }}> (Over Limit!)</span>}
+              </h4>
+              <table className="preview-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>S. No.</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Name</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Aadhar No.</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Mobile No.</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {group.operators.map((op, index) => (
+                    <tr key={`${group.centerCode}-${op.name}-${index}`}>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{index + 1}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{op.name}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{op.addharNo}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px' }}>{op.phoneNo}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
+                        <button
+                          onClick={() => handleRemoveOperatorFromPreview(op.empId)} // <-- Use op.empId directly
+                          style={{ backgroundColor: '#ffc107', color: 'black', border: 'none', padding: '5px 10px', borderRadius: '3px', cursor: 'pointer' }}>Remove</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         })}
-        <button 
-          onClick={handleClearAllAssignments} 
+        <button
+          onClick={handleClearAllAssignments}
           style={{ marginTop: '10px', backgroundColor: '#dc3545', color: 'white', padding: '8px 15px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
         >
           Clear All Assignments
@@ -461,15 +482,24 @@ const handleEmployeeClick = (employeeId) => {
             <tbody>
               {sortedEmployees.map(employee => (
                 <tr key={employee.empId} onClick={() => handleEmployeeClick(employee.empId)} style={{ cursor: 'pointer' }}>
-                  <td>
+                  <td onClick={(e) => {
+                      e.stopPropagation(); // Prevent row click
+
+                      const isDisabled = !employee.isBiometricOperator || !!centerAssignments[employee.empId];
+                      if (isDisabled) {
+                        return; // Do nothing if disabled
+                      }
+                      // Toggle the selection state
+                      const isCurrentlyChecked = selectedOperators.includes(employee.empId);
+                      handleOperatorSelect(employee.empId, !isCurrentlyChecked);
+                    }}>
                     <input
                       type="checkbox"
                       checked={selectedOperators.includes(employee.empId)}
                       onChange={(e) => {
-                        e.stopPropagation();
                         handleOperatorSelect(employee.empId, e.target.checked);
                       }}
-                      disabled={!employee.isBiometricOperator || !!centerAssignments[employee.empId]} 
+                      disabled={!employee.isBiometricOperator || !!centerAssignments[employee.empId]}
                     />
                   </td>
                   <td>
@@ -589,7 +619,7 @@ const handleEmployeeClick = (employeeId) => {
                           value={assignment.centerName}
                           onChange={(e) => handleAssignmentChange(operatorId, 'centerName', e.target.value)} // Allow manual edit
                           readOnly={!!(assignment.centerCode && predefinedCenters[assignment.centerCode])} // Make read-only if predefined code selected
-                       />
+                        />
                       </td>
                     </tr>
                   );
@@ -619,9 +649,10 @@ const handleEmployeeClick = (employeeId) => {
       {selectedEmployeeId && (
         <EmployeeDetails
           employeeId={selectedEmployeeId}
-          onClose={handleCloseDetails}
+          onClose={() => setSelectedEmployeeId(null)} // Or your existing handleCloseDetails
         />
       )}
+
     </div>
   );
 };
