@@ -1,0 +1,206 @@
+.view-saved-assignments-container {
+  padding: 30px 40px;
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #343a40;
+  min-height: calc(100vh - 60px); /* Adjust 60px based on your Navbar height */
+}
+
+.view-saved-assignments-container h2 {
+  text-align: center;
+  margin-bottom: 35px;
+  color: #2c3e50;
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+.loading-assignments,
+.error-assignments,
+.no-saved-lists {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+  color: #6c757d;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+}
+
+.error-assignments {
+  color: #dc3545;
+  border: 1px solid #f5c6cb;
+  background-color: #f8d7da;
+}
+
+.saved-lists-ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.saved-list-item {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  padding: 20px 25px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.saved-list-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.list-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.list-item-header h3 {
+  margin: 0;
+  color: #007bff;
+  font-size: 1.4em;
+}
+
+.list-timestamp {
+  font-size: 0.85em;
+  color: #6c757d;
+}
+
+.list-item-details h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #495057;
+  font-size: 1.1em;
+}
+
+.assignments-table-summary {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+}
+
+.assignments-table-summary th,
+.assignments-table-summary td {
+  border: 1px solid #e9ecef;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.assignments-table-summary th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.view-details-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}
+
+.view-details-link:hover {
+  background-color: #0056b3;
+}
+/* ... (existing styles for ViewSavedAssignments.css) ... */
+
+.list-item-actions {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  gap: 10px; /* Space between buttons */
+  justify-content: flex-start; /* Align buttons to the start */
+}
+
+.list-action-btn {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.85em;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  color: #fff;
+}
+
+.view-toggle-btn {
+  background-color: #6c757d; /* Secondary/Gray */
+}
+.view-toggle-btn:hover {
+  background-color: #5a6268;
+}
+
+.download-btn {
+  background-color: #28a745; /* Green */
+}
+.download-btn:hover {
+  background-color: #218838;
+}
+.download-btn:disabled {
+  background-color: #adb5bd;
+  cursor: not-allowed;
+}
+
+.rename-btn {
+  background-color: #ffc107; /* Yellow/Warning */
+  color: #212529;
+}
+.rename-btn:hover {
+  background-color: #e0a800;
+}
+
+.delete-btn {
+  background-color: #dc3545; /* Red/Danger */
+}
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.list-rename-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.list-rename-input {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1.2em; /* Match h3 size or adjust as needed */
+}
+.list-rename-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  outline: none;
+}
+
+.save-rename-btn {
+  background-color: #007bff; /* Primary */
+}
+.save-rename-btn:hover {
+  background-color: #0056b3;
+}
+.cancel-rename-btn {
+  background-color: #6c757d; /* Secondary */
+}
+.cancel-rename-btn:hover {
+  background-color: #5a6268;
+}

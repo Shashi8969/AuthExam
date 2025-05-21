@@ -11,6 +11,8 @@ import CenterManager from './components/CenterManager/CenterManager';
 import NotFoundPage from './pages/NotFoundPage'; // Assuming this is already created
 import PleaseLoginPage from './pages/PleaseLoginPage'; // Import the new page
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'; // Import the ProtectedRoute component
+import ViewSavedAssignments from './components/ViewSavedAssignments';
+
 
 
 function App() {
@@ -24,7 +26,7 @@ function App() {
           <Route path="/login" element={<AuthForm type="login" />} />
           <Route path="/signup" element={<AuthForm type="signup" />} />
            <Route path="/please-login" element={<PleaseLoginPage />} />
-
+          <Route path="/saved-assignments" element={<ViewSavedAssignments />} />
           {/* Protected Routes */}
           <Route
             path="/employees"

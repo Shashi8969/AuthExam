@@ -1,59 +1,665 @@
-/* src/components/EmployeeList.css */
+/* c:\Users\DELL\employee-manager\src\components\EmployeeList.css */
+
+/* Keyframes for Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+}
+
+/* ... existing styles ... */
+
+.save-assignments-btn {
+  background-color: #17a2b8; /* Example: Info Blue */
+  /* Inherits other styles from .action-button-group button if it's a sibling */
+}
+.save-assignments-btn:hover {
+  background-color: #138496;
+}
+.save-assignments-btn:disabled {
+  background-color: #adb5bd;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Adjust .action-button-group if needed to accommodate multiple buttons */
+.action-button-group {
+  margin-top: 35px;
+  text-align: center;
+  display: flex; /* To place buttons side-by-side */
+  justify-content: center; /* Center the buttons */
+  gap: 15px; /* Space between buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.employee-list {
+  padding: 30px 40px;
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Roboto as primary */
+  background-color: #f8f9fa; /* Lighter, cleaner background */
+  color: #343a40; /* Darker default text for better contrast */
+  min-height: 100vh; /* Ensure it takes at least full viewport height */
+}
+
+.employee-list h2 {
+  text-align: center;
+  margin-bottom: 35px;
+  color: #2c3e50;
+  font-size: 2.2em;
+  font-weight: 700; /* Bolder heading */
+  letter-spacing: -0.5px;
+}
+.employee-list h3 {
+  color: #34495e;
+  font-weight: 600;
+  margin-bottom: 20px; /* More space below h3 */
+}
+.employee-list h4 {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Search Bar Styles */
 .search-bar {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px; /* Increased margin */
   width: 100%;
-  max-width: 500px; /* Adjust as needed */
+  max-width: 550px; /* Slightly wider */
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Subtle shadow for the bar itself */
+  border-radius: 6px;
+  overflow: hidden; /* To contain border-radius with child elements */
 }
 
 .search-input {
   flex-grow: 1;
-  padding: 10px 15px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-right: none; /* For attached button look */
-  border-radius: 4px 0 0 4px;
+  padding: 12px 18px; /* Increased padding */
+  font-size: 1rem;
+  border: 1px solid #dee2e6;
+  border-right: none;
+  /* border-radius: 6px 0 0 6px; */ /* Handled by parent */
   outline: none;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .search-input:focus {
   border-color: #007bff;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.075), 0 0 0 0.2rem rgba(0,123,255,.25);
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); /* Standard Bootstrap focus */
 }
 
 .search-button {
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 12px 25px; /* Increased padding */
+  font-size: 1rem;
   color: #fff;
   background-color: #007bff;
   border: 1px solid #007bff;
-  border-radius: 0 4px 4px 0;
+  /* border-radius: 0 6px 6px 0; */ /* Handled by parent */
   cursor: pointer;
   outline: none;
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-  white-space: nowrap; /* Prevents text wrapping */
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
 
 .search-button:hover {
   background-color: #0056b3;
-  border-color: #0052a9;
 }
-
 .search-button:active {
   background-color: #004a99;
-  border-color: #00458f;
+  transform: scale(0.98); /* Press effect */
 }
-
 .search-button:disabled {
   background-color: #6c757d;
   border-color: #6c757d;
   cursor: not-allowed;
 }
 
-.search-button .fa-search {
-  margin-right: 5px;
+/* Filter Section (for the toggle switch) */
+.filter-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  font-size: 0.9rem;
+  color: #495057;
 }
 
+.filter-section span {
+  margin-right: 12px;
+}
+
+/* Toggle Switch Styles - (Existing styles are generally good, ensuring smoothness) */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc; transition: .4s;
+}
+.slider:before {
+  position: absolute; content: ""; height: 20px; width: 20px;
+  left: 4px; bottom: 4px; background-color: white; transition: .4s;
+}
+input:checked + .slider { background-color: #007bff; }
+input:focus + .slider { box-shadow: 0 0 1px #007bff; }
+input:checked + .slider:before { transform: translateX(22px); }
+.slider.round { border-radius: 28px; }
+.slider.round:before { border-radius: 50%; }
+
+
+/* Employee Table Styles */
+.employee-table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 25px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px; /* More pronounced radius */
+  box-shadow: 0 5px 20px rgba(0,0,0,0.07); /* Softer, larger shadow */
+  background-color: #fff; /* Ensure table background is white */
+}
+
+.employee-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.employee-table th,
+.employee-table td {
+  padding: 14px 18px; /* Increased padding */
+  text-align: left;
+  border-bottom: 1px solid #e9ecef; /* Lighter border */
+  vertical-align: middle;
+}
+
+.employee-table th {
+  background-color: #f8f9fa; /* Lighter header */
+  font-weight: 600;
+  color: #495057;
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  font-size: 0.75rem; /* Slightly smaller for uppercase */
+  letter-spacing: 0.8px; /* More spacing for uppercase */
+  transition: background-color 0.3s ease;
+}
+
+.employee-table th:hover {
+  background-color: #e9ecef;
+}
+
+.employee-table tbody tr {
+  transition: background-color 0.25s ease, transform 0.2s ease; /* Smooth row hover */
+}
+.employee-table tbody tr:nth-of-type(even) {
+  background-color: #fcfdff; /* Very subtle zebra */
+}
+.employee-table tbody tr:hover {
+  background-color: #eef2f7; /* Clearer hover state */
+  transform: scale(1.005); /* Slight lift effect - subtle */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Shadow on hover for depth */
+}
+
+.employee-table td .thumbnail {
+  width: 45px; /* Slightly larger */
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  border: 2px solid #fff; /* White border around thumbnail */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+.employee-table tbody tr:hover .thumbnail {
+  transform: scale(1.1); /* Enlarge thumbnail on row hover */
+}
+
+/* Action Buttons in Table */
+.employee-table .edit-btn,
+.employee-table .delete-btn {
+  padding: 7px 14px; /* Slightly more padding */
+  font-size: 0.8rem;
+  border-radius: 5px; /* More rounded */
+  cursor: pointer;
+  border: 1px solid transparent;
+  margin: 2px 5px 2px 0;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out; /* All properties transition */
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.employee-table .edit-btn {
+  background-color: #ffc107;
+  color: #212529;
+  border-color: #ffc107;
+}
+.employee-table .edit-btn:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.employee-table .delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+.employee-table .delete-btn:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+
+/* Loading and No Results States */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+  color: #6c757d;
+  min-height: 200px; /* Give it some space */
+}
+.loading::before { /* CSS Spinner */
+  content: '';
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 20px;
+  border: 4px solid #007bff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spinner 0.8s linear infinite;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+  color: #6c757d;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+}
+
+/* Assignment Sections */
+.assignment-section,
+.bulk-assignment,
+.center-assignment,
+.assignment-preview-section {
+  margin-top: 35px; /* More space between sections */
+  padding: 25px; /* More padding */
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  animation: fadeIn 0.5s ease-out; /* Fade in sections */
+}
+
+.assignment-section h3,
+.assignment-section h4,
+.assignment-preview-section h3,
+.assignment-preview-section h4 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #34495e;
+}
+.assignment-preview-section h4.preview-group-header { /* Specific to preview group headers */
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 12px;
+}
+
+.assignment-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+.assignment-section th,
+.assignment-section td {
+  padding: 12px 15px;
+  border: 1px solid #e9ecef;
+  text-align: left;
+  font-size: 0.85rem;
+}
+.assignment-section th {
+  background-color: #f8f9fa;
+}
+.assignment-section input[type="text"],
+.assignment-section select {
+  width: 100%;
+  padding: 10px 12px; /* More padding */
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.assignment-section input[type="text"]:focus,
+.assignment-section select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  outline: none;
+}
+
+.assignment-section label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #495057;
+}
+.bulk-assignment-controls { /* Added class for better targeting */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+
+/* Preview Table (inside assignment-preview-section) */
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 0.85rem;
+}
+.preview-table th,
+.preview-table td {
+  border: 1px solid #e9ecef;
+  padding: 10px 12px;
+  text-align: left;
+}
+.preview-table th {
+  background-color: #f8f9fa;
+}
+.preview-table .remove-operator-btn {
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.preview-table .remove-operator-btn:hover {
+  background-color: #e0a800;
+  transform: scale(1.05);
+}
+
+
+/* General Buttons (outside tables) */
+.action-button-group {
+  margin-top: 35px;
+  text-align: center;
+}
+
+/* Base style for buttons in this group for consistency */
+.action-button-group button,
+.bulk-assign-btn, /* Include bulk assign button here for base styles */
+.clear-assignments-btn { /* Include clear assignments button */
+  padding: 12px 28px; /* Generous padding */
+  font-size: 0.95rem;
+  color: white;
+  border: none;
+  border-radius: 6px; /* More rounded */
+  cursor: pointer;
+  margin: 5px;
+  font-weight: 500;
+  text-transform: uppercase; /* Uppercase for action buttons */
+  letter-spacing: 0.5px;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.action-button-group button:hover,
+.bulk-assign-btn:hover,
+.clear-assignments-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.action-button-group button:active,
+.bulk-assign-btn:active,
+.clear-assignments-btn:active {
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+
+.generate-excel-btn {
+  background-color: #28a745; /* Green */
+}
+.generate-excel-btn:hover {
+  background-color: #218838;
+}
+.generate-excel-btn:disabled {
+  background-color: #adb5bd; /* Softer disabled color */
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.clear-assignments-btn {
+  background-color: #dc3545; /* Red */
+}
+.clear-assignments-btn:hover {
+  background-color: #c82333;
+}
+
+.bulk-assign-btn {
+  background-color: #17a2b8; /* Info Blue */
+  margin-top: 10px; /* Add some space if it's below inputs */
+}
+.bulk-assign-btn:hover {
+  background-color: #138496;
+}
+
+/* Styling for specific elements from EmployeeList.js that had inline styles */
+.preview-group {
+  margin-bottom: 25px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  background-color: #fdfdff; /* Slightly off-white for contrast */
+}
+.preview-group.over-assigned {
+  border-left: 4px solid #e53e3e; /* Red accent for over-assigned */
+  background-color: #fff5f5; /* Light red background */
+}
+.preview-group-header { /* Already styled above, ensure consistency */
+  color: #34495e;
+}
+.over-limit-warning {
+  color: #c53030; /* Darker red for warning text */
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .employee-list { padding: 20px 15px; }
+  .employee-list h2 { font-size: 1.8em; margin-bottom: 25px; }
+
+  .search-bar {
+    flex-direction: column;
+    max-width: 100%;
+    box-shadow: none; /* Remove shadow on mobile if stacked */
+    border-radius: 0;
+  }
+  .search-input {
+    border-radius: 6px; /* Full radius when stacked */
+    border-right: 1px solid #dee2e6;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Add shadow to individual input */
+  }
+  .search-button {
+    border-radius: 6px; /* Full radius when stacked */
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Add shadow to individual button */
+  }
+
+  .employee-table th,
+  .employee-table td {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+
+  .employee-table .edit-btn,
+  .employee-table .delete-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    display: block;
+    width: calc(100% - 10px); /* Adjust width for margin */
+    margin: 5px auto;
+  }
+
+  .assignment-section input[type="text"],
+  .assignment-section select {
+    font-size: 0.85rem;
+  }
+  .bulk-assignment-controls {
+    grid-template-columns: 1fr; /* Stack controls on mobile */
+  }
+  .action-button-group button,
+  .bulk-assign-btn,
+  .clear-assignments-btn {
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Popup Styles (Enhancements) */
+.popup-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(30, 30, 40, 0.65); /* Darker, slightly bluish overlay */
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1050; opacity: 0; visibility: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+.popup-overlay.active { opacity: 1; visibility: visible; }
+
+.popup-content {
+  background-color: #fff;
+  padding: 25px 35px; /* More padding */
+  border-radius: 10px; /* More rounded */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+  text-align: left; position: relative;
+  max-width: 550px; /* Slightly wider modal */
+  width: 90%;
+  transform: scale(0.95) translateY(-20px); /* Initial state for animation */
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease; /* Springy effect */
+}
+.popup-overlay.active .popup-content {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.popup-content h3 {
+  margin-top: 0; margin-bottom: 20px; /* More space */
+  color: #2c3e50; font-size: 1.5em; /* Larger title */
+}
+.popup-content p { margin-bottom: 20px; line-height: 1.7; color: #495057; }
+
+.popup-close-btn {
+  position: absolute; top: 15px; right: 20px; background: none; border: none;
+  font-size: 28px; color: #adb5bd; cursor: pointer; padding: 5px; line-height: 1;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.popup-close-btn:hover { color: #343a40; transform: rotate(90deg); }
+
+
+/* Top/Bottom Popup (Banner/Toast Style) Enhancements */
+.popup-top .popup-content,
+.popup-bottom .popup-content {
+  position: fixed;
+  left: 50%;
+  max-width: 90%; width: auto; min-width: 320px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  padding: 15px 25px; /* Adjusted padding for banners */
+  /* transform and transition are handled by their specific classes */
+}
+.popup-top .popup-content {
+  top: 20px;
+  transform: translateX(-50%) translateY(-150%);
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.popup-overlay.active.popup-top .popup-content { transform: translateX(-50%) translateY(0); }
+
+.popup-bottom .popup-content {
+  bottom: 20px;
+  transform: translateX(-50%) translateY(150%);
+  transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.popup-overlay.active.popup-bottom .popup-content { transform: translateX(-50%) translateY(0); }
+
+
+/* Standalone Toast Enhancements */
+.toast-notification {
+  position: fixed; background-color: #343a40; color: white;
+  padding: 16px 28px; border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  z-index: 1100; opacity: 0; visibility: hidden;
+  font-size: 0.95rem;
+  transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.toast-notification.top { top: 25px; left: 50%; transform: translateX(-50%) translateY(-150%); }
+.toast-notification.bottom { bottom: 25px; left: 50%; transform: translateX(-50%) translateY(150%); }
+.toast-notification.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+
+/* Scroll to Top/Bottom Buttons Enhancements */
+.scroll-buttons-container {
+  position: fixed; bottom: 35px; right: 35px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.scroll-button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none; border-radius: 50%;
+  width: 50px; /* Slightly larger */
+  height: 50px;
+  font-size: 22px; font-weight: bold;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* Enhanced shadow */
+  transition: background-color 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  animation: pulse 2s infinite; /* Subtle pulse animation */
+  animation-delay: calc(var(--i, 0) * 0.2s); /* Stagger animation if multiple buttons */
+}
+.scroll-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.1) translateY(-3px); /* More pronounced hover */
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  animation-play-state: paused; /* Pause pulse on hover */
+}
+.scroll-button:active {
+  background-color: #004a99;
+  transform: scale(1.0) translateY(0px); /* Reset transform on active */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Add this if you have multiple scroll buttons and want staggered animation delay */
+/* .scroll-to-top { --i: 0; } */
+/* .scroll-to-bottom { --i: 1; } */

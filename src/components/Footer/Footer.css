@@ -28,8 +28,8 @@
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 40px;
+  grid-template-columns: repeat(4, 1fr); /* Ensure 4 columns in a row */
+  gap: 30px; /* Adjusted gap for 4 columns */
   padding-bottom: 40px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* Slightly more visible border */
 }
@@ -68,11 +68,11 @@
   opacity: 1;
 }
 
-.company-info .social-links {
+.brand-info .social-links { /* Updated selector from company-info to brand-info */
   margin-top: 25px;
 }
 
-.company-info .social-links a {
+.brand-info .social-links a { /* Updated selector */
   display: inline-block;
   margin-right: 15px;
   font-size: 1.5rem;
@@ -81,7 +81,7 @@
   opacity: 0.7;
 }
 
-.company-info .social-links a:hover {
+.brand-info .social-links a:hover { /* Updated selector */
   color: #a7c9f5; /* Lighter shade of primary */
   opacity: 1;
   transform: translateY(-2px); /* Subtle lift on hover */
@@ -128,11 +128,11 @@
     margin-bottom: 12px;
   }
 
-  .company-info {
+  .brand-info { /* Updated selector */
     text-align: center;
   }
 
-  .company-info .social-links {
+  .brand-info .social-links { /* Updated selector */
     justify-content: center;
     display: flex;
   }

@@ -8,43 +8,51 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-container">
-        <div className="footer-section company-info">
-          <h3>AuthExam</h3>
-          <p>Your trusted portal for secure exam authentication.</p>
-          <p>We are committed to ensuring integrity and fairness in every assessment through advanced biometric technology.</p>
+        {/* Section 1: Brand Info & Social Links */}
+        <div className="footer-section brand-info">
+          {/* Replace with your logo if available */}
+          {/* <img src="/path/to/your/logo.png" alt="AuthExam Logo" className="footer-logo"/> */}
+          <h3>AuthExam</h3> {/* Or use logo */}
+          <p className="brand-description">Your trusted partner in securing exam integrity through advanced biometric authentication.</p>
           <div className="social-links">
-            <a href="www.facebook.com" aria-label="Facebook"><FaFacebook /></a>
-            <a href="www.instagram.com" aria-label="Twitter"><FaTwitter /></a>
+            {/* Replace '#' with actual URLs */}
+            <a href="#" aria-label="Facebook"><FaFacebook /></a>
+            <a href="#" aria-label="Twitter"><FaTwitter /></a>
             <a href="#" aria-label="LinkedIn"><FaLinkedin /></a>
             <a href="#" aria-label="Instagram"><FaInstagram /></a>
           </div>
         </div>
 
+        {/* Section 2: Navigation */}
         <div className="footer-section navigation">
           <h3>Navigation</h3>
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/about">About Us</Link></li>
-            <li><Link to="/biometric-verification">Biometric Verification</Link></li> {/* More specific */}
-            <li><Link to="/fraud-prevention">Fraud Prevention</Link></li> {/* More specific */}
+            {/* Consider adding links to key features or services */}
+            <li><Link to="/features">Features</Link></li>
+            <li><Link to="/how-it-works">How it Works</Link></li>
             <li><Link to="/contact">Contact Us</Link></li>
           </ul>
         </div>
 
+        {/* Section 3: Resources & Legal */}
+        <div className="footer-section resources">
+          <h3>Resources</h3>
+          <ul>
+            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link to="/terms-of-service">Terms of Service</Link></li>
+            <li><Link to="/faq">FAQ</Link></li> {/* Added common FAQ link */}
+            {/* <li><Link to="/site-map">Site Map</Link></li> Consider if needed */}
+          </ul>
+        </div>
+
+        {/* Section 4: Contact Info */}
         <div className="footer-section contact-info">
           <h3>Contact Us</h3>
           <p><FaEnvelope className="contact-icon" /> Email: info@authexam.com</p>
           <p><FaPhone className="contact-icon" /> Phone: +91 9801902516</p>
           <p>Address: Kurhani, Muzaffarpur,Bihar, India</p>
-        </div>
-
-        <div className="footer-section legal">
-          <h3>Legal</h3>
-          <ul>
-            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-            <li><Link to="/terms-of-service">Terms of Service</Link></li>
-            <li><Link to="/site-map">Site Map</Link></li>
-          </ul>
         </div>
       </div>
       <div className="footer-bottom">
