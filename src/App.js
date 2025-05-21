@@ -6,9 +6,12 @@ import EmployeeList from './components/EmployeeList';
 import Home from './components/Home/Home';
 import { AuthProvider } from './context/AuthContext';
 import EmployeeForm from './components/EmployeeForm';
-import AdminProfilePage from './pages/AdminProfilePage';
-import ReferenceNameManager from './components/ReferenceNameManager';
-import CenterManager from './components/CenterManager';
+import ReferenceNameManager from './components/ReferenceNameManager/ReferenceNameManager';
+import CenterManager from './components/CenterManager/CenterManager';
+import NotFoundPage from './pages/NotFoundPage'; // Assuming this is already created
+import PleaseLoginPage from './pages/PleaseLoginPage'; // Import the new page
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'; // Import the ProtectedRoute component
+
 
 function App() {
   return (
@@ -18,13 +21,44 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
 
-          <Route path="/employees" element={<EmployeeList />} />
-          <Route path="/add-employee" element={<EmployeeForm />} />
           <Route path="/login" element={<AuthForm type="login" />} />
           <Route path="/signup" element={<AuthForm type="signup" />} />
-          <Route path="/profile" element={<AdminProfilePage type="profile-page" />} />
-          <Route path="/reference-names" element={<ReferenceNameManager />} />
-          <Route path="/admin/manage-centers" element={<CenterManager />} />
+           <Route path="/please-login" element={<PleaseLoginPage />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/employees"
+            element={
+              <ProtectedRoute>
+                <EmployeeList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-employee"
+            element={
+              <ProtectedRoute>
+                <EmployeeForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reference-names"
+            element={
+              <ProtectedRoute>
+                <ReferenceNameManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/manage-centers"
+            element={
+              <ProtectedRoute>
+                <CenterManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route */}
         </Routes>
       </Router>
     </AuthProvider>

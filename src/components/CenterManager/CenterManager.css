@@ -1,0 +1,112 @@
+/* src/components/CenterManager/CenterManager.css */
+.center-manager-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: auto;
+}
+
+.center-form-container {
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.success-message {
+  color: green;
+  margin-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-group-last {
+  margin-bottom: 15px; /* Specific margin for the last form group before buttons */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.button-primary {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.button-secondary {
+  padding: 10px 15px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.center-list-container h3 {
+  /* Styles for the h3 within center-list-container if needed, otherwise default */
+}
+
+.centers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.centers-table th,
+.centers-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.centers-table thead tr {
+  background-color: #f2f2f2;
+}
+
+.action-button-edit {
+  margin-right: 5px;
+  padding: 6px 12px;
+  background-color: #ffc107; /* Yellow for edit */
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #212529; /* Dark text for better contrast on yellow */
+}
+
+.action-button-delete {
+  padding: 6px 12px;
+  background-color: #dc3545; /* Red for delete */
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.no-centers-message {
+  /* Styles for the "No predefined centers" message if needed */
+}
+
+/* Add hover states for better UX */
+.button-primary:hover, .button-secondary:hover, .action-button-edit:hover, .action-button-delete:hover {
+  opacity: 0.9;
+}

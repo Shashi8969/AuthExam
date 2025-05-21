@@ -1,0 +1,50 @@
+/* src/pages/NotFoundPage.css */
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh; /* Adjust as needed to center vertically */
+  text-align: center;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+.not-found-icon {
+  font-size: 5rem; /* Make the icon large */
+  color: #ff6b6b; /* A friendly error color */
+  margin-bottom: 20px;
+}
+
+.not-found-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.not-found-message {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: #555;
+  max-width: 500px;
+}
+
+.not-found-link {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.not-found-link:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* You can add a simple SVG or an image here if you prefer */
+/* For example, a magnifying glass with a question mark or a lost robot */

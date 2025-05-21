@@ -1,7 +1,9 @@
 // src/components/CenterManager.js
 import React, { useState, useEffect } from 'react';
 import { ref, set, onValue, remove, get } from 'firebase/database';
-import { db } from '../config/firebase';
+import { db } from '../../config/firebase';
+import './CenterManager.css'; // Import the CSS file
+
 
 const CenterManager = () => {
   const [centerCode, setCenterCode] = useState('');
@@ -106,63 +108,63 @@ const CenterManager = () => {
   };
 
   return (
-    <div className="center-manager" style={{ padding: '20px', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: 'auto' }}>
+    <div className="center-manager-container">
       <h2>Manage Predefined Centers</h2>
 
-      <div className="center-form" style={{ marginBottom: '30px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
+      <div className="center-form-container">
         <h3>{editingCenterKey ? 'Edit Center' : 'Add New Center'}</h3>
-        {error && <p style={{ color: 'red', marginBottom: '10px' }}>{error}</p>}
-        {success && <p style={{ color: 'green', marginBottom: '10px' }}>{success}</p>}
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="centerCode" style={{ display: 'block', marginBottom: '5px' }}>Center Code:</label>
-          <input type="text" id="centerCode" value={centerCode} onChange={(e) => setCenterCode(e.target.value)} placeholder="Unique Center Code (e.g., C001)" style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />
+        {error && <p className="error-message">{error}</p>}
+        {success && <p className="success-message">{success}</p>}
+        <div className="form-group">
+          <label htmlFor="centerCode">Center Code:</label>
+          <input type="text" id="centerCode" value={centerCode} onChange={(e) => setCenterCode(e.target.value)} placeholder="Unique Center Code (e.g., C001)" />
         </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label htmlFor="centerName" style={{ display: 'block', marginBottom: '5px' }}>Center Name:</label>
-          <input type="text" id="centerName" value={centerName} onChange={(e) => setCenterName(e.target.value)} placeholder="e.g., Main City Center" style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />
+        <div className="form-group">
+          <label htmlFor="centerName">Center Name:</label>
+          <input type="text" id="centerName" value={centerName} onChange={(e) => setCenterName(e.target.value)} placeholder="e.g., Main City Center" />
         </div>
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="operatorCount" style={{ display: 'block', marginBottom: '5px' }}>Required Operator Count:</label>
-          <input type="number" id="operatorCount" value={operatorCount} onChange={(e) => setOperatorCount(e.target.value)} placeholder="e.g., 5" min="0" style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }} />
+        <div className="form-group form-group-last">
+          <label htmlFor="operatorCount">Required Operator Count:</label>
+          <input type="number" id="operatorCount" value={operatorCount} onChange={(e) => setOperatorCount(e.target.value)} placeholder="e.g., 5" min="0" />
         </div>
-        <button onClick={handleAddOrUpdateCenter} style={{ padding: '10px 15px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', marginRight: '10px' }}>
+        <button onClick={handleAddOrUpdateCenter} className="button-primary">
           {editingCenterKey ? 'Update Center' : 'Add Center'}
         </button>
         {editingCenterKey && (
-          <button onClick={clearForm} style={{ padding: '10px 15px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button onClick={clearForm} className="button-secondary">
             Cancel Edit
           </button>
         )}
       </div>
 
-      <div className="center-list">
+      <div className="center-list-container">
         <h3>Current Predefined Centers</h3>
         {Object.keys(predefinedCenters).length > 0 ? (
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
+          <table className="centers-table">
             <thead>
-              <tr style={{ backgroundColor: '#f2f2f2' }}>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left' }}>Code</th>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left' }}>Name</th>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left' }}>Operator Count</th>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left' }}>Actions</th>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Operator Count</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {Object.entries(predefinedCenters).map(([code, center]) => (
                 <tr key={code}>
-                  <td style={{ border: '1px solid #ddd', padding: '10px' }}>{code}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '10px' }}>{center.name}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '10px' }}>{center.count}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '10px' }}>
-                    <button onClick={() => handleEditCenter(code)} style={{ marginRight: '5px', padding: '6px 12px', backgroundColor: '#ffc107', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Edit</button>
-                    <button onClick={() => handleDeleteCenter(code)} style={{ padding: '6px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>Delete</button>
+                   <td>{code}</td>
+                  <td>{center.name}</td>
+                  <td>{center.count}</td>
+                  <td>
+                    <button onClick={() => handleEditCenter(code)} className="action-button-edit">Edit</button>
+                    <button onClick={() => handleDeleteCenter(code)} className="action-button-delete">Delete</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p>No predefined centers added yet. Add one using the form above.</p>
+          <p className="no-centers-message">No predefined centers added yet. Add one using the form above.</p>
         )}
       </div>
     </div>

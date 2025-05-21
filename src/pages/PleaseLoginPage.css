@@ -1,0 +1,49 @@
+/* src/pages/PleaseLoginPage.css */
+.please-login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  text-align: center;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+.please-login-icon {
+  font-size: 4rem;
+  color: #007bff; /* Primary color */
+  margin-bottom: 20px;
+}
+
+.please-login-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.please-login-message {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  color: #555;
+  max-width: 450px;
+}
+
+.please-login-button {
+  display: inline-flex; /* To align icon and text if you add one */
+  align-items: center;
+  padding: 12px 25px;
+  background-color: #28a745; /* Success color for login button */
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.please-login-button:hover {
+  background-color: #218838; /* Darker shade on hover */
+}

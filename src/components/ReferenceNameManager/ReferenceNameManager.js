@@ -1,7 +1,7 @@
 // src/components/ReferenceNameManager.js
 import React, { useState, useEffect } from 'react';
 import { ref, push, onValue, remove } from 'firebase/database';
-import { db } from '../config/firebase';
+import { db } from '../../config/firebase';
 import './ReferenceNameManager.css'; // Import the CSS file
 
 const ReferenceNameManager = () => {

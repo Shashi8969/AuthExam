@@ -4,8 +4,8 @@ import { signUp as firebaseSignUp, logIn,db} from '../../config/firebase'; // Im
 import { deleteUser } from 'firebase/auth'; // Import deleteUser
 import { ref, set } from 'firebase/database'; // Import the necessary database functions
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
 import './AuthForm.css';
-import { Link, useNavigate } from 'react-router-dom';
 
 const AuthForm = ({ type }) => {
   const [email, setEmail] = useState('');
@@ -17,6 +17,11 @@ const AuthForm = ({ type }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+    const location = useLocation(); // Get location object
+
+  // Determine where to redirect after login/signup
+  const from = location.state?.from?.pathname || '/'; // Default to homepage
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,16 +44,16 @@ const AuthForm = ({ type }) => {
               email: email,
               phone: phone,
               address: address,
-              password: confirmPassword
             });
-            navigate('/'); // Navigate only if data is saved successfully
+                        navigate(from, { replace: true });
+
           } catch (dbError) {
             console.error("Error saving user data to database:", dbError);
             // Delete the user if database write fails
             await deleteUser(userCredential.user)
               .then(() => {
                 console.log("User account deleted due to database error.");
-                setError("Signup failed. Please try again.");
+                setError("Signup failed due to a server issue. Please try again.");
                 // No need to navigate here, as signup failed
               })
               .catch((deleteError) => {
@@ -59,10 +64,10 @@ const AuthForm = ({ type }) => {
         }
       } else {
         await logIn(email, password);
-        navigate('/');
+        navigate(from, { replace: true });
       }
     } catch (authError) {
-      setError(authError.message);
+      setError(authError.message || `An error occurred during ${type}.`);
     } finally {
       setLoading(false);
     }
