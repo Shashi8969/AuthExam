@@ -20615,3 +20615,32 @@ E0521 17:56:59.690971    2500 watch.go:76] watchAllDir unable to walk dir `c:\Us
 [info] [Firebase Plugin] Stopping Data Connect toolkit
 [debug] [2025-05-21T12:27:41.454Z] E0521 17:57:39.700833    2500 load.go:23] Could not load config from "c:\\Users\\DELL\\employee-manager\\dataconnect": could not find dataconnect.yaml in `c:\Users\DELL\employee-manager\dataconnect`
  {"metadata":{"emulator":{"name":"dataconnect"},"message":"E0521 17:57:39.700833    2500 load.go:23] Could not load config from \"c:\\\\Users\\\\DELL\\\\employee-manager\\\\dataconnect\": could not find dataconnect.yaml in `c:\\Users\\DELL\\employee-manager\\dataconnect`\n"}}
+[debug] [2025-05-21T12:30:02.640Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-05-21T12:30:05.617Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-05-21T12:30:05.619Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-21T12:30:05.620Z] > authorizing via signed-in user (rishiraj34453@gmail.com)
+[debug] [2025-05-21T12:30:05.623Z] Checked if tokens are valid: true, expires at: 1747834018838
+[debug] [2025-05-21T12:30:05.623Z] Checked if tokens are valid: true, expires at: 1747834018838
+[debug] [2025-05-21T12:30:05.624Z] [Firebase Plugin] User found:  rishiraj34453@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-05-21T12:30:05.625Z] Checked if tokens are valid: true, expires at: 1747834018838
+[debug] [2025-05-21T12:30:05.626Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-05-21T12:30:05.637Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.6.1) on port 50001
+[debug] [2025-05-21T12:30:06.055Z] 'fdc build' failed with error: Unable to build your Data Connect schema and connectors (exit code 1): E0521 18:00:06.050499   20004 cmd.go:43] Error loading data connect config: could not find dataconnect.yaml in `c:\Users\DELL\employee-manager\dataconnect`
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"'fdc build' failed with error: Unable to build your Data Connect schema and connectors (exit code 1): E0521 18:00:06.050499   20004 cmd.go:43] Error loading data connect config: could not find dataconnect.yaml in `c:\\Users\\DELL\\employee-manager\\dataconnect`\n"}}
+[debug] [2025-05-21T12:30:06.056Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-05-21T12:30:06.056Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-05-21T12:30:06.057Z] Starting Data Connect Emulator with command {"binary":"C:\\Users\\DELL\\.cache\\firebase\\emulators\\dataconnect-emulator-2.6.1.exe","args":["--logtostderr","-v=2","dev","--listen=localhost:50001","--config_dir=c:\\Users\\DELL\\employee-manager\\dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"C:\\\\Users\\\\DELL\\\\.cache\\\\firebase\\\\emulators\\\\dataconnect-emulator-2.6.1.exe\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50001\",\"--config_dir=c:\\\\Users\\\\DELL\\\\employee-manager\\\\dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to \u001b[1mdataconnect-debug.log\u001b[22m"}}
+[debug] [2025-05-21T12:30:06.107Z] E0521 18:00:06.107162   21248 load.go:23] Could not load config from "c:\\Users\\DELL\\employee-manager\\dataconnect": could not find dataconnect.yaml in `c:\Users\DELL\employee-manager\dataconnect`
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"E0521 18:00:06.107162   21248 load.go:23] Could not load config from \"c:\\\\Users\\\\DELL\\\\employee-manager\\\\dataconnect\": could not find dataconnect.yaml in `c:\\Users\\DELL\\employee-manager\\dataconnect`\n"}}
+[debug] [2025-05-21T12:30:06.109Z] E0521 18:00:06.109750   21248 watch.go:76] watchAllDir unable to walk dir `c:\Users\DELL\employee-manager\dataconnect`: on path "c:\\Users\\DELL\\employee-manager\\dataconnect" (DirEntry: <nil>): CreateFile c:\Users\DELL\employee-manager\dataconnect: The system cannot find the file specified.
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"E0521 18:00:06.109750   21248 watch.go:76] watchAllDir unable to walk dir `c:\\Users\\DELL\\employee-manager\\dataconnect`: on path \"c:\\\\Users\\\\DELL\\\\employee-manager\\\\dataconnect\" (DirEntry: <nil>): CreateFile c:\\Users\\DELL\\employee-manager\\dataconnect: The system cannot find the file specified.\n"}}
+[debug] [2025-05-21T12:30:06.136Z] I0521 18:00:06.136553   21248 dev.go:95] Listening on address (HTTP + gRPC): 127.0.0.1:50001
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I0521 18:00:06.136553   21248 dev.go:95] Listening on address (HTTP + gRPC): 127.0.0.1:50001\n"}}
+[error] [Firebase Plugin] error:  {}
+[debug] [2025-05-21T12:30:06.980Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-05-21T12:30:06.980Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[debug] [2025-05-21T12:30:16.115Z] E0521 18:00:16.116430   21248 load.go:23] Could not load config from "c:\\Users\\DELL\\employee-manager\\dataconnect": could not find dataconnect.yaml in `c:\Users\DELL\employee-manager\dataconnect`
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"E0521 18:00:16.116430   21248 load.go:23] Could not load config from \"c:\\\\Users\\\\DELL\\\\employee-manager\\\\dataconnect\": could not find dataconnect.yaml in `c:\\Users\\DELL\\employee-manager\\dataconnect`\n"}}

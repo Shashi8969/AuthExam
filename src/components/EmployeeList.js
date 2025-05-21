@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 import * as XLSX from 'xlsx'; // Import the xlsx library
 
+import './EmployeeList.css'; // Import the new CSS file
 import EditEmployee from './EditEmployee';
 import EmployeeDetails from './EmployeeDetails';
 import Employee from '../models/Employee';
@@ -18,7 +19,8 @@ const EmployeeList = () => {
   const [loading, setLoading] = useState(true);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchInputText, setSearchInputText] = useState(''); // For live input
+  const [appliedSearchTerm, setAppliedSearchTerm] = useState(''); // For actual filtering
   const [sortColumn, setSortColumn] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc'); // Get user (aliased to currentUser) and loading state from AuthContext
   const { user: currentUser, loading: authLoading } = useAuth();
@@ -36,12 +38,6 @@ const EmployeeList = () => {
 
   // State for predefined centers
   const [predefinedCenters, setPredefinedCenters] = useState({});
-
-  // New state for groups: array of { id, name }
-  const [groups, setGroups] = useState([]);
-
-  // State for new group name input
-  const [newGroupName, setNewGroupName] = useState('');
 
   useEffect(() => {
     if (!authLoading && !currentUser) {
@@ -76,11 +72,13 @@ const EmployeeList = () => {
 
 
   const filteredEmployees = employees.filter(employee => { // Add opening curly brace
+    const searchTermLower = appliedSearchTerm.toLowerCase();
     const matchesSearch =
-      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.phoneNo.includes(searchTerm) ||
-      employee.addharNo.includes(searchTerm);
-
+      appliedSearchTerm === '' ? true : (
+        (employee.name && String(employee.name).toLowerCase().includes(searchTermLower)) ||
+        (employee.phoneNo && String(employee.phoneNo).includes(appliedSearchTerm)) || // appliedSearchTerm is not lowercased here for direct number matching
+        (employee.addharNo && String(employee.addharNo).includes(appliedSearchTerm))   // same as above
+      );
     if (!matchesSearch) {
       return false;
     }
@@ -130,9 +128,6 @@ const EmployeeList = () => {
     }
   };
 
-  const handleCloseDetails = () => {
-    setSelectedEmployeeId(null);
-  };
 
   // Renamed handler for the new toggle
   const handleUnassignedFilterChange = (e) => {
@@ -460,9 +455,19 @@ const EmployeeList = () => {
         <input
           type="text"
           placeholder="Search employees..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input" // Add className
+          value={searchInputText}
+          onChange={(e) => setSearchInputText(e.target.value)}
+          onKeyPress={(e) => { // Optional: Allow search on Enter key press
+            if (e.key === 'Enter') {
+              setAppliedSearchTerm(searchInputText);
+            }
+          }}
         />
+        <button onClick={() => setAppliedSearchTerm(searchInputText)} className="search-button"> {/* Add className and remove inline style */}
+          Search
+          {/* Optional: <i className="fas fa-search"></i> if using Font Awesome */}
+        </button>
       </div>
 
       {sortedEmployees.length === 0 ? (

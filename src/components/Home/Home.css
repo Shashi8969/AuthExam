@@ -1,69 +1,426 @@
-/* src/components/Home.css */
+/* c:\Users\DELL\employee-manager\src\components\Home\Home.css */
+
+:root {
+  --primary-color: #007bff;
+  --primary-color-darker: #0056b3;
+  --secondary-color: #2c3e50; /* For headings */
+  --accent-color: #17a2b8; /* A teal accent */
+  --text-color: #343a40; /* Darker grey for main text */
+  --text-color-light: #555e68; /* Lighter grey for secondary text */
+  --bg-light: #f8f9fa; /* Lighter than f9f9f9 */
+  --bg-white: #ffffff;
+  --border-color: #dee2e6;
+  --border-radius-sm: 0.25rem; /* 4px */
+  --border-radius-md: 0.5rem;  /* 8px */
+  --box-shadow-light: 0 2px 8px rgba(0, 0, 0, 0.075);
+  --box-shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --box-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --font-family-sans-serif: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 .home-container {
-    font-family: sans-serif;
-  }
-  
+  font-family: var(--font-family-sans-serif);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 85vh; /* Make hero taller */
+  overflow: hidden;
+display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--bg-white);
+}
+
+.hero-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  will-change: opacity; /* Performance hint */
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.55); /* Darker overlay for text contrast */
+  z-index: 2;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  padding: 20px;
+}
+
+.hero-content h1 {
+  font-size: 3.5em; /* Larger heading */
+  font-weight: 700;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+}
+
+.hero-content .subtitle {
+  font-size: 1.4em;
+  margin-bottom: 1.5em;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  font-weight: 300;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.cta-button {
+  padding: 12px 30px;
+  margin: 0.5em;
+  border-radius: var(--border-radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1em;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.cta-button.primary {
+  background-color: var(--primary-color);
+  color: var(--bg-white);
+  border: 2px solid var(--primary-color);
+}
+.cta-button.primary:hover {
+  background-color: var(--primary-color-darker);
+  border-color: var(--primary-color-darker);
+  transform: translateY(-2px);
+}
+
+.cta-button.secondary {
+  background-color: transparent;
+  color: var(--bg-white);
+  border: 2px solid var(--bg-white);
+}
+.cta-button.secondary:hover {
+  background-color: var(--bg-white);
+  color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.hero-slider-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  font-size: 28px;
+  cursor: pointer;
+  z-index: 4; /* Above overlay */
+  opacity: 0.7;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+  border-radius: var(--border-radius-sm);
+}
+
+.hero-slider-control:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+}
+
+.hero-slider-control.prev {
+  left: 20px;
+}
+
+.hero-slider-control.next {
+  right: 20px;
+}
+
+/* Features Section */
+.features-section {
+  padding: 80px 20px;
+  background-color: var(--bg-white);
+  text-align: center;
+}
+
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.feature-item {
+  background-color: var(--bg-light);
+  padding: 30px;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow-light);
+  flex-basis: calc(50% - 30px); /* Two items per row on medium screens */
+  max-width: 400px; /* Max width for items */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-medium);
+}
+
+.feature-icon {
+  font-size: 2.5em; /* Placeholder - replace with actual icons */
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  /* Example: if using Font Awesome:
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900; */
+}
+
+.feature-item h3 {
+  font-size: 1.4em;
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+}
+
+.feature-item p {
+  font-size: 1em;
+  color: var(--text-color-light);
+  line-height: 1.7;
+}
+
+
+/* General Section Styling */
+.about-section,
+.works-section, .downloadables-section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.about-section {
+  background-color: var(--bg-light);
+}
+
+.works-section {
+  background-color: var(--bg-light); /* Alternate background */
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+h2 {
+  font-size: 2.5em;
+  margin-bottom: 40px;
+  color: var(--secondary-color);
+  position: relative;
+  padding-bottom: 15px;
+}
+
+/* Underline effect for headings */
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: var(--primary-color);
+}
+
+/* About Section Specifics
+.about-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  text-align: left;
+}
+
+.about-image {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow-medium);
+} */
+
+.about-section p {
+  font-size: 1.1em;
+  color: var(--text-color-light);
+  max-width: 700px; /* Limit text width for readability */
+  margin: 0 auto; /* Center the paragraph if it's narrower */
+}
+
+.about-section strong {
+  color: var(--primary-color);
+}
+
+
+
+
+
+
+/* Works Section Specifics */
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.work-item {
+  background-color: var(--bg-white);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow-light);
+  overflow: hidden;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column; /* Ensure content flows top to bottom */
+}
+
+.work-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.work-item img {
+  width: 100%;
+  height: 200px; /* Fixed height for consistency */
+  object-fit: cover;
+}
+
+.work-item h3 {
+  font-size: 1.5em;
+  margin: 20px 20px 10px 20px;
+  color: var(--secondary-color);
+}
+
+.work-item p {
+  font-size: 1em;
+  padding: 0 20px 20px 20px;
+  color: var(--text-color-light);
+  min-height: 60px; /* Ensure some minimum height for text content */
+  flex-grow: 1; /* Allows paragraph to take up space if card heights vary */
+}
+
+/* Footer (ensure it's styled if not already) */
+/* .footer { ... } */
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .slider-section {
-    width: 100%;
-    overflow: hidden; /* To hide slides that are not active */
+    height: 50vh;
   }
-  
-  .slider {
-    display: flex;
-    transition: transform 0.5s ease-in-out; /* For smooth slide transitions */
+  .slider-control.visible { /* Ensure controls are visible on touch devices if hover isn't reliable */
+    opacity: 0.7;
   }
-  
-  .slide {
-    min-width: 100%; /* Each slide takes full width */
+  h2 {
+    font-size: 2em;
   }
-  
-  .slide img {
-    display: block;
-    width: 100%;
-    height: auto; /* Maintain aspect ratio */
+  .work-item h3 {
+    font-size: 1.3em;
   }
-  
-  .about-section {
-    padding: 40px 20px;
-    text-align: center;
-    background-color: #f9f9f9; /* Example background color */
+  .work-item p {
+    font-size: 0.95em;
   }
-  
-  .about-section .container {
-    max-width: 960px;
-    margin: 0 auto;
+  .slider-control {
+    padding: 8px 12px;
+    font-size: 20px;
   }
-  
-  .works-section {
-    padding: 40px 20px;
-    text-align: center;
+  .dot {
+    height: 10px;
+    width: 10px;
   }
-  
-  .works-section .container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .works-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
-    gap: 20px;
-    margin-top: 30px;
-  }
-  
-  .work-item {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    text-align: left;
-  }
-  
-  .work-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 6px;
-    margin-bottom: 10px;
-  }
-  
- 
+}
+/* Downloadables Section */
+.downloadables-section {
+  background-color: var(--bg-white);
+}
+
+.downloadables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.download-item {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-light);
+  padding: 20px;
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  color: var(--text-color);
+  box-shadow: var(--box-shadow-light);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.download-item:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-medium);
+  color: var(--primary-color);
+}
+
+.download-icon {
+  font-size: 2.5em; /* Emoji size */
+  margin-right: 20px;
+  color: var(--primary-color);
+}
+
+.download-info h3 {
+  font-size: 1.25em;
+  margin-top: 0;
+  margin-bottom: 5px;
+  color: var(--secondary-color);
+}
+.download-item:hover .download-info h3 {
+  color: var(--primary-color);
+}
+
+.download-info p {
+  font-size: 0.9em;
+  color: var(--text-color-light);
+  margin-bottom: 0;
+}
+
+.download-arrow {
+  margin-left: auto;
+  font-size: 1.8em;
+  color: var(--text-color-light);
+  transition: color 0.3s ease;
+}
+.download-item:hover .download-arrow {
+  color: var(--primary-color);
+}
