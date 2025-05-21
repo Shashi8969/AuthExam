@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
+      console.log('AuthContext - onAuthStateChanged fired. User object:', user); // <-- ADD THIS LINE
       setCurrentUser(user);
       setLoading(false);
     });
@@ -21,7 +22,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = {
-    currentUser,
+    user: currentUser, // Changed from currentUser to user
     loading
   };
 

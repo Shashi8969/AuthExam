@@ -63,10 +63,14 @@ const AuthForm = ({ type }) => {
           }
         }
       } else {
-        await logIn(email, password);
-        navigate(from, { replace: true });
+        console.log('AuthForm: Attempting Firebase login...');
+        const userCredential = await logIn(email, password);
+        console.log('AuthForm: Firebase login successful. UserCredential:', userCredential);
+        // No explicit navigation here. AuthContext and ProtectedRoute will handle it.
+        // After this, onAuthStateChanged in AuthContext should fire.
       }
     } catch (authError) {
+      console.error('AuthForm: Firebase login error:', authError);
       setError(authError.message || `An error occurred during ${type}.`);
     } finally {
       setLoading(false);

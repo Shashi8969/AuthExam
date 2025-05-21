@@ -7,6 +7,9 @@ const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth(); // Assuming your AuthContext provides 'user' and 'loading'
   const location = useLocation();
 
+    console.log('ProtectedRoute - loading:', loading, 'user:', user); // Add this line
+
+
   if (loading) {
     // Show a loading indicator while authentication status is being determined
     // You can replace this with a more sophisticated spinner component

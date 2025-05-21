@@ -12,14 +12,16 @@ import EmployeeDetails from './EmployeeDetails';
 import Employee from '../models/Employee';
 
 const EmployeeList = () => {
+    console.log('EmployeeList: Component Mounted and Rendering'); // <-- ADD THIS LINE
+
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState('name');
-  const [sortDirection, setSortDirection] = useState('asc');
-  const { currentUser, loading: authLoading } = useAuth(); // Get currentUser and loading state from AuthContext
+  const [sortDirection, setSortDirection] = useState('asc'); // Get user (aliased to currentUser) and loading state from AuthContext
+  const { user: currentUser, loading: authLoading } = useAuth();
   const navigate = useNavigate(); // Initialize useNavigate
 
   // New states for biometric operator selection and assignment
@@ -43,6 +45,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     if (!authLoading && !currentUser) {
+      console.log('EmployeeList useEffect: Redirecting! authLoading:', authLoading, 'currentUser:', currentUser); // <-- ADD THIS LOG
       alert('Please log in to view the employee list.'); // Show a popup message
       navigate('/login'); // Redirect to the login page
       return; // Prevent further execution of this useEffect
