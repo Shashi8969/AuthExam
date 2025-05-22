@@ -24,8 +24,17 @@ export const formFields = [
   {
     label: 'Address',
     name: 'address',
-    type: 'text',
+    type: 'select', // Changed from 'text' to 'select'
     required: true,
+    options: [ // Added city options
+      { value: '', label: 'Select a City' },
+      { value: 'Muzaffarpur', label: 'Muzaffarpur' },
+      { value: 'Hajipur', label: 'Hajipur' },
+      { value: 'Darbhanga', label: 'Darbhanga' },
+      { value: 'Patna', label: 'Patna' },
+      { value: 'Gaya', label: 'Gaya' },
+      // Add more cities as needed
+    ],
   },
   {
     label: 'Reference Name',

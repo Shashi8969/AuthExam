@@ -5,7 +5,7 @@ import AuthForm from './components/AuthForm/AuthForm';
 import EmployeeList from './components/EmployeeList';
 import Home from './components/Home/Home';
 import { AuthProvider } from './context/AuthContext';
-import EmployeeForm from './components/EmployeeForm';
+import EmployeeForm from './components/EmployeeForm/EmployeeForm';
 import ReferenceNameManager from './components/ReferenceNameManager/ReferenceNameManager';
 import CenterManager from './components/CenterManager/CenterManager';
 import NotFoundPage from './pages/NotFoundPage'; // Assuming this is already created
