@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../config/firebase';
+import { storage } from '../../config/firebase';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 const FileUpload = ({ label, onUpload, employeeId, cropType = 'profile' }) => {

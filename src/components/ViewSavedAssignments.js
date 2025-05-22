@@ -16,6 +16,7 @@ const ViewSavedAssignments = () => {
   const [expandedListId, setExpandedListId] = useState(null); // To show full details of a list
   const [renamingListId, setRenamingListId] = useState(null); // ID of the list being renamed
   const [newListName, setNewListName] = useState(''); // Current value for the new list name input
+  const PREVIEW_OPERATOR_LIMIT = 5; // Number of operators to show in list preview
 
 
   useEffect(() => {
@@ -75,17 +76,53 @@ const ViewSavedAssignments = () => {
       return;
     }
 
-    const sheetRows = [['Operator Name', 'Mobile No.', 'Aadhar No.', 'Center Code', 'Center Name']];
-    Object.entries(list.assignments).forEach(([operatorId, assignment]) => {
+    // 1. Group assignments by center first
+    const groupedByCenterForExcel = {};
+    Object.entries(list.assignments).forEach(([operatorId, assignmentDetails]) => {
       const operator = employeeMap[operatorId];
-      sheetRows.push([
-        operator ? operator.name : `ID: ${operatorId}`,
-        operator ? operator.phoneNo : '-',
-        operator ? operator.addharNo : '-',
-        assignment.centerCode || '-',
-        assignment.centerName || '-',
-      ]);
+      if (!operator) {
+        console.warn(`Operator with ID ${operatorId} not found in employeeMap for Excel export.`);
+        // Decide if you want to include a placeholder or skip
+      }
+
+      let opCenterCode = (assignmentDetails.centerCode || '').trim() || 'Unassigned_Code';
+      let opCenterName = (assignmentDetails.centerName || '').trim() || 'Unassigned_Center';
+      const groupKey = `${opCenterCode} - ${opCenterName}`;
+
+      if (!groupedByCenterForExcel[groupKey]) {
+        groupedByCenterForExcel[groupKey] = {
+          centerCode: opCenterCode,
+          centerName: opCenterName,
+          operators: []
+        };
+      }
+      groupedByCenterForExcel[groupKey].operators.push({
+        name: operator ? operator.name : `ID: ${operatorId}`,
+        phoneNo: operator ? operator.phoneNo : '-',
+        addharNo: operator ? operator.addharNo : '-',
+      });
     });
+
+    // 2. Construct sheetRows with grouped data
+    const sheetRows = [];
+    Object.values(groupedByCenterForExcel).forEach((centerGroup, index) => {
+      if (index > 0) {
+        sheetRows.push([]); // Add an empty row as a separator between center tables
+      }
+      // Center Header
+      sheetRows.push([`Center: ${centerGroup.centerName} (Code: ${centerGroup.centerCode})`]);
+      // Operator Table Headers for this center
+      sheetRows.push(['S. No.', 'Operator Name', 'Mobile No.', 'Aadhar No.', 'Center Code', 'Center Name']);
+      // Operator Data
+      centerGroup.operators.forEach((op, opIndex) => {
+        sheetRows.push([opIndex + 1, op.name, op.phoneNo, op.addharNo, centerGroup.centerCode, centerGroup.centerName]);
+      });
+    });
+
+    if (sheetRows.length === 0) {
+      alert('No valid data to export after grouping.');
+      return;
+    }
 
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.aoa_to_sheet(sheetRows);
@@ -133,14 +170,33 @@ const ViewSavedAssignments = () => {
     }
   };
 
-  const renderAssignmentsTable = (assignments, listId) => {
-    const entries = Object.entries(assignments);
-    const itemsToShow = expandedListId === listId ? entries : entries.slice(0, 5);
+    // Helper function to group assignments by center for a given list
+  const groupAssignmentsByCenter = (assignments, currentEmployeeMap) => {
+    const grouped = {};
+    if (!assignments) return grouped;
 
-    return itemsToShow.map(([operatorId, assignment]) => {
-      const operator = employeeMap[operatorId];
-      // ... (rest of the table row rendering as before)
+    Object.entries(assignments).forEach(([operatorId, assignmentDetails]) => {
+      const operator = currentEmployeeMap[operatorId];
+
+      let opCenterCode = (assignmentDetails.centerCode || '').trim() || 'Unassigned_Code';
+      let opCenterName = (assignmentDetails.centerName || '').trim() || 'Unassigned_Center';
+      const groupKey = `${opCenterCode} - ${opCenterName}`; // Unique key for the group
+
+      if (!grouped[groupKey]) {
+        grouped[groupKey] = {
+          centerCode: opCenterCode,
+          centerName: opCenterName,
+          operators: []
+        };
+      }
+      grouped[groupKey].operators.push({
+        empId: operatorId,
+        name: operator ? operator.name : `ID: ...${operatorId.slice(-6)}`,
+        phoneNo: operator ? operator.phoneNo : '-',
+        addharNo: operator ? operator.addharNo : '-',
+      });
     });
+    return grouped;
   };
 
   if (loading || employeesLoading) {
@@ -158,97 +214,144 @@ const ViewSavedAssignments = () => {
         <p className="no-saved-lists">No assignment lists have been saved yet.</p>
       ) : (
         <ul className="saved-lists-ul">
-          {savedLists.map(list => (
-            <li key={list.id} className="saved-list-item">
-              {renamingListId === list.id ? (
-                <div className="list-rename-section">
-                  <input
-                    type="text"
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    className="list-rename-input"
-                    autoFocus
-                  />
-                  <button onClick={() => handleSaveListName(list.id)} className="list-action-btn save-rename-btn">Save</button>
-                  <button onClick={cancelRenameList} className="list-action-btn cancel-rename-btn">Cancel</button>
-                </div>
-              ) : (
-                <div className="list-item-header">
-                  <h3>{list.name}</h3>
-                  <span className="list-timestamp">
-                    Saved on: {new Date(list.timestamp).toLocaleString()}
-                  </span>
-                </div>
-              )}
+          
+           {savedLists.map(list => { // Each 'list' is a saved assignment list
+            const totalAssignmentsInList = list.assignments ? Object.keys(list.assignments).length : 0;
+            const groupedAssignmentsInList = groupAssignmentsByCenter(list.assignments, employeeMap);
 
-              <div className="list-item-details">
-                <h4>Assigned Operators:</h4>
-                {list.assignments && Object.keys(list.assignments).length > 0 ? (
-                  <table className="assignments-table-summary">
-                    <thead>
-                      <tr>
-                        <th>Name</th>
-                        <th>Mobile No.</th>
-                        <th>Aadhar No.</th>
-                        <th>Center Code</th>
-                        <th>Center Name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(list.assignments)
-                        .slice(0, expandedListId === list.id ? Object.keys(list.assignments).length : 5)
-                        .map(([operatorId, assignment]) => {
-                          const operator = employeeMap[operatorId];
-                          return (
-                            <tr key={operatorId}>
-                              <td>{operator ? operator.name : `ID: ...${operatorId.slice(-6)}`}</td>
-                              <td>{operator ? operator.phoneNo : '-'}</td>
-                              <td>{operator ? operator.addharNo : '-'}</td>
-                              <td>{assignment.centerCode || '-'}</td>
-                              <td>{assignment.centerName || '-'}</td>
-                            </tr>
-                          );
-                        })}
-                      {Object.keys(list.assignments).length > 5 && expandedListId !== list.id && (
-                        <tr>
-                          <td colSpan="5" style={{ textAlign: 'center' }}>
-                            ...and {Object.keys(list.assignments).length - 5} more.
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+            // For preview mode: flatten operators from groups up to PREVIEW_OPERATOR_LIMIT
+            let previewOperatorsFlat = [];
+            if (expandedListId !== list.id && totalAssignmentsInList > 0) {
+              let count = 0;
+              for (const group of Object.values(groupedAssignmentsInList)) {
+                for (const op of group.operators) {
+                  if (count < PREVIEW_OPERATOR_LIMIT) {
+                    previewOperatorsFlat.push({ ...op, centerCode: group.centerCode, centerName: group.centerName });
+                    count++;
+                  } else {
+                    break;
+                  }
+                }
+                if (count >= PREVIEW_OPERATOR_LIMIT) break;
+              }
+            }
+
+            return (
+              <li key={list.id} className="saved-list-item">
+                {renamingListId === list.id ? (
+                  <div className="list-rename-section">
+                    <input
+                      type="text"
+                      value={newListName}
+                      onChange={(e) => setNewListName(e.target.value)}
+                      className="list-rename-input"
+                      autoFocus
+                    />
+                    <button onClick={() => handleSaveListName(list.id)} className="list-action-btn save-rename-btn">Save</button>
+                    <button onClick={cancelRenameList} className="list-action-btn cancel-rename-btn">Cancel</button>
+                  </div>
                 ) : (
-                  <p>No specific assignments recorded in this list entry.</p>
+                <div className="list-item-header">
+                    <h3>{list.name}</h3>
+                    <span className="list-timestamp">
+                      Saved on: {new Date(list.timestamp).toLocaleString()}
+                    </span>
+                  </div>  
                 )}
-                <div className="list-item-actions">
-                  {Object.keys(list.assignments || {}).length > 5 && (
-                    <button onClick={() => toggleExpandList(list.id)} className="list-action-btn view-toggle-btn">
-                      {expandedListId === list.id ? 'Hide Details' : 'View Full List'}
+                <div className="list-item-details">
+                  <h4>Assigned Operators:</h4>
+                  {totalAssignmentsInList === 0 ? (
+                    <p>No specific assignments recorded in this list entry.</p>
+                  ) : expandedListId === list.id ? (
+                    // Full View: Show assignments grouped by center
+                    Object.values(groupedAssignmentsInList).map((centerGroup, groupIndex) => (
+                      <div key={`${list.id}-group-${groupIndex}`} className="center-group-in-list">
+                        <h5 className="preview-group-header">
+                          Center: {centerGroup.centerName} (Code: {centerGroup.centerCode}) - Assigned: {centerGroup.operators.length}
+                        </h5>
+                        <table className="assignments-table-summary">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Mobile No.</th>
+                              <th>Aadhar No.</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {centerGroup.operators.map(op => (
+                              <tr key={`${list.id}-${centerGroup.centerCode}-${op.empId}`}>
+                                <td>{op.name}</td>
+                                <td>{op.phoneNo}</td>
+                                <td>{op.addharNo}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ))
+                  ) : (
+                    // Preview View: Show a flat list of first N operators
+                    <>
+                      <table className="assignments-table-summary">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Mobile No.</th>
+                            <th>Aadhar No.</th>
+                            <th>Center Code</th>
+                            <th>Center Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {previewOperatorsFlat.map(op => (
+                            <tr key={`${list.id}-preview-${op.empId}`}>
+                              <td>{op.name}</td>
+                              <td>{op.phoneNo}</td>
+                              <td>{op.addharNo}</td>
+                              <td>{op.centerCode}</td>
+                              <td>{op.centerName}</td>
+                            </tr>
+                          ))}
+                          {totalAssignmentsInList > PREVIEW_OPERATOR_LIMIT && (
+                            <tr>
+                              <td colSpan="5" style={{ textAlign: 'center' }}>
+                                ...and {totalAssignmentsInList - PREVIEW_OPERATOR_LIMIT} more.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </>
+                  )}
+                  <div className="list-item-actions">
+                    {totalAssignmentsInList > PREVIEW_OPERATOR_LIMIT && (
+                      <button onClick={() => toggleExpandList(list.id)} className="list-action-btn view-toggle-btn">
+                        {expandedListId === list.id ? 'Hide Details' : 'View Full List'}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDownloadList(list)}
+                      className="list-action-btn download-btn"
+                      disabled={totalAssignmentsInList === 0}
+                    >
+                      Download XLSX
                     </button>
-                  )}
-                  <button
-                    onClick={() => handleDownloadList(list)}
-                    className="list-action-btn download-btn"
-                    disabled={!list.assignments || Object.keys(list.assignments).length === 0}
-                  >
-                    Download XLSX
-                  </button>
-                  {renamingListId !== list.id && (
-                     <button onClick={() => startRenameList(list)} className="list-action-btn rename-btn">
-                       Rename
+                    {renamingListId !== list.id && (
+                       <button onClick={() => startRenameList(list)} className="list-action-btn rename-btn">
+                         Rename
+                       </button>
+                    )}
+                    <button
+                      onClick={() => handleDeleteList(list.id, list.name)}
+                      className="list-action-btn delete-btn"
+                    >
+                      Delete List
                      </button>
-                  )}
-                  <button
-                    onClick={() => handleDeleteList(list.id, list.name)}
-                    className="list-action-btn delete-btn"
-                  >
-                    Delete List
-                  </button>
+                     </div>
                 </div>
-              </div>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>

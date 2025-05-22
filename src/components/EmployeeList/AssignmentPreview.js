@@ -70,7 +70,7 @@ const AssignmentPreview = ({
                       <button
                         onClick={() => onRemoveOperatorFromPreview(op.empId)}
                         className="remove-operator-btn">
-                          Remove
+                        Remove
                       </button>
                     </td>
                   </tr>

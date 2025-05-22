@@ -1,230 +1,252 @@
-/* Navbar.css - Light Theme with Enhanced Animations */
+/* Root mode transitions and CSS Variables */
+:root {
+  /* Color Palette - Light & Professional Theme */
+  --bg-navbar: #ffffff;
+  --text-navbar: #333333; /* Slightly softer black for text */
+  --bg-navbar-hover: #f0f0f0; /* Light gray for general hover */
+  --text-navbar-accent: #007bff; /* Professional blue for accents */
+
+  --bg-dropdown: #ffffff;
+  --text-dropdown: #333333;
+  --bg-dropdown-hover: #f0f0f0;
+  --shadow-dropdown: 0 2px 8px rgba(0, 0, 0, 0.1); /* Softer shadow for dropdown */
+
+  --bg-signup: #007bff; /* Using accent blue for signup */
+  --text-signup: white;
+  --bg-signup-hover: #0056b3; /* Darker blue for hover */
+  --text-signup-hover: white;
+
+  --text-logo: #2c3e50; /* Darker, distinct color for logo text */
+
+  /* Transitions */
+  --transition-speed: 0.3s;
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .navbar {
-  display: flex;
-  align-items: center;
-  background-color: #ffffff; /* White background from light theme */
-  padding: 0.8rem 1rem; /* Adjusted padding for better mobile view */
-  color: #333; /* Darker text color from light theme */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Softer shadow */
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  width: 100%;
-  box-sizing: border-box;
-  border-bottom: 1px solid #e7e7e7; /* Subtle bottom border from light theme */
+  background-color: var(--bg-navbar);
+  color: var(--text-navbar);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+  padding: 0.8rem 1rem; /* Vertical and horizontal padding */
+  position: sticky; /* Make the navbar sticky */
+  top: 0; /* Stick to the top of the viewport */
+  z-index: 1000; /* Ensure it's above other content */
+  width: 100%; /* Make the navbar full-width */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  /* display: flex; and align-items: center; can be useful here if .navbar-container isn't the only direct child
+     or if you want to directly control alignment of .navbar-container within .navbar's padding. */
 }
 
 .navbar-container {
   display: flex;
-  justify-content: space-between; /* This will push logo to left and nav items to right */
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  max-width: 1200px; /* Optional: constrain width on larger screens */
-  margin: 0 auto; /* Center container if max-width is used */
+  width: 90%;
+  margin: 0 auto; /* Center the container */
+  max-width: 1300px;
 }
 
-.navbar-logo {
-  color: #2c3e50; /* Darker brand color from light theme */
-  text-decoration: none;
-  font-size: 1.5rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-}
-
-.logo-image {
-  height: 40px; /* Adjust as needed */
-  margin-right: 12px;
-  /* filter: brightness(0) invert(1); */ /* Remove filter, assuming logo works on light bg */
+.menu-icon {
+  display: none;
+  color: inherit;
+  font-size: 1.8rem;
+  cursor: pointer;
 }
 
 .nav-menu {
   display: flex;
+  align-items: center;
   list-style: none;
-  text-align: center;
-  margin: 0; /* Reset margin */
-  padding: 0; /* Reset padding */
-  margin-left: auto; /* This will push the nav-menu to the right */
-  margin-right: 10px; /* Add some right margin for spacing from the edge */
+  gap: 20px;
+  /* Explicit desktop defaults to override potential mobile .active styles */
+  padding: 0;
+  margin: 0; /* Assuming it's a direct child and doesn't need external margin */
+  flex-direction: row;
+  position: static;
+  width: auto;
+  top: auto;
+  left: auto;
+  background-color: transparent; /* Ensure no mobile background persists if different */
 }
 
 .nav-item {
-  height: 60px; /* Consistent height for items */
-  display: flex; /* Align items vertically */
-  align-items: center; /* Align items vertically */
+  position: relative;
 }
-
+.nav-item:last-child { /* To ensure theme toggle button or last item has some space in mobile view */
+  margin-bottom: 1rem;
+}
 .nav-links {
-  color: #555; /* Medium gray for links from light theme */
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  height: 100%;
   display: flex;
   align-items: center;
-  transition: color 0.3s ease-out, transform 0.3s ease-out, background-color 0.3s ease; /* Keep futuristic transitions */
-  border-radius: 4px; /* Add radius for hover effect consistency */
-  position: relative; /* For pseudo-element underline */
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: var(--text-navbar);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 .nav-links:hover {
-  color: #007bff; /* Primary color on hover from light theme */
-  transform: translateY(-2px); /* Slight lift on hover */
+  background-color: var(--bg-navbar-hover);
+  color: var(--text-navbar-accent);
 }
 
-.nav-links::after { /* Underline effect */
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 2px;
-  bottom: -2px; /* Position below the link */
-  left: 50%;
-  background-color: #007bff; /* Primary color for underline */
-  transition: width 0.3s ease-out, left 0.3s ease-out;
+.nav-links svg {
+  margin-right: 8px;
 }
 
-.nav-links:hover::after {
-  width: 80%; /* Underline width on hover */
-  left: 10%;
+.signup {
+  background-color: var(--bg-signup);
+  color: var(--text-signup);
+  border-radius: 6px;
 }
 
-.nav-links.signup-btn {
-  background-color: #007bff; /* Primary color for sign up from light theme */
-  padding: 0.5rem 1rem;
-  color: white;
-  border-radius: 4px;
-  margin-left: 10px; /* Spacing from other links */
+.signup:hover {
+  background-color: var(--bg-signup-hover);
+  color: var(--text-signup-hover);
 }
 
-.logout-btn {
-  background-color: transparent; /* Keep transparent from light theme */
-  color: #dc3545; /* Red text for logout */
-  padding: 0.6rem 1rem;
-  border: 1px solid #dc3545; /* Red border */
-  border-radius: 4px;
+.profile-dropdown {
+  position: relative;
+}
+
+.profile-toggle {
   cursor: pointer;
-  font-size: 0.9rem;
-  margin-left: 10px; /* Spacing */
+  /* Inherits .nav-links styles if it has that class */
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  background-color: #2a2a3b;
+  background-color: var(--bg-dropdown);
+  border-radius: 8px;
+  min-width: 180px;
+  overflow: hidden; /* Keep this if you don't want content to spill, or manage with padding */
+  z-index: 1020; /* Higher z-index for desktop dropdown */
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: var(--shadow-dropdown);
+}
+
+.dropdown-menu li {
+  padding: 10px 15px;
+  transition: background-color var(--transition-speed);
+}
+
+.dropdown-menu li a,
+.dropdown-menu li button {
+  text-decoration: none;
   display: flex;
   align-items: center;
-  transition: background-color 0.3s ease-out, color 0.3s ease-out, transform 0.3s ease-out; /* Keep futuristic transitions */
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 8px 0;
+  color: var(--text-dropdown);
+  transition: color var(--transition-speed);
 }
 
-.logout-btn:hover {
-  background-color: #dc3545; /* Red background on hover */
-  color: white; /* White text on hover */
-  transform: scale(1.05); /* Slight zoom on hover from futuristic */
+.dropdown-menu li:hover {
+  background-color: var(--bg-dropdown-hover);
 }
 
-.user-icon {
-  margin-right: 8px;
-  font-size: 1.2em; /* Slightly larger user icon */
-  color: #777; /* Slightly lighter icon color from light theme */
+.logout-button {
+  background: none;
+  border: none;
+  color: var(--text-navbar); /* Or a specific logout color variable */
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
 }
 
-/* Styles for medium screens (e.g., small laptops) - Icon only */
-@media screen and (min-width: 961px) and (max-width: 1280px) {
-  .navbar-logo {
-    font-size: 1.2rem; /* Slightly smaller logo text */
-  }
-  .logo-image {
-    height: 35px; /* Slightly smaller logo image */
-  }
-
-  .nav-links span, /* Hide text within nav-links */
-  .logout-btn span, /* Hide text within logout button if you add one */
-  .nav-links.signup-btn span { /* Hide text within signup button if you add one */
-    display: none;
-  }
-
-  .nav-links,
-  .logout-btn,
-  .nav-links.signup-btn {
-    padding: 0.5rem 0.8rem; /* Adjust padding for icon-only */
-    justify-content: center; /* Center the icon */
-  }
-
-  .nav-links svg, /* Target icons directly */
-  .logout-btn svg,
-  .nav-links.signup-btn svg {
-    margin-right: 0 !important; /* Remove right margin from icons when text is hidden */
-  }
-
-  /* If you have a user display name span, hide it too */
-  .nav-item .nav-links span:not(.user-icon-wrapper-if-any) { display: none; }
+.logout-button:hover {
+  background-color: var(--bg-navbar-hover);
+  color: var(--text-navbar-accent); /* Or a specific logout hover color */
 }
 
-.menu-icon {
-  display: none; /* Hidden on desktop */
-}
-
-/* Responsive Styles */
-@media screen and (max-width: 960px) {
-  .navbar-container {
-    /* Allow items to wrap if needed, or adjust padding */
-    /* On smaller screens, space-between might still be fine, or you might want to adjust */
-    /* justify-content: center; if you want logo centered above menu */
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .menu-icon {
+    display: block;
   }
 
   .nav-menu {
-    display: flex;
+    /* display: none; -- We will control visibility with transform */
+    display: flex; /* It needs to be flex to be able to transition and layout items */
     flex-direction: column;
-    width: 100%;
-    height: auto; /* Adjust height based on content */
-    position: absolute;
-    top: 60px; /* Height of the navbar */
-    left: -100%; /* Start off screen */
-    opacity: 1;
-    transition: all 0.5s ease;
-    background-color: #ffffff; /* White background for dropdown from light theme */
-    margin-left: 0; /* Reset margin-left for mobile dropdown */
-    margin-right: 0; /* Reset margin-right for mobile dropdown */
-    padding-bottom: 1rem; /* Add some padding at the bottom */
+    position: fixed; /* Fixed position to slide over content */
+    top: 0;
+    left: 0;
+    width: 50vw; /* Set to half viewport width */
+    max-height: 100vh; /* Set to half viewport height, or adjust as needed */
+    box-sizing: border-box; /* Ensure padding is included in the width/height */
+    background-color: var(--bg-navbar);
+    padding: 20px; /* Adjust padding for side menu */
+    transform: translateX(-100%); /* Initially off-screen to the left */
+    transition: transform var(--transition-speed) ease-in-out;
+    z-index: 1010; /* Above main navbar and page content */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.15); /* Shadow for the side menu */
+    gap: 1rem; /* Vertical spacing for menu items */
+    overflow-y: auto; /* Allow scrolling if content exceeds height */
   }
 
   .nav-menu.active {
-    left: 0; /* Slide in */
+    transform: translateX(0); /* Slide into view */
+    /* No need to repeat display:flex or other properties already on .nav-menu */
+  }
+}
+/* Logo Container */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-logo);
+}
+
+/* Logo Image Styling */
+.logo-image {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  margin-right: 10px;
+  border-radius: 8px;
+}
+
+/* Logo Text Styling */
+.logo-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* Focus Visible styles for accessibility */
+.nav-links:focus-visible,
+.signup:focus-visible,
+.profile-toggle:focus-visible, /* Assuming .profile-toggle is a button or has tabindex */
+.dropdown-menu li a:focus-visible,
+.dropdown-menu li button:focus-visible,
+.logout-button:focus-visible {
+  outline: 2px solid var(--text-navbar-accent);
+  outline-offset: 2px;
+}
+
+/* Animation Definition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
     opacity: 1;
-    transition: all 0.5s ease;
-    z-index: 1;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Add shadow to dropdown from light theme */
-  }
-
-  .nav-links {
-    text-align: center;
-    padding: 1.5rem 1rem; /* Increased padding for touch targets */
-    width: 100%;
-    display: block; /* Make links take full width */
-  }
-
-  .nav-links:hover {
-    background-color: #e9ecef; /* Light gray hover for mobile links from light theme */
-    color: #007bff; /* Primary color for text on hover */
-    border-radius: 0; /* No radius for full-width items */
-  }
-
-  .nav-item {
-    width: 100%;
-    height: auto; /* Adjust height */
-  }
-
-  .nav-item .logout-btn,
-  .nav-item .nav-links.signup-btn {
-    width: calc(100% - 2rem); /* Full width minus padding */
-    margin: 10px auto; /* Center button */
-    padding: 1rem;
-    text-align: center;
-    justify-content: center;
-  }
-
-
-  .menu-icon {
-    display: block; /* Show hamburger icon */
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(-100%, 60%);
-    font-size: 1.8rem;
-    cursor: pointer;
-    color: #333; /* Dark color for hamburger icon from light theme */
+    transform: translateY(0);
   }
 }

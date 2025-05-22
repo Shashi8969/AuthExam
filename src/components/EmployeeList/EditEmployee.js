@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react'; // Added React for potential JSX needs if not already implied
 import { ref, get, update, onValue, push } from 'firebase/database'; // Added onValue and push
 import { ref as storageRef, deleteObject } from 'firebase/storage';
-import { db, storage } from '../config/firebase';
-import FileUpload from './FileUpload';
+import { db, storage } from '../../config/firebase';
+import FileUpload from '../EmployeeForm/FileUpload';
 
 const EditEmployee = ({ employeeId, onClose }) => {
   const [formData, setFormData] = useState({

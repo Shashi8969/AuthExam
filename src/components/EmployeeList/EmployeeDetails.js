@@ -1,8 +1,8 @@
 // src/components/EmployeeDetails.js
 import React, { useState, useEffect } from 'react';
 import { ref, get } from 'firebase/database'; // Changed to Realtime Database
-import { db } from '../config/firebase'; // Ensure your Firebase config is set up correctly
-import Employee from '../models/Employee'; // Make sure you have this model defined
+import { db } from '../../config/firebase'; // Ensure your Firebase config is set up correctly
+import Employee from '../../models/Employee'; // Make sure you have this model defined
 import styles from './EmployeeDetails.module.css'; // Import CSS Module
 
 

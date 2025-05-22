@@ -1,18 +1,19 @@
 // src/components/EmployeeList.js
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { onValue, ref, remove, push } from 'firebase/database'; // Added push
-import { db } from '../config/firebase';
+import { db } from '../../config/firebase';
 import { ref as dbRef } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import * as XLSX from 'xlsx';
 import './EmployeeList.css';
 import EditEmployee from './EditEmployee';
 import EmployeeDetails from './EmployeeDetails';
-import Employee from '../models/Employee';
+import Employee from '../../models/Employee';
 import EmployeeTable from './EmployeeTable'; // Import new component
 import AssignmentControls from './AssignmentControls'; // Import new component
 import AssignmentPreview from './AssignmentPreview'; // Import new component
+
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);

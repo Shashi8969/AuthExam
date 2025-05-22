@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/NavBar/Navbar';
 import AuthForm from './components/AuthForm/AuthForm';
-import EmployeeList from './components/EmployeeList';
+import EmployeeList from './components/EmployeeList/EmployeeList';
 import Home from './components/Home/Home';
 import { AuthProvider } from './context/AuthContext';
 import EmployeeForm from './components/EmployeeForm/EmployeeForm';

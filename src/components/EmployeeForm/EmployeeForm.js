@@ -1,7 +1,7 @@
 // src/components/EmployeeForm.js
 import React, { useState, useEffect, useMemo } from 'react'; // Added useMemo
 import useForm from '../../hooks/useForm';
-import FileUpload from '../FileUpload';
+import FileUpload from './FileUpload';
 import { formFields as initialFormFieldsConfig } from '../../constants/formFields'; // Renamed for clarity
 import { imageUploadFields } from '../../constants/imageUploadFields';
 import { ref, onValue, push, set, query, orderByChild, equalTo, get } from 'firebase/database'; // Import Firebase functions
