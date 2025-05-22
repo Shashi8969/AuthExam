@@ -1,8 +1,9 @@
 // src/components/AuthForm.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Import useEffect
 import { signUp as firebaseSignUp, logIn,db} from '../../config/firebase'; // Import auth for deleteUser
 import { deleteUser } from 'firebase/auth'; // Import deleteUser
 import { ref, set } from 'firebase/database'; // Import the necessary database functions
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
 import './AuthForm.css';
@@ -17,12 +18,22 @@ const AuthForm = ({ type }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-    const location = useLocation(); // Get location object
-
+  const location = useLocation(); // Get location object
+  const { user: currentUser, loading: authLoading } = useAuth(); // Get current user from AuthContext
   // Determine where to redirect after login/signup
   const from = location.state?.from?.pathname || '/'; // Default to homepage
 
 
+   useEffect(() => {
+    // If auth is not loading and a user is already logged in,
+    // redirect them from login/signup pages to the home page.
+    if (!authLoading && currentUser) {
+      console.log('AuthForm: User already logged in, redirecting to home.');
+      navigate('/', { replace: true });
+    }
+  }, [currentUser, authLoading, navigate]);
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -66,8 +77,8 @@ const AuthForm = ({ type }) => {
         console.log('AuthForm: Attempting Firebase login...');
         const userCredential = await logIn(email, password);
         console.log('AuthForm: Firebase login successful. UserCredential:', userCredential);
-        // No explicit navigation here. AuthContext and ProtectedRoute will handle it.
-        // After this, onAuthStateChanged in AuthContext should fire.
+        // Navigate to the 'from' location or home page after successful login
+        navigate(from, { replace: true });
       }
     } catch (authError) {
       console.error('AuthForm: Firebase login error:', authError);
@@ -77,6 +88,12 @@ const AuthForm = ({ type }) => {
     }
   };
 
+  // If auth is still loading or user is already logged in (and useEffect will redirect),
+  // you might want to show a loading spinner or null to prevent form flash.
+  if (authLoading || (!authLoading && currentUser)) {
+    return <div className="auth-container"><p>Loading...</p></div>; // Or some other loading indicator
+  }
+  
   return (
     <div className="auth-container">
       <div className="auth-card">

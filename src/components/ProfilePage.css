@@ -1,0 +1,169 @@
+/* c:/Users/DELL/employee-manager/src/components/ProfilePage.css */
+
+.profile-page-container {
+  padding: 30px 40px;
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa; /* Consistent background */
+  color: #343a40;
+  min-height: calc(100vh - 60px); /* Adjust based on Navbar height */
+}
+
+.profile-page-container h2 {
+  text-align: center;
+  margin-bottom: 35px;
+  color: #2c3e50; /* Consistent heading color */
+  font-size: 2.2em;
+  font-weight: 700;
+}
+
+/* Card style for each section */
+.profile-page-container .card {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  padding: 25px 30px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.profile-page-container .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.profile-page-container .card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #007bff; /* Primary color for section titles */
+  font-size: 1.6em;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+/* Profile Section specific styles */
+.profile-section p {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.profile-section form div {
+  margin-bottom: 15px;
+}
+
+.profile-section form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.profile-section form input[type="text"],
+.profile-section form input[type="email"],
+.profile-section form input[type="tel"],
+.profile-section form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+.profile-section form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+
+/* Operator List Section specific styles */
+.operator-list-section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.operator-list-section li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+.operator-list-section li:last-child {
+  border-bottom: none;
+}
+
+/* Saved Assignments Section specific styles */
+.saved-assignments-section-profile p {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+/* Reference Names Section specific styles */
+.reference-names-section .reference-tags {
+  list-style-type: none;
+  padding-left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reference-names-section .reference-tags li {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* Action Buttons on Profile Page */
+.profile-action-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  color: #fff;
+  text-decoration: none; /* For anchor tags styled as buttons */
+  display: inline-block; /* For anchor tags */
+  margin-top: 10px;
+}
+
+.edit-profile-btn {
+  background-color: #ffc107; /* Yellow/Warning */
+  color: #212529;
+}
+.edit-profile-btn:hover {
+  background-color: #e0a800;
+}
+
+.view-details-link-profile {
+  background-color: #17a2b8; /* Info Blue */
+}
+.view-details-link-profile:hover {
+  background-color: #138496;
+}
+
+.logout-section {
+  text-align: center; /* Center the logout button */
+  margin-top: 40px;
+}
+
+.logout-btn-profile {
+  background-color: #dc3545; /* Red/Danger */
+  padding: 12px 25px;
+  font-size: 1rem;
+}
+.logout-btn-profile:hover {
+  background-color: #c82333;
+}
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}

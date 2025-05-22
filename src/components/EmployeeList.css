@@ -31,6 +31,42 @@
   transform: none;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+/* ... (other styles) ... */
+
+/* Operator Counts Summary Styles */
+.operator-counts-summary {
+  display: flex;
+  justify-content: space-around; /* Or space-between, or flex-start with gap */
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #e9ecef; /* Light background to make it stand out a bit */
+  border-radius: 6px;
+  margin-top: 20px; /* Space above the table or search bar */
+  margin-bottom: 15px; /* Space below the counts */
+  font-size: 0.9rem;
+  color: #495057;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.operator-counts-summary span {
+  padding: 5px 10px;
+}
+
+.operator-counts-summary strong {
+  color: #007bff; /* Highlight the count number */
+  font-size: 1rem;
+}
+
+/* Responsive adjustments for counts if needed */
+@media (max-width: 600px) {
+  .operator-counts-summary {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* ... (rest of your CSS) ... */
 
 /* Adjust .action-button-group if needed to accommodate multiple buttons */
 .action-button-group {
@@ -67,6 +103,30 @@
   color: #495057;
   font-weight: 600;
 }
+
+/* ... (your existing CSS) ... */
+
+.employee-table th .reference-filter-select {
+  display: block; /* Make it take the full width of the th cell area if desired */
+  width: 100%;    /* Or set a specific width like 120px */
+  margin-top: 5px;
+  padding: 4px 6px;
+  font-size: 0.8em; /* Smaller font for the select in header */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  box-sizing: border-box; /* Ensures padding and border don't add to width */
+}
+
+.employee-table th > div { /* Style for the "Reference" text itself */
+  margin-bottom: 2px; /* Add a little space between text and select */
+}
+
+/* Optional: Adjust padding of the 'Reference' th if needed */
+.employee-table th:nth-child(7) { /* Assuming 'Reference' is the 7th column */
+  /* padding-bottom: 8px; */ /* Example to give more space for the select */
+}
+
 
 /* Search Bar Styles */
 .search-bar {

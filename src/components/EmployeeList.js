@@ -33,6 +33,7 @@ const EmployeeList = () => {
   const [showUnassignedOnly, setShowUnassignedOnly] = useState(false);
   const [predefinedCenters, setPredefinedCenters] = useState({});
   const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
+  const [selectedReferenceFilter, setSelectedReferenceFilter] = useState(''); // State for reference filter
 
   useEffect(() => {
     if (!authLoading && !currentUser) {
@@ -85,6 +86,30 @@ const EmployeeList = () => {
     }, {});
   }, [employees]);
 
+  const uniqueReferenceNames = useMemo(() => {
+    const references = new Set(
+      employees
+        .map(emp => emp.referenceName)
+        .filter(Boolean) // Remove null, undefined, or empty strings
+    );
+    return ['', ...Array.from(references).sort()]; // Add an empty string for "All" and sort
+  }, [employees]);
+
+  const totalBiometricOperatorsCount = useMemo(() => {
+    return employees.filter(emp => emp.isBiometricOperator).length;
+  }, [employees]);
+
+  const availableForSelectionCount = useMemo(() => {
+    return employees.filter(emp =>
+      emp.isBiometricOperator &&
+      !selectedOperators.includes(emp.empId) &&
+      !centerAssignments[emp.empId]
+    ).length;
+  }, [employees, selectedOperators, centerAssignments]);
+
+
+
+
   const filteredEmployees = employees.filter(employee => {
     const searchTermLower = appliedSearchTerm.toLowerCase();
     const matchesSearch =
@@ -94,6 +119,11 @@ const EmployeeList = () => {
         (employee.addharNo && String(employee.addharNo).includes(appliedSearchTerm))
       );
     if (!matchesSearch) {
+      return false;
+    }
+
+    // Apply reference name filter
+    if (selectedReferenceFilter && employee.referenceName !== selectedReferenceFilter) {
       return false;
     }
 
@@ -246,9 +276,17 @@ const EmployeeList = () => {
     alert('Bulk assignment applied to selected operators.');
   };
   
+  const handleDeselectAllOperators = () => {
+    setSelectedOperators([]);
+  };
+  
   const handleBulkCenterNameChange = (e) => {
     setBulkCenterName(e.target.value);
     // If you want to clear bulkCenterCode if name is manually typed, add logic here
+  };
+  
+  const handleReferenceFilterChange = (referenceName) => {
+    setSelectedReferenceFilter(referenceName);
   };
 
   const handleClearAllAssignments = () => {
@@ -405,6 +443,14 @@ const EmployeeList = () => {
         </button>
       </div>
 
+      <div className="operator-counts-summary">
+        <span>Total Biometric Operators: <strong>{totalBiometricOperatorsCount}</strong></span>
+        <span>Operators Available for Selection: <strong>{availableForSelectionCount}</strong></span>
+      </div>
+
+
+
+
       {sortedEmployees.length === 0 ? (
         <p className="no-results">No employees found</p>
       ) : (
@@ -418,6 +464,10 @@ const EmployeeList = () => {
           onDelete={deleteEmployee}
           onOperatorSelect={handleOperatorSelect}
           selectedOperators={selectedOperators}
+          uniqueReferenceNames={uniqueReferenceNames}
+          selectedReferenceFilter={selectedReferenceFilter}
+          onReferenceFilterChange={handleReferenceFilterChange}
+          onDeselectAll={handleDeselectAllOperators} // Pass the new handler
           centerAssignments={centerAssignments}
         />
       )}

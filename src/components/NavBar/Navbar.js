@@ -71,17 +71,17 @@ const Navbar = () => {
 
           {user && (
             <>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link to="/employees" className="nav-links" onClick={() => setMenuOpen(false)}>
                   <FaListAlt style={{ marginRight: '8px' }} /> <span>Operator List</span>
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link to="/add-employee" className="nav-links" onClick={() => setMenuOpen(false)}>
                   <FaPlusCircle style={{ marginRight: '8px' }} /> <span>Add Operator</span>
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link to="/reference-names" className="nav-links" onClick={() => setMenuOpen(false)}>
                   <FaUserPlus style={{ marginRight: '8px' }} /> <span>Reference Names</span>
                 </Link>
@@ -90,7 +90,7 @@ const Navbar = () => {
                 <Link to="/admin/manage-centers" className="nav-links" onClick={() => setMenuOpen(false)}>
                   <FaUsersCog style={{ marginRight: '8px' }} /> <span>Manage Centers</span>
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link to="/profile"
                 className="nav-links" onClick={() => setMenuOpen(false)}>
@@ -98,11 +98,11 @@ const Navbar = () => {
                   <span className="user-display-name">{displayName}</span>
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <button className="logout-btn" onClick={handleLogout}>
                   <FaSignOutAlt style={{ marginRight: '5px' }} /> <span>Logout</span>
                 </button>
-              </li>
+              </li> */}
             </>
           )}
 
