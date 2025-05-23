@@ -25,8 +25,8 @@ const EmployeeTable = ({
                         <th onClick={onDeselectAll} style={{ cursor: 'pointer' }}>Select</th> {/* Add onClick and cursor style */}
                         <th>Profile</th>
                         <th onClick={() => onSort('name')}>Name {sortColumn === 'name' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
-                        <th onClick={() => onSort('phoneNo')}>Phone {sortColumn === 'phoneNo' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
-                        <th onClick={() => onSort('addharNo')}>Aadhar {sortColumn === 'addharNo' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                        <th onClick={() => onSort('phoneNo')}>Mobile No. {sortColumn === 'phoneNo' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                        <th onClick={() => onSort('addharNo')}>Aadhar No. {sortColumn === 'addharNo' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}</th>
                         <th>Address</th> {/* This column is not sortable by header click in current setup */}
                         <th>
                             <div>Reference</div>

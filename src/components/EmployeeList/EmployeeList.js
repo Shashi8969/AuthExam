@@ -408,7 +408,14 @@ const EmployeeList = () => {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
   };
 
-  if (loading || authLoading) return <div className="loading">Loading...</div>;
+if (loading || authLoading) {
+    return (
+      <div className="loading-spinner-container">
+        <div className="loading-spinner"></div>
+        <span className="loading-text">Loading Employees...</span> 
+      </div>
+    );
+  }
 
   return (
     <div className="employee-list">

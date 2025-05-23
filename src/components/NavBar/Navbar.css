@@ -188,7 +188,7 @@ html {
     top: 0;
     left: 0;
     width: 50vw; /* Set to half viewport width */
-    max-height: 100vh; /* Set to half viewport height, or adjust as needed */
+    height: 100vh; /* Ensure full viewport height */
     box-sizing: border-box; /* Ensure padding is included in the width/height */
     background-color: var(--bg-navbar);
     padding: 20px; /* Adjust padding for side menu */
