@@ -43,7 +43,7 @@ const EmployeeList = () => {
   const [predefinedCenters, setPredefinedCenters] = useState({});
   const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20); // Default items per page
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Default items per page
   const [selectedReferenceFilter, setSelectedReferenceFilter] = useState(''); // State for reference filter
 
   useEffect(() => {
