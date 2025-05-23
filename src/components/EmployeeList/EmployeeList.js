@@ -28,7 +28,7 @@ const EmployeeList = () => {
   const navigate = useNavigate();
 
   const [selectedOperators, setSelectedOperators] = useState([]);
-  const [centerAssignments, setCenterAssignments] = useState({});
+  const [centerAssignments, setCenterAssignments] = useState(() => {    const savedAssignments = localStorage.getItem('centerAssignments');    return savedAssignments ? JSON.parse(savedAssignments) : {};  });
   const [bulkCenterCode, setBulkCenterCode] = useState('');
   const [bulkCenterName, setBulkCenterName] = useState('');
   const [showUnassignedOnly, setShowUnassignedOnly] = useState(false);
@@ -43,6 +43,7 @@ const EmployeeList = () => {
       return;
     }
 
+
     const unsubscribe = onValue(ref(db, 'Employees'), (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -56,6 +57,11 @@ const EmployeeList = () => {
 
     return () => unsubscribe();
   }, [authLoading, currentUser, navigate]);
+
+    // Effect to save centerAssignments to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('centerAssignments', JSON.stringify(centerAssignments));
+  }, [centerAssignments]);
 
   useEffect(() => {
     const centersRef = ref(db, 'PredefinedCenters');
@@ -295,6 +301,7 @@ const EmployeeList = () => {
     setSelectedOperators([]);
     setBulkCenterCode('');
     setBulkCenterName('');
+    localStorage.removeItem('centerAssignments'); // Clear from local storage
     alert('All center assignments have been cleared.');
   };
 
