@@ -112,6 +112,11 @@ const Navbar = () => {
                 {dropdownOpen && (
                   <ul className="dropdown-menu" id="profile-menu">
                     <li>
+                      <Link to="/profile" onClick={closeAllMenus}>
+                        <FaUserCircle style={{ marginRight: '8px' }} /> View profile
+                      </Link>
+                    </li>
+                    <li>
                       <Link to="/employees" onClick={closeAllMenus}>
                         <FaListAlt style={{ marginRight: '8px' }} /> Operator List
                       </Link>
@@ -128,6 +133,11 @@ const Navbar = () => {
                       >
                         <FaUsersCog style={{ marginRight: '8px' }} /> Manage Centers
                       </Link>
+                    </li>
+                    <li>
+                      <Link to="/saved-assignments" onClick={closeAllMenus}>
+                        <FaListAlt style={{ marginRight: '8px' }} /> Saved Assignment
+                    </Link>
                     </li>
                     <li>
                       <button
