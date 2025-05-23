@@ -28,7 +28,7 @@ const EmployeeList = () => {
   const navigate = useNavigate();
 
   const [selectedOperators, setSelectedOperators] = useState([]);
-  const [centerAssignments, setCenterAssignments] = useState(() => {    const savedAssignments = localStorage.getItem('centerAssignments');    return savedAssignments ? JSON.parse(savedAssignments) : {};  });
+  const [centerAssignments, setCenterAssignments] = useState(() => { const savedAssignments = localStorage.getItem('centerAssignments'); return savedAssignments ? JSON.parse(savedAssignments) : {}; });
   const [bulkCenterCode, setBulkCenterCode] = useState('');
   const [bulkCenterName, setBulkCenterName] = useState('');
   const [showUnassignedOnly, setShowUnassignedOnly] = useState(false);
@@ -58,7 +58,7 @@ const EmployeeList = () => {
     return () => unsubscribe();
   }, [authLoading, currentUser, navigate]);
 
-    // Effect to save centerAssignments to localStorage whenever it changes
+  // Effect to save centerAssignments to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('centerAssignments', JSON.stringify(centerAssignments));
   }, [centerAssignments]);
@@ -144,14 +144,14 @@ const EmployeeList = () => {
     if (!a[sortColumn] || !b[sortColumn]) return 0; // Handle cases where sortable property might be missing
 
     if (typeof a[sortColumn] === 'string' && typeof b[sortColumn] === 'string') {
-        return sortDirection === 'asc'
-            ? a[sortColumn].localeCompare(b[sortColumn])
-            : b[sortColumn].localeCompare(a[sortColumn]);
+      return sortDirection === 'asc'
+        ? a[sortColumn].localeCompare(b[sortColumn])
+        : b[sortColumn].localeCompare(a[sortColumn]);
     }
     // Basic numeric sort (can be expanded if other types are needed)
     return sortDirection === 'asc'
-        ? a[sortColumn] - b[sortColumn]
-        : b[sortColumn] - a[sortColumn];
+      ? a[sortColumn] - b[sortColumn]
+      : b[sortColumn] - a[sortColumn];
   });
 
   const handleSort = (column) => {
@@ -197,7 +197,7 @@ const EmployeeList = () => {
     } else {
       setSelectedOperators(prevSelected => prevSelected.filter(id => id !== employeeId));
       setCenterAssignments(prevAssignments => {
-        if (prevAssignments[employeeId]) {
+        if (prevAssignments[employeeId] && !prevAssignments[employeeId].individuallySet) {
           const newAssignments = { ...prevAssignments };
           delete newAssignments[employeeId];
           return newAssignments;
@@ -209,6 +209,7 @@ const EmployeeList = () => {
 
   const handleAssignmentChange = (operatorId, field, value) => {
     setCenterAssignments(prevAssignments => {
+      const currentAssignment = prevAssignments[operatorId] || {};
       if (field === 'centerCode' && value) {
         const targetCenter = predefinedCenters[value];
         if (targetCenter && typeof targetCenter.count === 'number') {
@@ -218,7 +219,7 @@ const EmployeeList = () => {
               currentAssignedToTargetCenter++;
             }
           });
-          if (!prevAssignments[operatorId] || prevAssignments[operatorId].centerCode !== value) {
+          if (currentAssignment.centerCode !== value) {
             if (currentAssignedToTargetCenter >= targetCenter.count) {
               alert(`Cannot assign to ${targetCenter.name} (${value}). Maximum operator count of ${targetCenter.count} reached.`);
               return prevAssignments;
@@ -226,10 +227,13 @@ const EmployeeList = () => {
           }
         }
       }
-      const newAssignmentForOperator = { ...(prevAssignments[operatorId] || {}), [field]: value };
-      if (field === 'centerCode') {
+      const newAssignmentForOperator = {
+        ...currentAssignment,
+        [field]: value,
+        individuallySet: true // Mark as individually set
+      }; if (field === 'centerCode') {
         const selectedPredefinedCenter = predefinedCenters[value];
-        newAssignmentForOperator.centerName = selectedPredefinedCenter ? selectedPredefinedCenter.name : '';
+        newAssignmentForOperator.centerName = selectedPredefinedCenter ? selectedPredefinedCenter.name : (value ? newAssignmentForOperator.centerName : '');
       }
       return {
         ...prevAssignments,
@@ -251,29 +255,46 @@ const EmployeeList = () => {
       return;
     }
 
-    const targetCenter = predefinedCenters[bulkCenterCode];
-    if (targetCenter && typeof targetCenter.count === 'number') {
-      let currentAssignedToTargetCenter = 0;
-      Object.values(centerAssignments).forEach(assignment => {
-        if (assignment.centerCode === bulkCenterCode) {
-          currentAssignedToTargetCenter++;
+    if (bulkCenterCode) { // Only check capacity if a predefined center is chosen
+      const targetCenter = predefinedCenters[bulkCenterCode];
+      if (targetCenter && typeof targetCenter.count === 'number') {
+        // Calculate the projected count for the target center after this bulk operation
+        let finalCountForTargetCenter = 0;
+        const tempAssignments = { ...centerAssignments };
+
+        // Tentatively apply bulk assignments to a temporary copy
+        selectedOperators.forEach(opId => {
+          // Only apply bulk if not individually set or if individually set to a different center
+          if (!tempAssignments[opId] || !tempAssignments[opId].individuallySet) {
+            tempAssignments[opId] = { centerCode: bulkCenterCode, centerName: bulkCenterName, individuallySet: false };
+          }
+        });
+
+        // Now count how many would be in the target center
+        Object.values(tempAssignments).forEach(assignment => {
+          if (assignment.centerCode === bulkCenterCode) {
+            finalCountForTargetCenter++;
+          }
+        });
+
+        if (finalCountForTargetCenter > targetCenter.count) {
+          alert(`Cannot perform bulk assignment to ${targetCenter.name} (${bulkCenterCode}). It would result in ${finalCountForTargetCenter} operators, exceeding the maximum of ${targetCenter.count}. Please adjust selections or individual assignments.`);
+          return;
         }
-      });
-
-      const newlyAssignedCount = selectedOperators.filter(opId => !centerAssignments[opId] || centerAssignments[opId].centerCode !== bulkCenterCode).length;
-
-      if (currentAssignedToTargetCenter + newlyAssignedCount > targetCenter.count) {
-        alert(`Cannot assign ${selectedOperators.length} operators to ${targetCenter.name} (${bulkCenterCode}). It would exceed the maximum operator count of ${targetCenter.count}.`);
-        return;
+      
       }
     }
 
     const newAssignments = { ...centerAssignments };
     selectedOperators.forEach(operatorId => {
-      newAssignments[operatorId] = {
-        centerCode: bulkCenterCode,
-        centerName: bulkCenterName,
-      };
+      // Only apply bulk assignment if the operator does not have an individually set assignment
+      if (!newAssignments[operatorId] || !newAssignments[operatorId].individuallySet) {
+        newAssignments[operatorId] = {
+          centerCode: bulkCenterCode,
+          centerName: bulkCenterName,
+          individuallySet: false // Mark as not individually set (or simply omit the flag)
+        };
+        }
     });
     setCenterAssignments(newAssignments);
 
@@ -282,16 +303,16 @@ const EmployeeList = () => {
     setBulkCenterName('');
     alert('Bulk assignment applied to selected operators.');
   };
-  
+
   const handleDeselectAllOperators = () => {
     setSelectedOperators([]);
   };
-  
+
   const handleBulkCenterNameChange = (e) => {
     setBulkCenterName(e.target.value);
     // If you want to clear bulkCenterCode if name is manually typed, add logic here
   };
-  
+
   const handleReferenceFilterChange = (referenceName) => {
     setSelectedReferenceFilter(referenceName);
   };
@@ -382,9 +403,9 @@ const EmployeeList = () => {
     }
 
     // Optional: Prompt for a name for this saved list
-    const listName = prompt('Enter a name for this work list (e.g., "BSSC_List"-"RRB_List" ):', 
-                           `Operator_List - ${new Date().toLocaleDateString()}`);
-    
+    const listName = prompt('Enter a name for this work list (e.g., "BSSC_List"-"RRB_List" ):',
+      `Operator_List - ${new Date().toLocaleDateString()}`);
+
     if (listName === null) { // User cancelled the prompt
       return;
     }
@@ -399,7 +420,7 @@ const EmployeeList = () => {
       const savedListsRef = dbRef(db, 'SavedAssignmentLists');
       await push(savedListsRef, savedListData); // push() generates a unique ID
       alert(`List saved as "${listName}"`);
-  
+
       alert('Assignment list saved successfully!');
     } catch (error) {
       console.error('Error saving assignment list:', error);
@@ -415,11 +436,11 @@ const EmployeeList = () => {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
   };
 
-if (loading || authLoading) {
+  if (loading || authLoading) {
     return (
       <div className="loading-spinner-container">
         <div className="loading-spinner"></div>
-        <span className="loading-text">Loading Employees...</span> 
+        <span className="loading-text">Loading Employees...</span>
       </div>
     );
   }
@@ -510,16 +531,16 @@ if (loading || authLoading) {
 
       <div className="action-button-group"> {/* Wrapper for button, use CSS file */}
         <button
-            onClick={handleGenerateExcel}
-            disabled={Object.keys(centerAssignments).length === 0}
-            className="generate-excel-btn" /* Use class for styling */
+          onClick={handleGenerateExcel}
+          disabled={Object.keys(centerAssignments).length === 0}
+          className="generate-excel-btn" /* Use class for styling */
         >
           Generate Biometric Operator List
         </button>
         <button
-            onClick={handleSaveAssignmentList}
-            disabled={Object.keys(centerAssignments).length === 0}
-            className="save-assignments-btn" // New class for styling
+          onClick={handleSaveAssignmentList}
+          disabled={Object.keys(centerAssignments).length === 0}
+          className="save-assignments-btn" // New class for styling
         >
           Save Assignment List
         </button>
