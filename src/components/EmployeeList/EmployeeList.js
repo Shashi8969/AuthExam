@@ -42,6 +42,8 @@ const EmployeeList = () => {
   const [showUnassignedOnly, setShowUnassignedOnly] = useState(false);
   const [predefinedCenters, setPredefinedCenters] = useState({});
   const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20); // Default items per page
   const [selectedReferenceFilter, setSelectedReferenceFilter] = useState(''); // State for reference filter
 
   useEffect(() => {
@@ -170,6 +172,38 @@ const EmployeeList = () => {
       setSortDirection('asc');
     }
   };
+
+  // Calculate total pages and employees for the current page
+  const currentTotalPages = useMemo(() => {
+    if (itemsPerPage === 'all' || sortedEmployees.length === 0) {
+      return 1;
+    }
+    return Math.ceil(sortedEmployees.length / Number(itemsPerPage));
+  }, [sortedEmployees.length, itemsPerPage]);
+
+  const paginatedEmployees = useMemo(() => {
+    if (itemsPerPage === 'all' || sortedEmployees.length === 0) {
+      return sortedEmployees;
+    }
+    const numItemsPerPage = Number(itemsPerPage);
+    const startIndex = (currentPage - 1) * numItemsPerPage;
+    const endIndex = Math.min(startIndex + numItemsPerPage, sortedEmployees.length);
+    return sortedEmployees.slice(startIndex, endIndex);
+  }, [sortedEmployees, currentPage, itemsPerPage]);
+
+  // Effect to adjust currentPage if it's out of bounds (e.g., after filtering or itemsPerPage change)
+  useEffect(() => {
+    if (currentPage > currentTotalPages) {
+      setCurrentPage(currentTotalPages > 0 ? currentTotalPages : 1);
+    } else if (currentPage < 1 && currentTotalPages > 0) { // Ensure currentPage is at least 1
+      setCurrentPage(1);
+    }
+  }, [sortedEmployees.length, itemsPerPage, currentPage, currentTotalPages]);
+
+  // Reset to page 1 when primary filters, search term, or items per page change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [appliedSearchTerm, selectedReferenceFilter, showUnassignedOnly]);
 
   const handleEmployeeClick = (employeeId) => {
     setSelectedEmployeeId(employeeId);
@@ -334,6 +368,12 @@ const EmployeeList = () => {
     alert('All center assignments have been cleared.');
   };
 
+    const handleItemsPerPageChange = (e) => {
+    const newItemsPerPage = e.target.value;
+    setItemsPerPage(newItemsPerPage === 'all' ? 'all' : Number(newItemsPerPage));
+    setCurrentPage(1); // Reset to first page when items per page changes
+  };
+
   const handleRemoveOperatorFromPreview = (operatorIdToRemove) => {
     setCenterAssignments(prevAssignments => {
       const newAssignments = { ...prevAssignments };
@@ -495,11 +535,12 @@ const EmployeeList = () => {
 
 
 
-      {sortedEmployees.length === 0 ? (
+      {paginatedEmployees.length === 0 && sortedEmployees.length === 0 ? (
         <p className="no-results">No employees found</p>
       ) : (
+        <>
         <EmployeeTable
-          employees={sortedEmployees}
+          employees={paginatedEmployees}
           onSort={handleSort}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
@@ -514,6 +555,39 @@ const EmployeeList = () => {
           onDeselectAll={handleDeselectAllOperators} // Pass the new handler
           centerAssignments={centerAssignments}
         />
+                <div className="pagination-controls-container">
+          <div className="items-per-page-selector">
+            <label htmlFor="itemsPerPageSelect">Rows per page:</label>
+            <select
+              id="itemsPerPageSelect"
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+          {itemsPerPage !== 'all' && sortedEmployees.length > 0 && (
+            <div className="pagination-navigation">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="pagination-button prev-button"
+              > Previous </button>
+              <span className="pagination-info"> Page {currentPage} of {currentTotalPages} </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, currentTotalPages))}
+                disabled={currentPage === currentTotalPages || currentTotalPages === 0}
+                className="pagination-button next-button"
+              > Next </button>
+            </div>
+          )}
+          <div className="pagination-summary"> Displaying {paginatedEmployees.length} of {sortedEmployees.length} employees </div>
+        </div>
+        </>
       )}
 
       <AssignmentControls
