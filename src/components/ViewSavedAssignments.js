@@ -3,6 +3,7 @@ import { ref, onValue, off, remove as firebaseRemove, update as firebaseUpdate }
 import { db } from '../config/firebase';
 import * as XLSX from 'xlsx'; // For Excel export
 import Employee from '../models/Employee'; // Import Employee model
+import { useNavigate } from 'react-router-dom'; // For navigation
 import './ViewSavedAssignments.css'; // We'll create this CSS file
 
 const ViewSavedAssignments = () => {
@@ -11,6 +12,8 @@ const ViewSavedAssignments = () => {
   const [error, setError] = useState(null);
   const [employeeMap, setEmployeeMap] = useState({});
   const [employeesLoading, setEmployeesLoading] = useState(true);
+    const navigate = useNavigate(); // Initialize useNavigate
+
 
   // State for UI interactions
   const [expandedListId, setExpandedListId] = useState(null); // To show full details of a list
@@ -18,6 +21,12 @@ const ViewSavedAssignments = () => {
   const [newListName, setNewListName] = useState(''); // Current value for the new list name input
   const PREVIEW_OPERATOR_LIMIT = 5; // Number of operators to show in list preview
 
+  const handleEditList = (listAssignments) => {
+    if (window.confirm("Editing this list will replace any unsaved assignments on the main page. Do you want to continue?")) {
+      localStorage.setItem('assignmentsToEdit', JSON.stringify(listAssignments || {}));
+      navigate('/employees');
+    }
+  };
 
   useEffect(() => {
     const savedListsRef = ref(db, 'SavedAssignmentLists');
@@ -347,6 +356,13 @@ const ViewSavedAssignments = () => {
                     >
                       Delete List
                      </button>
+                                          <button
+                        onClick={() => handleEditList(list.assignments)}
+                        className="list-action-btn edit-list-btn"
+                     >
+                        Edit List
+                     </button>
+
                      </div>
                 </div>
             </li>

@@ -28,7 +28,15 @@ const EmployeeList = () => {
   const navigate = useNavigate();
 
   const [selectedOperators, setSelectedOperators] = useState([]);
-  const [centerAssignments, setCenterAssignments] = useState(() => { const savedAssignments = localStorage.getItem('centerAssignments'); return savedAssignments ? JSON.parse(savedAssignments) : {}; });
+  const [centerAssignments, setCenterAssignments] = useState(() => {
+    const assignmentsToEdit = localStorage.getItem('assignmentsToEdit');
+    if (assignmentsToEdit) {
+      localStorage.removeItem('assignmentsToEdit'); // Consume it once
+      return JSON.parse(assignmentsToEdit);
+    }
+    const savedAssignments = localStorage.getItem('centerAssignments');
+    return savedAssignments ? JSON.parse(savedAssignments) : {};
+  });
   const [bulkCenterCode, setBulkCenterCode] = useState('');
   const [bulkCenterName, setBulkCenterName] = useState('');
   const [showUnassignedOnly, setShowUnassignedOnly] = useState(false);

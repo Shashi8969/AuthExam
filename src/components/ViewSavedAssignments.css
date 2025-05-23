@@ -204,3 +204,20 @@
 .cancel-rename-btn:hover {
   background-color: #5a6268;
 }
+
+/* Specific styling for the "Edit List" button */
+.edit-list-btn {
+  background-color: #007bff; /* Blue background - common for primary actions */
+  color: white;
+  border-color: #007bff;
+}
+
+.edit-list-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  border-color: #0056b3;
+}
+
+.edit-list-btn:active {
+  background-color: #004085; /* Even darker blue when clicked */
+  border-color: #004085;
+}
