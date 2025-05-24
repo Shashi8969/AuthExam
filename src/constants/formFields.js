@@ -8,7 +8,7 @@ export const formFields = [
   {
     label: 'Phone Number',
     name: 'phoneNo',
-    type: 'text',
+    type: 'tel',
     required: true,
     pattern: '^[0-9]{10}$',
     title: 'Please enter a valid 10-digit phone number.',
@@ -16,7 +16,7 @@ export const formFields = [
   {
     label: 'Aadhar Number',
     name: 'addharNo',
-    type: 'text',
+    type: 'number',
     required: true,
     pattern: '^[0-9]{12}$',
     title: 'Please enter a valid 12-digit Aadhar number.',

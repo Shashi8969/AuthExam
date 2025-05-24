@@ -101,7 +101,14 @@ const EditEmployee = ({ employeeId, onClose }) => {
     setUpdating(true);
     try {
       const employeeRef = ref(db, `Employees/${employeeId}`);
-      await update(employeeRef, formData);
+      // Convert phoneNo and addharNo to numbers before updating
+      const dataToUpdate = {
+        ...formData,
+        phoneNo: formData.phoneNo ? Number(formData.phoneNo) : null,
+        addharNo: formData.addharNo ? Number(formData.addharNo) : null,
+      };
+
+      await update(employeeRef, dataToUpdate);
 
       if (makeReferencable && formData.name && formData.name.trim() !== '') {
         const nameExists = Object.values(rawReferenceNames).includes(formData.name.trim());
