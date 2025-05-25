@@ -34,8 +34,8 @@ const Home = () => {
   // };
 
   const downloadableItems = [
-    { id: 1, title: "AuthExam Brochure", description: "Learn more about our comprehensive features.", fileName: "AuthExam_Brochure.pdf", icon: "📄" },
-    { id: 2, title: "Security Whitepaper", description: "Detailed insights into our security protocols.", fileName: "Security_Whitepaper.pdf", icon: "🛡️" },
+    { id: 1, title: "Mock Report", description: "Download Biomatric Mock Report Here.", fileName: "https://drive.google.com/uc?export=download&id=1BCFDElm3YLiKLXVXZpG8C0m2FMhHt5Uv", icon: "📄" },
+    { id: 2, title: "CSR Report", description: "Download CSR Report For Biomatric Work.", fileName: "Security_Whitepaper.pdf", icon: "🛡️" },
     { id: 3, title: "User Guide", description: "Step-by-step instructions for administrators.", fileName: "User_Guide.pdf", icon: "📖" },
   ];
 
@@ -150,7 +150,11 @@ const Home = () => {
           <h2>Important Resources</h2>
           <div className="downloadables-grid">
             {downloadableItems.map(item => (
-              <a href={`${process.env.PUBLIC_URL}/downloads/${item.fileName}`} download key={item.id} className="download-item">
+              <a 
+                href={item.fileName.startsWith('http') ? item.fileName : `${process.env.PUBLIC_URL}/downloads/${item.fileName}`} 
+                download 
+                key={item.id} 
+                className="download-item">
                 <div className="download-icon">{item.icon}</div>
                 <div className="download-info">
                   <h3>{item.title}</h3>

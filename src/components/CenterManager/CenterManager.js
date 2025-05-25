@@ -1,8 +1,9 @@
 // src/components/CenterManager.js
 import React, { useState, useEffect } from 'react';
-import { ref, set, onValue, remove, get } from 'firebase/database';
+import { ref, set, onValue, remove, get, query, orderByChild, equalTo } from 'firebase/database';
 import { db } from '../../config/firebase';
 import './CenterManager.css'; // Import the CSS file
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 
 
 const CenterManager = () => {
@@ -13,15 +14,30 @@ const CenterManager = () => {
   const [editingCenterKey, setEditingCenterKey] = useState(null); // Store the key (centerCode) of the center being edited
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const { user: authUser, isAdmin } = useAuth(); // Get auth user and admin status
 
   useEffect(() => {
-    const centersRef = ref(db, 'PredefinedCenters');
-    const unsubscribe = onValue(centersRef, (snapshot) => {
+    if (!authUser) return; // Don't fetch if user is not logged in
+
+    let centersQuery;
+    if (isAdmin) {
+      centersQuery = ref(db, 'PredefinedCenters'); // Admin sees all
+    } else {
+      centersQuery = query(ref(db, 'PredefinedCenters'), orderByChild('createdBy'), equalTo(authUser.uid)); // User sees their own
+    }
+
+    const unsubscribe = onValue(centersQuery, (snapshot) => {
       const data = snapshot.val();
       setPredefinedCenters(data || {});
     });
     return () => unsubscribe();
-  }, []);
+  }, [authUser, isAdmin]);
+
+  // Helper to get a display name for the user
+  const getUserDisplayName = (user) => {
+    if (!user) return 'Unknown User';
+    return user.displayName || user.email || user.uid;
+  };
 
   const clearForm = () => {
     setCenterCode('');
@@ -33,6 +49,11 @@ const CenterManager = () => {
   };
 
   const handleAddOrUpdateCenter = async () => {
+    if (!authUser) {
+      setError('You must be logged in to manage centers.');
+      return;
+    }
+
     const currentCode = centerCode.trim();
     const currentName = centerName.trim();
     const currentOpCount = operatorCount.trim();
@@ -52,6 +73,8 @@ const CenterManager = () => {
     const centerData = {
       name: currentName,
       count: parseInt(currentOpCount),
+      createdBy: authUser.uid, // Add creator's UID
+      createdByName: getUserDisplayName(authUser), // Add creator's display name
       // code: currentCode // Storing code as a field is redundant if key is code
     };
 
@@ -59,8 +82,10 @@ const CenterManager = () => {
       // If not editing, or if editing and the code (key) has changed, check for code uniqueness
       if (!editingCenterKey || (editingCenterKey && editingCenterKey !== currentCode)) {
         const existingCenterRef = ref(db, `PredefinedCenters/${currentCode}`);
-        const snapshot = await get(existingCenterRef);
-        if (snapshot.exists()) {
+        const existingSnapshot = await get(existingCenterRef);
+        // For non-admins, we also need to ensure they are not trying to use a code that an admin might have globally created.
+        // However, the primary check is for their own scope or global scope if admin.
+        if (existingSnapshot.exists()) {
           setError(`Center Code "${currentCode}" already exists. Choose a unique code.`);
           return;
         }
@@ -68,7 +93,11 @@ const CenterManager = () => {
 
       // If editing and the code (key) changed, remove the old entry
       if (editingCenterKey && editingCenterKey !== currentCode) {
-        await remove(ref(db, `PredefinedCenters/${editingCenterKey}`));
+        // Ensure user has permission to delete the old entry (owner or admin)
+        const oldCenterData = predefinedCenters[editingCenterKey];
+        if (isAdmin || (oldCenterData && oldCenterData.createdBy === authUser.uid)) {
+          await remove(ref(db, `PredefinedCenters/${editingCenterKey}`));
+        } // else, they can't delete the old one if they don't own it and are not admin
       }
 
       await set(ref(db, `PredefinedCenters/${currentCode}`), centerData);
@@ -81,6 +110,16 @@ const CenterManager = () => {
   };
 
   const handleDeleteCenter = async (codeToDelete) => {
+    if (!authUser) {
+      setError('You must be logged in to delete centers.');
+      return;
+    }
+    const centerToDeleteData = predefinedCenters[codeToDelete];
+    if (!isAdmin && (!centerToDeleteData || centerToDeleteData.createdBy !== authUser.uid)) {
+      setError('You do not have permission to delete this center.');
+      return;
+    }
+
     if (window.confirm(`Are you sure you want to delete center ${codeToDelete}? This action cannot be undone.`)) {
       try {
         await remove(ref(db, `PredefinedCenters/${codeToDelete}`));
@@ -88,7 +127,7 @@ const CenterManager = () => {
         if (editingCenterKey === codeToDelete) {
           clearForm();
         }
-      } catch (e) {
+      } catch (e) { // Added missing brace
         setError('Failed to delete center.');
         console.error(e);
       }
@@ -96,6 +135,12 @@ const CenterManager = () => {
   };
 
   const handleEditCenter = (code) => {
+    if (!authUser) return;
+    const centerToEditData = predefinedCenters[code];
+    if (!isAdmin && (!centerToEditData || centerToEditData.createdBy !== authUser.uid)) {
+      // Non-admin trying to edit a center they don't own
+      return;
+    }
     const centerToEdit = predefinedCenters[code];
     if (centerToEdit) {
       setEditingCenterKey(code);
@@ -146,6 +191,7 @@ const CenterManager = () => {
                 <th>Code</th>
                 <th>Name</th>
                 <th>Operator Count</th>
+                {isAdmin && <th>Added By</th>}
                 <th>Actions</th>
               </tr>
             </thead>
@@ -155,6 +201,7 @@ const CenterManager = () => {
                    <td>{code}</td>
                   <td>{center.name}</td>
                   <td>{center.count}</td>
+                  {isAdmin && <td>{center.createdByName || center.createdBy}</td>}
                   <td>
                     <button onClick={() => handleEditCenter(code)} className="action-button-edit">Edit</button>
                     <button onClick={() => handleDeleteCenter(code)} className="action-button-delete">Delete</button>

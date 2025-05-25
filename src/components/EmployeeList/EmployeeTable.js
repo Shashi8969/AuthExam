@@ -15,6 +15,7 @@ const EmployeeTable = ({
     uniqueReferenceNames,
     selectedReferenceFilter,
     onReferenceFilterChange,
+    isAdmin, // Accept isAdmin prop
     centerAssignments,
 }) => {
     return (
@@ -91,24 +92,26 @@ const EmployeeTable = ({
                             <td>{employee.address}</td>
                             <td>{employee.referenceName || '-'}</td>
                             <td>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onEdit(employee.empId);
-                                    }}
-                                    className="edit-btn"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        onDelete(employee.empId);
-                                    }}
-                                    className="delete-btn"
-                                >
-                                    Delete
-                                </button>
+                                <div className="action-buttons">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onEdit(employee.empId);
+                                        }}
+                                        className="edit-btn"
+                                    >
+                                        Edit
+                                    </button>
+                                    {isAdmin && ( // Conditionally render Delete button
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onDelete(employee.empId);
+                                            }}
+                                            className="delete-btn"
+                                        > Delete </button>
+                                    )}
+                                </div>
                             </td>
                         </tr>
                     ))}

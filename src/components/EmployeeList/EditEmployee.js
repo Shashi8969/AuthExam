@@ -1,9 +1,10 @@
 // src/components/EditEmployee.js
 import React, { useState, useEffect } from 'react'; // Added React for potential JSX needs if not already implied
-import { ref, get, update, onValue, push } from 'firebase/database'; // Added onValue and push
+import { ref, get, update, onValue, push, query, orderByChild, equalTo } from 'firebase/database'; // Added query, orderByChild, equalTo
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { db, storage } from '../../config/firebase';
 import FileUpload from '../EmployeeForm/FileUpload';
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 
 const EditEmployee = ({ employeeId, onClose }) => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ const EditEmployee = ({ employeeId, onClose }) => {
   const [rawReferenceNames, setRawReferenceNames] = useState({});
   const [makeReferencable, setMakeReferencable] = useState(false);
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const { user: authUser, isAdmin } = useAuth(); // Get user and isAdmin status
 
   // Fetch employee data and reference names
   useEffect(() => {
@@ -41,18 +43,31 @@ const EditEmployee = ({ employeeId, onClose }) => {
         setLoading(false);
       }
     };
+
     const fetchReferenceNames = () => {
-      const referenceNamesRef = ref(db, 'ReferenceNames');
-      const unsubscribe = onValue(referenceNamesRef, (snapshot) => {
+      if (!authUser && !isAdmin) return () => {}; // No user and not admin, do nothing
+
+      let queryRef;
+      if (isAdmin) {
+        queryRef = ref(db, 'ReferenceNames'); // Admin sees all
+      } else if (authUser) {
+        queryRef = query(ref(db, 'ReferenceNames'), orderByChild('createdBy'), equalTo(authUser.uid)); // User sees their own
+      } else {
+        return () => {}; // Should not happen if authUser check above is correct
+      }
+
+      const unsubscribe = onValue(queryRef, (snapshot) => {
         const data = snapshot.val();
+        const loadedReferences = {};
+        const optionsArray = [];
         if (data) {
-          const optionsArray = Object.values(data).map(name => ({ value: name, label: name }));
-          setReferenceNameOptions([{ value: '', label: 'Select a Reference' }, ...optionsArray]);
-          setRawReferenceNames(data);
-        } else {
-          setReferenceNameOptions([{ value: '', label: 'Select a Reference' }]);
-          setRawReferenceNames({});
+          Object.keys(data).forEach(key => {
+            loadedReferences[key] = { ...data[key], id: key };
+            optionsArray.push({ value: data[key].name, label: data[key].name });
+          });
         }
+        setReferenceNameOptions([{ value: '', label: 'Select a Reference' }, ...optionsArray.sort((a,b) => a.label.localeCompare(b.label))]);
+        setRawReferenceNames(loadedReferences);
       });
       return unsubscribe;
     };
@@ -63,16 +78,21 @@ const EditEmployee = ({ employeeId, onClose }) => {
     return () => {
       unsubscribeReferences();
     };
-  }, [employeeId]);
+  }, [employeeId, authUser, isAdmin]);
 
   // Effect to set initial 'makeReferencable' state once both employee data and reference names are loaded
   useEffect(() => {
-    if (initialDataLoaded && formData.name && Object.keys(rawReferenceNames).length > 0) {
-      if (Object.values(rawReferenceNames).includes(formData.name)) {
+    if (initialDataLoaded && formData.name && authUser && Object.keys(rawReferenceNames).length > 0) {
+      // Check if formData.name exists in the current user's reference names
+      const userReferences = Object.values(rawReferenceNames).filter(refObj => refObj.createdBy === authUser.uid);
+      if (userReferences.some(refObj => refObj.name === formData.name)) {
         setMakeReferencable(true);
+      } else {
+        setMakeReferencable(false); // Explicitly set if not found for the user
       }
     }
-  }, [initialDataLoaded, formData.name, rawReferenceNames]);
+  }, [initialDataLoaded, formData.name, rawReferenceNames, authUser]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,15 +130,28 @@ const EditEmployee = ({ employeeId, onClose }) => {
 
       await update(employeeRef, dataToUpdate);
 
-      if (makeReferencable && formData.name && formData.name.trim() !== '') {
-        const nameExists = Object.values(rawReferenceNames).includes(formData.name.trim());
-        if (!nameExists) {
+      // Allow any authenticated user to make their employee a reference for themselves
+      if (makeReferencable && formData.name && formData.name.trim() !== '' && authUser) {
+        const newRefName = formData.name.trim();
+        let nameExistsForUser = false;
+
+        // Check if this name already exists in the current user's reference names
+        const userReferences = Object.values(rawReferenceNames).filter(refObj => refObj.createdBy === authUser.uid);
+        nameExistsForUser = userReferences.some(refObj => refObj.name === newRefName);
+
+        if (!nameExistsForUser) {
           const referenceNamesDbRef = ref(db, 'ReferenceNames');
-          await push(referenceNamesDbRef, formData.name.trim());
-          // No need to update local reference names state here as onValue will do it
+          await push(referenceNamesDbRef, {
+            name: newRefName,
+            createdBy: authUser.uid,
+            // timestamp: serverTimestamp() // Optional: for tracking when created
+          });
+          // onValue listener for reference names will update the dropdown automatically
+        } else {
+          // Optional: Notify user if the reference name already exists for them
+          // console.log(`Reference name "${newRefName}" already exists for you.`);
         }
       }
-
       alert('Employee updated successfully!');
       onClose();
     } catch (error) {
@@ -198,9 +231,10 @@ const EditEmployee = ({ employeeId, onClose }) => {
             </select>
           </div>
 
+          {/* "Make referencable" option available to all users for their own employees */}
           <div className="form-group">
             <label htmlFor="makeReferencableEdit" style={{ display: 'flex', alignItems: 'center' }}>
-              Make this person a referencable option?
+              Make this person a referencable option for you?
               <input
                 type="checkbox"
                 id="makeReferencableEdit"
@@ -211,7 +245,6 @@ const EditEmployee = ({ employeeId, onClose }) => {
               />
             </label>
           </div>
-
           <div className="form-group">
             <label>Profile Image:</label>
             <FileUpload 

@@ -1,6 +1,6 @@
 // src/components/EmployeeList.js
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { onValue, ref, remove, push } from 'firebase/database'; // Added push
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { onValue, ref, remove, push, query, orderByChild, equalTo, serverTimestamp } from 'firebase/database'; // Added query, orderByChild, equalTo, serverTimestamp
 import { db } from '../../config/firebase';
 import { ref as dbRef } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +24,7 @@ const EmployeeList = () => {
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
-  const { user: currentUser, loading: authLoading } = useAuth();
+  const { user: currentUser, isAdmin, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [selectedOperators, setSelectedOperators] = useState([]);
@@ -45,6 +45,7 @@ const EmployeeList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10); // Default items per page
   const [selectedReferenceFilter, setSelectedReferenceFilter] = useState(''); // State for reference filter
+  const [userReferenceNames, setUserReferenceNames] = useState([]); // For the filter dropdown
 
   useEffect(() => {
     if (!authLoading && !currentUser) {
@@ -53,11 +54,22 @@ const EmployeeList = () => {
       return;
     }
 
+    let employeesQuery;
+    if (isAdmin) {
+      employeesQuery = ref(db, 'Employees');
+    } else if (currentUser) {
+      employeesQuery = query(ref(db, 'Employees'), orderByChild('createdBy'), equalTo(currentUser.uid));
+    } else {
+      // No user, or not admin and no specific query, clear employees and stop loading
+      setEmployees([]);
+      setLoading(false);
+      return;
+    }
 
-    const unsubscribe = onValue(ref(db, 'Employees'), (snapshot) => {
+    const unsubscribeEmployees = onValue(employeesQuery, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const employeesArray = Object.keys(data).map(key => Employee.fromFirebase({ ...data[key], empId: key }));
+        const employeesArray = Object.keys(data).map(key => Employee.fromFirebase({ ...data[key], empId: key, createdBy: data[key].createdBy }));
         setEmployees(employeesArray);
       } else {
         setEmployees([]);
@@ -65,8 +77,35 @@ const EmployeeList = () => {
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [authLoading, currentUser, navigate]);
+    return () => {
+      unsubscribeEmployees();
+    };
+  }, [authLoading, currentUser, navigate, isAdmin]);
+
+  // Effect to fetch reference names for the filter dropdown
+  useEffect(() => {
+    if (!currentUser && !isAdmin) return; // No user and not admin, do nothing
+
+    let queryRef;
+    if (isAdmin) {
+      queryRef = ref(db, 'ReferenceNames'); // Admin sees all
+    } else if (currentUser) {
+      queryRef = query(ref(db, 'ReferenceNames'), orderByChild('createdBy'), equalTo(currentUser.uid)); // User sees their own
+    } else {
+      return; // Should not happen
+    }
+
+    const unsubscribeReferences = onValue(queryRef, (snapshot) => {
+      const data = snapshot.val();
+      const namesArray = [];
+      if (data) {
+        Object.values(data).forEach(refObj => namesArray.push(refObj.name));
+      }
+      // Add "All" option and sort, removing duplicates
+      setUserReferenceNames(['', ...Array.from(new Set(namesArray)).sort()]);
+    });
+    return () => unsubscribeReferences();
+  }, [currentUser, isAdmin]);
 
   // Effect to save centerAssignments to localStorage whenever it changes
   useEffect(() => {
@@ -101,15 +140,6 @@ const EmployeeList = () => {
       acc[employee.empId] = employee;
       return acc;
     }, {});
-  }, [employees]);
-
-  const uniqueReferenceNames = useMemo(() => {
-    const references = new Set(
-      employees
-        .map(emp => emp.referenceName)
-        .filter(Boolean) // Remove null, undefined, or empty strings
-    );
-    return ['', ...Array.from(references).sort()]; // Add an empty string for "All" and sort
   }, [employees]);
 
   const totalBiometricOperatorsCount = useMemo(() => {
@@ -210,11 +240,16 @@ const EmployeeList = () => {
   };
 
   const deleteEmployee = (employeeId) => {
+    if (!isAdmin) {
+      alert("You do not have permission to delete employees.");
+      return;
+    }
     const confirmDelete = window.confirm("Are you sure you want to delete this employee?");
     if (confirmDelete) {
       remove(dbRef(db, `Employees/${employeeId}`))
         .then(() => {
-          // console.log("Employee deleted successfully"); // Optional: keep for debugging if needed
+          // Optionally, remove from centerAssignments if present
+          setCenterAssignments(prev => { const newAssignments = {...prev}; delete newAssignments[employeeId]; return newAssignments; });
         })
         .catch((error) => {
           console.error("Error deleting employee:", error);
@@ -461,7 +496,8 @@ const EmployeeList = () => {
     const savedListData = {
       name: listName || `Unnamed List - ${Date.now()}`, // Default name if prompt is empty
       timestamp: Date.now(),
-      assignments: { ...centerAssignments } // Save a copy of current assignments
+      assignments: { ...centerAssignments }, // Save a copy of current assignments
+      createdBy: currentUser ? currentUser.uid : 'unknown_user' // Associate with user
     };
 
     try {
@@ -474,7 +510,7 @@ const EmployeeList = () => {
       console.error('Error saving assignment list:', error);
       alert('Failed to save assignment list. Please try again.');
     }
-  }, [centerAssignments]); // Include dependencies for useCallback
+  }, [centerAssignments, currentUser]); // Include dependencies for useCallback
 
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -549,10 +585,11 @@ const EmployeeList = () => {
           onDelete={deleteEmployee}
           onOperatorSelect={handleOperatorSelect}
           selectedOperators={selectedOperators}
-          uniqueReferenceNames={uniqueReferenceNames}
+          uniqueReferenceNames={userReferenceNames} // Use fetched reference names
           selectedReferenceFilter={selectedReferenceFilter}
           onReferenceFilterChange={handleReferenceFilterChange}
           onDeselectAll={handleDeselectAllOperators} // Pass the new handler
+          isAdmin={isAdmin} // Pass isAdmin prop
           centerAssignments={centerAssignments}
         />
                 <div className="pagination-controls-container">

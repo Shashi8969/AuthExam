@@ -4,10 +4,11 @@ import useForm from '../../hooks/useForm';
 import FileUpload from './FileUpload';
 import { formFields as initialFormFieldsConfig } from '../../constants/formFields'; // Renamed for clarity
 import { imageUploadFields } from '../../constants/imageUploadFields';
-import { ref, onValue, push, set, query, orderByChild, equalTo, get } from 'firebase/database'; // Import Firebase functions
+import { ref, onValue, push, set, query, orderByChild, equalTo, get, serverTimestamp } from 'firebase/database'; // Import Firebase functions, added serverTimestamp
 import Employee from '../../models/Employee'; // Import Employee model
 import './EmployeeForm.css'; // Import the new CSS file
 import { db } from '../../config/firebase'; // Your Firebase configuration
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 
 // Helper to generate a unique key for form sessions or new entities
 const generateUniqueKey = () => push(ref(db, '_tempKeys')).key; // Using a dummy path for key generation
@@ -18,6 +19,7 @@ const EmployeeForm = () => {
   const [makeReferencable, setMakeReferencable] = useState(false);
   // This ID is used for grouping uploaded files for a new, unsaved employee.
   const [formSessionId, setFormSessionId] = useState(null);
+  const { user: authUser, isAdmin } = useAuth(); // Get user and isAdmin status
 
   const {
     formData,
@@ -36,20 +38,34 @@ const EmployeeForm = () => {
   }, []);
 
   useEffect(() => {
-    const referenceNamesRef = ref(db, 'ReferenceNames');
-    const unsubscribe = onValue(referenceNamesRef, (snapshot) => {
+    if (!authUser && !isAdmin) return () => {}; // No user and not admin, do nothing for references
+
+    let queryRef;
+    if (isAdmin) {
+      queryRef = ref(db, 'ReferenceNames'); // Admin sees all
+    } else if (authUser) {
+      queryRef = query(ref(db, 'ReferenceNames'), orderByChild('createdBy'), equalTo(authUser.uid)); // User sees their own
+    } else {
+      setReferenceNameOptions([{ value: '', label: 'Select a Reference' }]);
+      setRawReferenceNames({});
+      return () => {}; // Should not happen if authUser check above is correct
+    }
+
+    const unsubscribe = onValue(queryRef, (snapshot) => {
       const data = snapshot.val();
+      const loadedReferences = {};
+      const optionsArray = [];
       if (data) {
-        const optionsArray = Object.values(data).map(name => ({ value: name, label: name }));
-        setReferenceNameOptions([{ value: '', label: 'Select a Reference' }, ...optionsArray]);
-        setRawReferenceNames(data);
-      } else {
-        setReferenceNameOptions([{ value: '', label: 'Select a Reference' }]);
-        setRawReferenceNames({});
+        Object.keys(data).forEach(key => {
+          loadedReferences[key] = { ...data[key], id: key }; // Store full object with ID
+          optionsArray.push({ value: data[key].name, label: data[key].name });
+        });
       }
+      setReferenceNameOptions([{ value: '', label: 'Select a Reference' }, ...optionsArray.sort((a,b) => a.label.localeCompare(b.label))]);
+      setRawReferenceNames(loadedReferences); // Store the fetched objects
     });
     return () => unsubscribe();
-  }, []);
+  }, [authUser, isAdmin]);
 
   // Dynamically build formFields configuration based on state
   const formFields = useMemo(() => {
@@ -73,11 +89,16 @@ const EmployeeForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.addharNo || formData.addharNo.trim() === '') {
+    if (!authUser) {
+      setError(new Error('You must be logged in to add an employee.'));
+      return;
+    }
+    // Ensure addharNo is treated as a string for .trim()
+    const aadharNumber = String(formData.addharNo || '').trim();
+    if (!aadharNumber) {
         setError(new Error('Aadhar number is required.'));
         return;
     }
-
     setLoading(true);
     setError(null); // Clear any previous errors
 
@@ -85,7 +106,7 @@ const EmployeeForm = () => {
       // 1. Check for duplicate Aadhar number
       const aadharQuery = query(ref(db, 'Employees'), orderByChild('addharNo'), equalTo(formData.addharNo.trim()));
       const aadharSnapshot = await get(aadharQuery);
-
+      
       if (aadharSnapshot.exists()) {
         setError(new Error('Aadhar number already exists. This person may already be registered.'));
         setLoading(false);
@@ -100,7 +121,13 @@ const EmployeeForm = () => {
       const employeeToSave = new Employee({
         ...formData, // Contains text inputs and image URLs
         empId: generatedEmpId,
+        createdBy: authUser.uid, // Set the creator
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
         // isBiometricOperator: true, // Default or from a form field if you add one
+        // Ensure phoneNo and addharNo are stored as strings if that's the model's expectation
+        phoneNo: String(formData.phoneNo || ''),
+        addharNo: String(formData.addharNo || ''),
       });
 
       await set(newEmployeeRef, employeeToSave.toFirebase());
@@ -109,11 +136,17 @@ const EmployeeForm = () => {
       // 3. Add to ReferenceNames if applicable
       if (makeReferencable && formData.name && formData.name.trim() !== '') {
         const trimmedName = formData.name.trim();
-        // Check against rawReferenceNames for existence
-        const nameExists = Object.values(rawReferenceNames).includes(trimmedName);
+        // Check if this name already exists in the current user's reference names
+        let nameExists = false;
+        if (authUser) {
+            const userReferences = Object.values(rawReferenceNames).filter(refObj => refObj.createdBy === authUser.uid);
+            nameExists = userReferences.some(refObj => refObj.name === trimmedName);
+        }
+
         if (!nameExists) {
           const referenceNamesRef = ref(db, 'ReferenceNames');
-          await push(referenceNamesRef, trimmedName);
+          // Save as an object with name and createdBy
+          await push(referenceNamesRef, { name: trimmedName, createdBy: authUser.uid });
         }
       }
 
