@@ -4,6 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// Optional: Log a confirmation or a specific key if needed for debugging
+if (process.env.NODE_ENV === 'development') {
+  console.log("[index.js] Firebase API Key Loaded:", !!process.env.REACT_APP_FIREBASE_API_KEY);
+}
+
+
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

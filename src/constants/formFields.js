@@ -16,7 +16,7 @@ export const formFields = [
   {
     label: 'Aadhar Number',
     name: 'addharNo',
-    type: 'number',
+    type: 'text', // Changed from 'number' to 'text' for better string handling
     required: true,
     pattern: '^[0-9]{12}$',
     title: 'Please enter a valid 12-digit Aadhar number.',

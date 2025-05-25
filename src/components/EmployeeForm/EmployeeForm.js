@@ -103,12 +103,20 @@ const EmployeeForm = () => {
     setError(null); // Clear any previous errors
 
     try {
-      // 1. Check for duplicate Aadhar number
-      const aadharQuery = query(ref(db, 'Employees'), orderByChild('addharNo'), equalTo(formData.addharNo.trim()));
-      const aadharSnapshot = await get(aadharQuery);
-      
-      if (aadharSnapshot.exists()) {
-        setError(new Error('Aadhar number already exists. This person may already be registered.'));
+      // 1. Check for duplicate Aadhar number within the current user's employees
+      const userEmployeesQuery = query(ref(db, 'Employees'), orderByChild('createdBy'), equalTo(authUser.uid));
+      const userEmployeesSnapshot = await get(userEmployeesQuery);
+      let duplicateFound = false;
+      if (userEmployeesSnapshot.exists()) {
+        userEmployeesSnapshot.forEach(childSnapshot => {
+          const employee = childSnapshot.val();
+          if (employee.addharNo && employee.addharNo.trim() === aadharNumber) {
+            duplicateFound = true;
+          }
+        });
+      }
+      if (duplicateFound) {
+        setError(new Error('Aadhar number already exists in your records. This person may already be registered.'));
         setLoading(false);
         return;
       }
@@ -130,7 +138,15 @@ const EmployeeForm = () => {
         addharNo: String(formData.addharNo || ''),
       });
 
-      await set(newEmployeeRef, employeeToSave.toFirebase());
+      const dataToSave = employeeToSave.toFirebase();
+      console.log('[EmployeeForm] Auth User for submission:', authUser);
+      console.log('[EmployeeForm] Data being saved to Firebase:', dataToSave);
+
+      if (!dataToSave.createdBy || dataToSave.createdBy !== authUser.uid) {
+        console.error("[EmployeeForm] CRITICAL: 'createdBy' field is missing or incorrect in the data to save!", dataToSave);
+        throw new Error("'createdBy' field is missing or incorrect. Cannot save employee.");
+      }
+      await set(newEmployeeRef, dataToSave);
       alert('Employee added successfully!');
 
       // 3. Add to ReferenceNames if applicable

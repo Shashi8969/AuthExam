@@ -32,7 +32,13 @@ const EditEmployee = ({ employeeId, onClose }) => {
         const employeeRef = ref(db, `Employees/${employeeId}`);
         const snapshot = await get(employeeRef);
         if (snapshot.exists()) {
-          setFormData(snapshot.val());
+          const employeeData = snapshot.val();
+          // Ensure phoneNo and addharNo are strings in the form state
+          setFormData({
+            ...employeeData,
+            phoneNo: String(employeeData.phoneNo || ''),
+            addharNo: String(employeeData.addharNo || ''),
+          });
           // Check if current employee's name is a reference to set initial toggle state
           // This check will be refined in the combined useEffect below
         }
@@ -122,10 +128,11 @@ const EditEmployee = ({ employeeId, onClose }) => {
     try {
       const employeeRef = ref(db, `Employees/${employeeId}`);
       // Convert phoneNo and addharNo to numbers before updating
+      // Ensure they are strings for Firebase
       const dataToUpdate = {
         ...formData,
-        phoneNo: formData.phoneNo ? Number(formData.phoneNo) : null,
-        addharNo: formData.addharNo ? Number(formData.addharNo) : null,
+        phoneNo: String(formData.phoneNo || '').trim(),
+        addharNo: String(formData.addharNo || '').trim(),
       };
 
       await update(employeeRef, dataToUpdate);
