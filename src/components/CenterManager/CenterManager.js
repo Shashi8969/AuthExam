@@ -104,7 +104,12 @@ const CenterManager = () => {
       setSuccess(editingCenterKey ? 'Center updated successfully!' : 'Center added successfully!');
       clearForm();
     } catch (e) {
-      setError(`Failed to ${editingCenterKey ? 'update' : 'add'} center. ${e.message}`);
+      // Check if the error is likely due to a failed uniqueness check because of read permissions
+      if (e.message && e.message.toLowerCase().includes("permission denied") && (!editingCenterKey || (editingCenterKey && editingCenterKey !== currentCode))) {
+        setError(`Center Code "${currentCode}" might already be in use or is unavailable. Please try a different code.`);
+      } else {
+        setError(`Failed to ${editingCenterKey ? 'update' : 'add'} center. ${e.message}`);
+      } 
       console.error(e);
     }
   };
@@ -162,7 +167,8 @@ const CenterManager = () => {
         {success && <p className="success-message">{success}</p>}
         <div className="form-group">
           <label htmlFor="centerCode">Center Code:</label>
-          <input type="text" id="centerCode" value={centerCode} onChange={(e) => setCenterCode(e.target.value)} placeholder="Unique Center Code (e.g., C001)" />
+          <input type="text" id="centerCode" value={centerCode} onChange={(e) => setCenterCode(e.target.value)} placeholder="Unique Center Code (e.g., C001)"
+            disabled={editingCenterKey && !isAdmin} />
         </div>
         <div className="form-group">
           <label htmlFor="centerName">Center Name:</label>
@@ -196,18 +202,31 @@ const CenterManager = () => {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(predefinedCenters).map(([code, center]) => (
-                <tr key={code}>
-                   <td>{code}</td>
-                  <td>{center.name}</td>
-                  <td>{center.count}</td>
-                  {isAdmin && <td>{center.createdByName || center.createdBy}</td>}
-                  <td>
-                    <button onClick={() => handleEditCenter(code)} className="action-button-edit">Edit</button>
-                    <button onClick={() => handleDeleteCenter(code)} className="action-button-delete">Delete</button>
-                  </td>
-                </tr>
-              ))}
+              {Object.entries(predefinedCenters)
+                .sort(([codeA, centerA], [codeB, centerB]) => {
+                  // Sort by center name if defined, else by code
+                  const nameA = centerA?.name || '';
+                  const nameB = centerB?.name || '';
+                  if (nameA && nameB) {
+                    return nameA.localeCompare(nameB);
+                  }
+                  if (nameA) return -1;
+                  if (nameB) return 1;
+                  // Fallback to code comparison
+                  return codeA.localeCompare(codeB);
+                })
+                .map(([code, center]) => (
+                  <tr key={code}>
+                    <td>{code}</td>
+                    <td>{center.name}</td>
+                    <td>{center.count}</td>
+                    {isAdmin && <td>{center.createdByName || center.createdBy}</td>}
+                    <td>
+                      <button onClick={() => handleEditCenter(code)} className="action-button-edit">Edit</button>
+                      <button onClick={() => handleDeleteCenter(code)} className="action-button-delete">Delete</button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         ) : (
