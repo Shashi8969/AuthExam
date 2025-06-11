@@ -28,11 +28,11 @@ const Footer = () => {
           <h3>Navigation</h3>
           <ul>
             <li><Link to="/">Home</Link></li>
-            <li><Link to="/about">About Us</Link></li>
+            <li><Link to="/">About Us</Link></li>
             {/* Consider adding links to key features or services */}
-            <li><Link to="/features">Features</Link></li>
-            <li><Link to="/how-it-works">How it Works</Link></li>
-            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/">Features</Link></li>
+            <li><Link to="/">How it Works</Link></li>
+            <li><Link to="/">Contact Us</Link></li>
           </ul>
         </div>
 
@@ -40,9 +40,9 @@ const Footer = () => {
         <div className="footer-section resources">
           <h3>Resources</h3>
           <ul>
-            <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-            <li><Link to="/terms-of-service">Terms of Service</Link></li>
-            <li><Link to="/faq">FAQ</Link></li> {/* Added common FAQ link */}
+            <li><Link to="/">Privacy Policy</Link></li>
+            <li><Link to="/">Terms of Service</Link></li>
+            <li><Link to="/">FAQ</Link></li> {/* Added common FAQ link */}
             {/* <li><Link to="/site-map">Site Map</Link></li> Consider if needed */}
           </ul>
         </div>
