@@ -27,10 +27,10 @@ const Footer = () => {
         <div className="footer-section navigation">
           <h3>Navigation</h3>
           <ul>
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/">About Us</Link></li>
+            <li>Home</li>
+            <li>About Us</li>
             {/* Consider adding links to key features or services */}
-            <li><Link to="/">Features</Link></li>
+            <li>Features</li>
             <li><Link to="/">How it Works</Link></li>
             <li><Link to="/">Contact Us</Link></li>
           </ul>
