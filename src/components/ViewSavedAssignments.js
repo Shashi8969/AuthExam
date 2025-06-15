@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ref, onValue, off, remove as firebaseRemove, update as firebaseUpdate } from 'firebase/database'; // Added firebaseRemove and firebaseUpdate
+import { ref, onValue, off, remove as firebaseRemove, update as firebaseUpdate, query, orderByChild, equalTo } from 'firebase/database'; // Added query, orderByChild, equalTo
 import { db } from '../config/firebase';
 import * as XLSX from 'xlsx'; // For Excel export
 import Employee from '../models/Employee'; // Import Employee model
 import { useNavigate } from 'react-router-dom'; // For navigation
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 import './ViewSavedAssignments.css'; // We'll create this CSS file
 
 const ViewSavedAssignments = () => {
@@ -12,7 +13,8 @@ const ViewSavedAssignments = () => {
   const [error, setError] = useState(null);
   const [employeeMap, setEmployeeMap] = useState({});
   const [employeesLoading, setEmployeesLoading] = useState(true);
-    const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); // Initialize useNavigate
+  const { user: currentUser, isAdmin, loading: authLoading } = useAuth(); // Get auth status and isAdmin
 
 
   // State for UI interactions
@@ -29,38 +31,67 @@ const ViewSavedAssignments = () => {
   };
 
   useEffect(() => {
-    const savedListsRef = ref(db, 'SavedAssignmentLists');
-    setLoading(true);
+    if (authLoading) return; // Wait for auth state to resolve
+    if (!currentUser) {
+      setError("Please log in to view saved assignments.");
+      setLoading(false);
+      setEmployeesLoading(false);
+      // Optionally, redirect to login: navigate('/login');
+      return;
+    }
 
-    const listener = onValue(savedListsRef, (snapshot) => {
+    let queryRef;
+    if (isAdmin) {
+      queryRef = ref(db, 'SavedAssignmentLists');
+    } else {
+      // Non-admin users query for lists they created
+      queryRef = query(ref(db, 'SavedAssignmentLists'), orderByChild('createdBy'), equalTo(currentUser.uid));
+    }
+
+    setLoading(true);
+    const listener = onValue(queryRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const listsArray = Object.keys(data).map(key => ({
           id: key,
           ...data[key]
-        })).sort((a, b) => b.timestamp - a.timestamp); // Sort by newest first
+        })).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)); // Sort by newest first, handle missing timestamp
         setSavedLists(listsArray);
       } else {
         setSavedLists([]);
       }
       setLoading(false);
     }, (err) => {
-      console.error("Error fetching saved assignment lists:", err);
+      console.error("Error fetching saved assignment lists:", err); // Log the original Firebase error
       setError("Failed to load saved assignment lists. Please check your connection or database rules.");
       setLoading(false);
     });
 
     // Detach the listener when the component unmounts
-    return () => off(savedListsRef, 'value', listener);
-  }, []);
+    return () => off(queryRef, 'value', listener);
+  }, [currentUser, authLoading, navigate, isAdmin]); // Added isAdmin to dependencies
+
   useEffect(() => {
-    const employeesDbRef = ref(db, 'Employees');
+    if (authLoading || !currentUser) return; // Wait for auth and ensure user exists
+
+    let employeesQueryRef;
+    if (isAdmin) {
+      employeesQueryRef = ref(db, 'Employees');
+    } else {
+      // Non-admins fetch employees they created, to populate names in their lists
+      employeesQueryRef = query(ref(db, 'Employees'), orderByChild('createdBy'), equalTo(currentUser.uid));
+    }
     setEmployeesLoading(true);
-    const unsubscribeEmployees = onValue(employeesDbRef, (snapshot) => {
+    const unsubscribeEmployees = onValue(employeesQueryRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const empMap = Object.keys(data).reduce((acc, key) => {
-          acc[key] = Employee.fromFirebase({ ...data[key], empId: key });
+          // Ensure data[key] is an object before spreading
+          if (typeof data[key] === 'object' && data[key] !== null) {
+            acc[key] = Employee.fromFirebase({ ...data[key], empId: key });
+          } else {
+            console.warn(`Invalid data for employee key ${key}:`, data[key]);
+          }
           return acc;
         }, {});
         setEmployeeMap(empMap);
@@ -69,11 +100,12 @@ const ViewSavedAssignments = () => {
       }
       setEmployeesLoading(false);
     }, (err) => {
-      console.error("Error fetching employees:", err);
+      console.error("Error fetching employees:", err); // Log the original Firebase error
+      // setError("Failed to load employee data."); // You might want a separate error state or append to existing
       setEmployeesLoading(false); // Still set loading to false on error
     });
     return () => unsubscribeEmployees();
-  }, []);
+  }, [currentUser, authLoading, isAdmin]); // Added isAdmin to dependencies
 
   const toggleExpandList = (listId) => {
     setExpandedListId(prevId => (prevId === listId ? null : listId));
@@ -208,8 +240,12 @@ const ViewSavedAssignments = () => {
     return grouped;
   };
 
-  if (loading || employeesLoading) {
+  if (authLoading || loading || employeesLoading) {
     return <div className="loading-assignments">Loading saved assignment lists...</div>;
+  }
+
+  if (!currentUser && !error) { // If not logged in and no specific error set yet
+    return <div className="error-assignments">Please log in to view this page.</div>;
   }
 
   if (error) {

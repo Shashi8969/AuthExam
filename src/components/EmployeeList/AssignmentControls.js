@@ -66,7 +66,7 @@ const AssignmentControls = ({
               const assignment = centerAssignments[operatorId] || { centerCode: '', centerName: '' };
               return (
                 <tr key={operatorId}>
-                  <td>{operator ? operator.name : 'N/A'}</td>
+                  <td>{(operator && operator.name) || 'N/A'}</td>
                   <td>
                     <select
                       value={assignment.centerCode}

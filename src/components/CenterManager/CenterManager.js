@@ -79,37 +79,39 @@ const CenterManager = () => {
     };
 
     try {
-      // If not editing, or if editing and the code (key) has changed, check for code uniqueness
-      if (!editingCenterKey || (editingCenterKey && editingCenterKey !== currentCode)) {
+      let canProceedWithWrite = true;
+
+      // Uniqueness check for the center code:
+      // - Admins can check if a code (new or changed) already exists.
+      // - Non-admins cannot change the code when editing (input is disabled).
+      // - For non-admins ADDING a NEW center, this client-side 'get' check will be permission denied
+      //   if the code path doesn't exist or isn't theirs. So, we skip it for them here
+      //   and rely on database write rules to handle actual creation/conflicts.
+      if (isAdmin && (!editingCenterKey || (editingCenterKey && editingCenterKey !== currentCode))) {
+        // Admin is creating a new center or changing the code of an existing one.
         const existingCenterRef = ref(db, `PredefinedCenters/${currentCode}`);
         const existingSnapshot = await get(existingCenterRef);
-        // For non-admins, we also need to ensure they are not trying to use a code that an admin might have globally created.
-        // However, the primary check is for their own scope or global scope if admin.
         if (existingSnapshot.exists()) {
-          setError(`Center Code "${currentCode}" already exists. Choose a unique code.`);
-          return;
+          setError(`Admin: Center Code "${currentCode}" already exists. Please choose a unique code.`);
+          canProceedWithWrite = false;
         }
       }
 
-      // If editing and the code (key) changed, remove the old entry
-      if (editingCenterKey && editingCenterKey !== currentCode) {
-        // Ensure user has permission to delete the old entry (owner or admin)
-        const oldCenterData = predefinedCenters[editingCenterKey];
-        if (isAdmin || (oldCenterData && oldCenterData.createdBy === authUser.uid)) {
+      if (canProceedWithWrite) {
+        // If an admin is editing and changed the center code, remove the old entry.
+        // Non-admins cannot change the code, so this block is effectively admin-only for code changes.
+        if (isAdmin && editingCenterKey && editingCenterKey !== currentCode) {
           await remove(ref(db, `PredefinedCenters/${editingCenterKey}`));
-        } // else, they can't delete the old one if they don't own it and are not admin
-      }
+        }
 
-      await set(ref(db, `PredefinedCenters/${currentCode}`), centerData);
-      setSuccess(editingCenterKey ? 'Center updated successfully!' : 'Center added successfully!');
-      clearForm();
+        await set(ref(db, `PredefinedCenters/${currentCode}`), centerData);
+        setSuccess(editingCenterKey ? 'Center updated successfully!' : 'Center added successfully!');
+        clearForm();
+      }
     } catch (e) {
-      // Check if the error is likely due to a failed uniqueness check because of read permissions
-      if (e.message && e.message.toLowerCase().includes("permission denied") && (!editingCenterKey || (editingCenterKey && editingCenterKey !== currentCode))) {
-        setError(`Center Code "${currentCode}" might already be in use or is unavailable. Please try a different code.`);
-      } else {
-        setError(`Failed to ${editingCenterKey ? 'update' : 'add'} center. ${e.message}`);
-      } 
+      // Simplified error handling. The detailed permission denied for 'get' is avoided for non-admins.
+      // Any remaining "Permission denied" would likely be from the 'set' or 'remove' if rules are misconfigured.
+      setError(`Failed to ${editingCenterKey ? 'update' : 'add'} center. ${e.message}`);
       console.error(e);
     }
   };

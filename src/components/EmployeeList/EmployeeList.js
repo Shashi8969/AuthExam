@@ -1,6 +1,6 @@
 // src/components/EmployeeList.js
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { onValue, ref, remove, push, query, orderByChild, equalTo, serverTimestamp } from 'firebase/database'; // Added query, orderByChild, equalTo, serverTimestamp
+import { onValue, ref, remove, push, query, orderByChild, equalTo, serverTimestamp, get, update as firebaseUpdate } from 'firebase/database'; // Added get, firebaseUpdate
 import { db } from '../../config/firebase';
 import { ref as dbRef } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
@@ -113,12 +113,27 @@ const EmployeeList = () => {
   }, [centerAssignments]);
 
   useEffect(() => {
-    const centersRef = ref(db, 'PredefinedCenters');
-    const unsubscribeCenters = onValue(centersRef, (snapshot) => {
+    if (authLoading) return; // Wait for auth state
+    // No need to fetch if no user and not admin, though admin might still want to see all
+    // if (!currentUser && !isAdmin) {
+    //   setPredefinedCenters({});
+    //   return;
+    // }
+
+    let centersQuery;
+    if (isAdmin) {
+      centersQuery = ref(db, 'PredefinedCenters'); // Admin sees all
+    } else if (currentUser) {
+      centersQuery = query(ref(db, 'PredefinedCenters'), orderByChild('createdBy'), equalTo(currentUser.uid)); // User sees their own
+    } else {
+      setPredefinedCenters({}); // No user, no centers to show
+      return; // Exit if no query can be formed
+    }
+    const unsubscribeCenters = onValue(centersQuery, (snapshot) => {
       setPredefinedCenters(snapshot.val() || {});
     });
     return () => unsubscribeCenters();
-  }, []);
+  }, [authLoading, currentUser, isAdmin]); // Add dependencies
 
   useEffect(() => {
     const handleScroll = () => {
@@ -480,32 +495,61 @@ const EmployeeList = () => {
   };
 
   const handleSaveAssignmentList = useCallback(async () => {
+    if (!currentUser) {
+      alert("You must be logged in to save lists.");
+      return;
+    }
     if (Object.keys(centerAssignments).length === 0) {
       alert('There are no assignments to save.');
       return;
     }
 
     // Optional: Prompt for a name for this saved list
-    const listName = prompt('Enter a name for this work list (e.g., "BSSC_List"-"RRB_List" ):',
+    const listNameInput = prompt('Enter a name for this work list (e.g., "BSSC_List"-"RRB_List" ):',
       `Operator_List - ${new Date().toLocaleDateString()}`);
 
-    if (listName === null) { // User cancelled the prompt
+    if (listNameInput === null) { // User cancelled the prompt
       return;
     }
+    const listName = listNameInput.trim() || `Operator_List - ${new Date().toLocaleDateString()}`;
 
     const savedListData = {
-      name: listName || `Unnamed List - ${Date.now()}`, // Default name if prompt is empty
+      name: listName,
       timestamp: Date.now(),
       assignments: { ...centerAssignments }, // Save a copy of current assignments
-      createdBy: currentUser ? currentUser.uid : 'unknown_user' // Associate with user
+      createdBy: currentUser.uid
     };
 
     try {
       const savedListsRef = dbRef(db, 'SavedAssignmentLists');
-      await push(savedListsRef, savedListData); // push() generates a unique ID
-      alert(`List saved as "${listName}"`);
+      // Query for lists created by the current user that have the same name
+      const userListsQuery = query(savedListsRef, orderByChild('createdBy'), equalTo(currentUser.uid));
+      const snapshot = await get(userListsQuery);
 
-      alert('Assignment list saved successfully!');
+      let existingListId = null;
+
+      if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+          const listData = childSnapshot.val();
+          if (listData.name === listName) {
+            existingListId = childSnapshot.key;
+          }
+        });
+      }
+
+      if (existingListId) {
+        // Update existing list
+        const listToUpdateRef = dbRef(db, `SavedAssignmentLists/${existingListId}`);
+        await firebaseUpdate(listToUpdateRef, {
+          assignments: savedListData.assignments, // Update assignments
+          timestamp: Date.now() // Update timestamp to now
+        });
+        alert(`List "${listName}" updated successfully.`);
+      } else {
+        // Create new list
+        await push(savedListsRef, savedListData);
+        alert(`List "${listName}" saved successfully.`);
+      }
     } catch (error) {
       console.error('Error saving assignment list:', error);
       alert('Failed to save assignment list. Please try again.');
@@ -637,6 +681,8 @@ const EmployeeList = () => {
         onBulkCenterCodeChange={handleBulkCenterCodeChange}
         onBulkCenterNameChange={handleBulkCenterNameChange}
         onBulkAssign={handleBulkAssign}
+        currentUser={currentUser} // Pass current user
+        isAdmin={isAdmin}         // Pass admin status
         onAssignmentChange={handleAssignmentChange}
       />
 
