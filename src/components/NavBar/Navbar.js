@@ -1,7 +1,8 @@
 // src/components/Navbar.js
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, logOut } from '../../config/firebase';
+import { logOut } from '../../config/firebase'; // auth is not needed directly if using context
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import {
   FaUserCircle,
   FaSignOutAlt,
@@ -20,18 +21,11 @@ import './Navbar.css';
 import '../../App.css';
 
 const Navbar = () => {
-  const [user, setUser] = useState(null);
+  const { user, profileName } = useAuth(); // Get user and profileName from context
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
-    });
-    return unsubscribe;
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,7 +49,11 @@ const Navbar = () => {
     }
   };
 
-  const displayName = user?.displayName || user?.email?.split('@')[0] || 'User';
+  const getFirstName = (fullName) => {
+    if (!fullName || typeof fullName !== 'string') return 'User'; // Basic check for invalid fullName
+    return fullName.split(' ')[0] || 'User'; // Return first part or 'User' if split results in empty
+  };
+  const displayName = getFirstName(profileName); // Use profileName from context
 
   // Helper to close all menus, useful for navigation links
   const closeAllMenus = () => {
