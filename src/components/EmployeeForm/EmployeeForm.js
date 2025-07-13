@@ -38,7 +38,7 @@ const EmployeeForm = () => {
   }, []);
 
   useEffect(() => {
-    if (!authUser && !isAdmin) return () => {}; // No user and not admin, do nothing for references
+    if (!authUser && !isAdmin) return () => { }; // No user and not admin, do nothing for references
 
     let queryRef;
     if (isAdmin) {
@@ -48,7 +48,7 @@ const EmployeeForm = () => {
     } else {
       setReferenceNameOptions([{ value: '', label: 'Select a Reference' }]);
       setRawReferenceNames({});
-      return () => {}; // Should not happen if authUser check above is correct
+      return () => { }; // Should not happen if authUser check above is correct
     }
 
     const unsubscribe = onValue(queryRef, (snapshot) => {
@@ -61,7 +61,7 @@ const EmployeeForm = () => {
           optionsArray.push({ value: data[key].name, label: data[key].name });
         });
       }
-      setReferenceNameOptions([{ value: '', label: 'Select a Reference' }, ...optionsArray.sort((a,b) => a.label.localeCompare(b.label))]);
+      setReferenceNameOptions([{ value: '', label: 'Select a Reference' }, ...optionsArray.sort((a, b) => a.label.localeCompare(b.label))]);
       setRawReferenceNames(loadedReferences); // Store the fetched objects
     });
     return () => unsubscribe();
@@ -96,8 +96,8 @@ const EmployeeForm = () => {
     // Ensure addharNo is treated as a string for .trim()
     const aadharNumber = String(formData.addharNo || '').trim();
     if (!aadharNumber) {
-        setError(new Error('Aadhar number is required.'));
-        return;
+      setError(new Error('Aadhar number is required.'));
+      return;
     }
     setLoading(true);
     setError(null); // Clear any previous errors
@@ -110,7 +110,7 @@ const EmployeeForm = () => {
       if (userEmployeesSnapshot.exists()) {
         userEmployeesSnapshot.forEach(childSnapshot => {
           const employee = childSnapshot.val();
-          if (employee.addharNo && employee.addharNo.trim() === aadharNumber) {
+          if (employee.addharNo && String(employee.addharNo).trim() === aadharNumber) {
             duplicateFound = true;
           }
         });
@@ -155,8 +155,8 @@ const EmployeeForm = () => {
         // Check if this name already exists in the current user's reference names
         let nameExists = false;
         if (authUser) {
-            const userReferences = Object.values(rawReferenceNames).filter(refObj => refObj.createdBy === authUser.uid);
-            nameExists = userReferences.some(refObj => refObj.name === trimmedName);
+          const userReferences = Object.values(rawReferenceNames).filter(refObj => refObj.createdBy === authUser.uid);
+          nameExists = userReferences.some(refObj => refObj.name === trimmedName);
         }
 
         if (!nameExists) {
