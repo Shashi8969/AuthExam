@@ -1,7 +1,7 @@
 // src/components/AuthForm.js
 import { useState, useEffect } from 'react'; // Import useEffect
-import { signUp as firebaseSignUp, logIn,db} from '../../config/firebase'; // Import auth for deleteUser
-import { deleteUser } from 'firebase/auth'; // Import deleteUser
+import { signUp as firebaseSignUp, logIn, db, auth } from '../../config/firebase'; // Import auth for deleteUser and auth object
+import { deleteUser, sendPasswordResetEmail } from 'firebase/auth'; // Import deleteUser and sendPasswordResetEmail
 import { ref, set } from 'firebase/database'; // Import the necessary database functions
 import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
@@ -23,8 +23,12 @@ const AuthForm = ({ type }) => {
   // Determine where to redirect after login/signup
   const from = location.state?.from?.pathname || '/'; // Default to homepage
 
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetMessage, setResetMessage] = useState('');
+  const [resetError, setResetError] = useState('');
 
-   useEffect(() => {
+  useEffect(() => {
     // If auth is not loading and a user is already logged in,
     // redirect them from login/signup pages to the home page.
     if (!authLoading && currentUser) {
@@ -32,6 +36,32 @@ const AuthForm = ({ type }) => {
       navigate('/', { replace: true });
     }
   }, [currentUser, authLoading, navigate]);
+
+  const handleForgotPasswordClick = () => {
+    setIsForgotPassword(true);
+    setError(''); // Clear any existing login errors
+  };
+
+  const handleResetEmailChange = (e) => {
+    setResetEmail(e.target.value);
+    setResetError(''); // Clear any reset email errors
+    setResetMessage(''); // Clear any previous reset messages
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    setResetError('');
+    setResetMessage('');
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, resetEmail);
+      setResetMessage('Password reset link sent to your email address.');
+    } catch (resetError) {
+      setResetError(resetError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -56,8 +86,7 @@ const AuthForm = ({ type }) => {
               phone: phone,
               address: address,
             });
-                        navigate(from, { replace: true });
-
+            navigate(from, { replace: true });
           } catch (dbError) {
             console.error("Error saving user data to database:", dbError);
             // Delete the user if database write fails
@@ -93,109 +122,149 @@ const AuthForm = ({ type }) => {
   if (authLoading || (!authLoading && currentUser)) {
     return <div className="auth-container"><p>Loading...</p></div>; // Or some other loading indicator
   }
-  
+
   return (
-    <div className="auth-container">
+    <div className={`auth-container ${type === 'signup' ? 'signup-page' : 'login-page'}`}>
       <div className="auth-card">
         <div className="auth-header">
-          <h2>{type === 'signup' ? 'Create Account' : 'Welcome Back'}</h2>
-          <p>{type === 'signup' ? 'Sign up to get started' : 'Log in to your account'}</p>
+          <h2>{type === 'signup' ? 'Create Account' : isForgotPassword ? 'Reset Password' : 'Welcome Back'}</h2>
+          <p>
+            {type === 'signup'
+              ? 'Sign up to get started'
+              : isForgotPassword
+              ? 'Enter your email to reset your password'
+              : 'Log in to your account'}
+          </p>
         </div>
 
         {error && <div className="auth-error">{error}</div>}
+        {resetError && <div className="auth-error">{resetError}</div>}
+        {resetMessage && <div className="auth-message">{resetMessage}</div>}
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          {type === 'signup' && (
+        {isForgotPassword ? (
+          <form onSubmit={handleResetPasswordSubmit} className="auth-form">
             <div className="input-group">
-              <FaUser className="input-icon" />
+              <FaEnvelope className="input-icon" />
               <input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                type="email"
+                placeholder="Email Address"
+                value={resetEmail}
+                onChange={handleResetEmailChange}
                 required
               />
             </div>
-          )}
+            <button type="submit" disabled={loading} className="auth-btn">
+              {loading ? 'Sending...' : 'Send Reset Link'}
+              <FaArrowRight className="btn-icon" />
+            </button>
+            <p className="auth-footer-link" onClick={() => setIsForgotPassword(false)}>
+              Back to Login
+            </p>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="auth-form">
+            {type === 'signup' && (
+              <div className="input-group">
+                <FaUser className="input-icon" />
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+            )}
 
-          {type === 'signup' && (
+            {type === 'signup' && (
+              <div className="input-group">
+                <FaPhone className="input-icon" />
+                <input
+                  type="tel"
+                  placeholder="Phone Number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
+            {type === 'signup' && (
+              <div className="input-group">
+                <FaMapMarkerAlt className="input-icon" />
+                <input
+                  type="text"
+                  placeholder="Address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
             <div className="input-group">
-              <FaPhone className="input-icon" />
+              <FaEnvelope className="input-icon" />
               <input
-                type="tel"
-                placeholder="Phone Number"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
-          )}
 
-          {type === 'signup' && (
-            <div className="input-group">
-              <FaMapMarkerAlt className="input-icon" />
-              <input
-                type="text"
-                placeholder="Address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-              />
-            </div>
-          )}
-
-          <div className="input-group">
-            <FaEnvelope className="input-icon" />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <FaLock className="input-icon" />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength="6"
-            />
-          </div>
-
-          {type === 'signup' && (
             <div className="input-group">
               <FaLock className="input-icon" />
               <input
                 type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength="6"
               />
             </div>
-          )}
 
-          <button type="submit" disabled={loading} className="auth-btn">
-            {loading ? 'Processing...' : (
-              <>
-                {type === 'signup' ? 'Sign Up' : 'Login'}
-                <FaArrowRight className="btn-icon" />
-              </>
+            {type === 'signup' && (
+              <div className="input-group">
+                <FaLock className="input-icon" />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength="6"
+                />
+              </div>
             )}
-          </button>
-        </form>
+
+            <button type="submit" disabled={loading} className="auth-btn">
+              {loading ? 'Processing...' : (
+                <>
+                  {type === 'signup' ? 'Sign Up' : 'Login'}
+                  <FaArrowRight className="btn-icon" />
+                </>
+              )}
+            </button>
+
+            {type !== 'signup' && (
+              <p className="auth-footer-link" onClick={handleForgotPasswordClick}>
+                Forgot Password?
+              </p>
+            )}
+          </form>
+        )}
 
         <div className="auth-footer">
           {type === 'signup' ? (
-            <p>Already have an account? <Link to="/login">Login</Link></p>
+            <p>
+              Already have an account? <Link to="/login">Login</Link>
+            </p>
           ) : (
-            <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
+            <p>
+              Don't have an account? <Link to="/signup">Sign up</Link>
+            </p>
           )}
         </div>
       </div>
