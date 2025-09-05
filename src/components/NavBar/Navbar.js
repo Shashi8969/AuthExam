@@ -65,7 +65,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo" onClick={() => setMenuOpen(false)}>
-          <img src="/logo192.png" alt="Logo" className="logo-image" />
+          <img src="/logo.jpg" alt="Logo" className="logo-image" />
           <span className="logo-text">AuthExam</span>
         </Link>
 
