@@ -1,0 +1,101 @@
+[debug] [2025-09-06T06:12:58.819Z] ----------------------------------------------------------------------
+[debug] [2025-09-06T06:12:58.825Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\DELL\AppData\Local\npm-cache\_npx\ba4f1959e38407b5\node_modules\firebase-tools\lib\bin\firebase.js init dataconnect --project employee-manager-a2c73
+[debug] [2025-09-06T06:12:58.826Z] CLI Version:   14.15.2
+[debug] [2025-09-06T06:12:58.826Z] Platform:      win32
+[debug] [2025-09-06T06:12:58.826Z] Node Version:  v20.15.1
+[debug] [2025-09-06T06:12:58.827Z] Time:          Sat Sep 06 2025 11:42:58 GMT+0530 (India Standard Time)
+[debug] [2025-09-06T06:12:58.827Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-06T06:12:58.831Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-09-06T06:12:59.462Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-06T06:12:59.462Z] > authorizing via signed-in user (rishiraj34453@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  D:\Projects\AuthExam
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[debug] [2025-09-06T06:13:00.285Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-09-06T06:13:00.287Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-09-06T06:13:17.817Z] Using project from CLI flag: employee-manager-a2c73
+[debug] [2025-09-06T06:13:17.818Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:17.819Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:17.819Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/employee-manager-a2c73 [none]
+[debug] [2025-09-06T06:13:18.447Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/employee-manager-a2c73 200
+[debug] [2025-09-06T06:13:18.448Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/employee-manager-a2c73 {"projectId":"employee-manager-a2c73","projectNumber":"27079741851","displayName":"Employee Manager","name":"projects/employee-manager-a2c73","resources":{"hostingSite":"employee-manager-a2c73","realtimeDatabaseInstance":"employee-manager-a2c73-default-rtdb"},"state":"ACTIVE","etag":"1_90d181c1-68d2-49c2-a9a8-5f91d9ba5b94"}
+[info] i  Using project employee-manager-a2c73 (Employee Manager) 
+[info] 
+=== Dataconnect Setup
+[debug] [2025-09-06T06:13:18.764Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:18.765Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:18.765Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/employee-manager-a2c73/billingInfo [none]
+[debug] [2025-09-06T06:13:20.499Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/employee-manager-a2c73/billingInfo 200
+[debug] [2025-09-06T06:13:20.500Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/employee-manager-a2c73/billingInfo {"name":"projects/employee-manager-a2c73/billingInfo","projectId":"employee-manager-a2c73","billingAccountName":"billingAccounts/01E4F0-47B21E-2B1B1E","billingEnabled":true}
+[info] i  dataconnect: ensuring required API firebasedataconnect.googleapis.com is enabled... 
+[debug] [2025-09-06T06:13:20.504Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:20.505Z] Checked if tokens are valid: true, expires at: 1757142357833
+[info] i  dataconnect: ensuring required API sqladmin.googleapis.com is enabled... 
+[debug] [2025-09-06T06:13:20.507Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:20.508Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:20.508Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com [none]
+[debug] [2025-09-06T06:13:20.509Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com x-goog-quota-user=projects/employee-manager-a2c73
+[debug] [2025-09-06T06:13:20.513Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com [none]
+[debug] [2025-09-06T06:13:20.513Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com x-goog-quota-user=projects/employee-manager-a2c73
+[debug] [2025-09-06T06:13:22.668Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com 200
+[debug] [2025-09-06T06:13:22.669Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com [omitted]
+[warn] !  dataconnect: missing required API firebasedataconnect.googleapis.com. Enabling now... 
+[debug] [2025-09-06T06:13:22.672Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:22.673Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:22.673Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com:enable [none]
+[debug] [2025-09-06T06:13:22.674Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com:enable x-goog-quota-user=projects/employee-manager-a2c73
+[debug] [2025-09-06T06:13:22.703Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com 200
+[debug] [2025-09-06T06:13:22.704Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com [omitted]
+[warn] !  dataconnect: missing required API sqladmin.googleapis.com. Enabling now... 
+[debug] [2025-09-06T06:13:22.705Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:22.706Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:22.707Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com:enable [none]
+[debug] [2025-09-06T06:13:22.707Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com:enable x-goog-quota-user=projects/employee-manager-a2c73
+[debug] [2025-09-06T06:13:23.264Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com:enable 200
+[debug] [2025-09-06T06:13:23.265Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/firebasedataconnect.googleapis.com:enable [omitted]
+[debug] [2025-09-06T06:13:23.375Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com:enable 200
+[debug] [2025-09-06T06:13:23.376Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/sqladmin.googleapis.com:enable [omitted]
+[debug] [2025-09-06T06:13:33.400Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:33.401Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:13:33.402Z] >>> [apiv2][query] GET https://firebasedataconnect.googleapis.com/v1/projects/employee-manager-a2c73/locations/-/services [none]
+[debug] [2025-09-06T06:13:35.775Z] <<< [apiv2][status] GET https://firebasedataconnect.googleapis.com/v1/projects/employee-manager-a2c73/locations/-/services 200
+[debug] [2025-09-06T06:13:35.776Z] <<< [apiv2][body] GET https://firebasedataconnect.googleapis.com/v1/projects/employee-manager-a2c73/locations/-/services {}
+[info] i  Learn more about Gemini in Firebase and how it uses your data: https://firebase.google.com/docs/gemini-in-firebase#how-gemini-in-firebase-uses-your-data 
+[info] i  dataconnect: ensuring required API cloudaicompanion.googleapis.com is enabled... 
+[debug] [2025-09-06T06:14:37.001Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:14:37.001Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:14:37.002Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/cloudaicompanion.googleapis.com [none]
+[debug] [2025-09-06T06:14:37.002Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/cloudaicompanion.googleapis.com x-goog-quota-user=projects/employee-manager-a2c73
+[debug] [2025-09-06T06:14:37.688Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/cloudaicompanion.googleapis.com 200
+[debug] [2025-09-06T06:14:37.689Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/employee-manager-a2c73/services/cloudaicompanion.googleapis.com [omitted]
+[info] +  dataconnect: required API cloudaicompanion.googleapis.com is enabled 
+[debug] [2025-09-06T06:14:37.703Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:14:37.704Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:14:37.704Z] >>> [apiv2][query] GET https://sqladmin.googleapis.com/v1/projects/employee-manager-a2c73/instances [none]
+[debug] [2025-09-06T06:14:39.098Z] <<< [apiv2][status] GET https://sqladmin.googleapis.com/v1/projects/employee-manager-a2c73/instances 200
+[debug] [2025-09-06T06:14:39.099Z] <<< [apiv2][body] GET https://sqladmin.googleapis.com/v1/projects/employee-manager-a2c73/instances {}
+[debug] [2025-09-06T06:14:39.100Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:14:39.100Z] Checked if tokens are valid: true, expires at: 1757142357833
+[debug] [2025-09-06T06:14:39.101Z] >>> [apiv2][query] GET https://firebasedataconnect.googleapis.com/v1/projects/employee-manager-a2c73/locations [none]
+[debug] [2025-09-06T06:14:41.034Z] <<< [apiv2][status] GET https://firebasedataconnect.googleapis.com/v1/projects/employee-manager-a2c73/locations 200
+[debug] [2025-09-06T06:14:41.035Z] <<< [apiv2][body] GET https://firebasedataconnect.googleapis.com/v1/projects/employee-manager-a2c73/locations {"locations":[{"name":"projects/employee-manager-a2c73/locations/asia-east1","locationId":"asia-east1","displayName":"Taiwan"},{"name":"projects/employee-manager-a2c73/locations/asia-east2","locationId":"asia-east2","displayName":"Hong Kong"},{"name":"projects/employee-manager-a2c73/locations/asia-northeast1","locationId":"asia-northeast1","displayName":"Tokyo"},{"name":"projects/employee-manager-a2c73/locations/asia-northeast2","locationId":"asia-northeast2","displayName":"Osaka"},{"name":"projects/employee-manager-a2c73/locations/asia-northeast3","locationId":"asia-northeast3","displayName":"Seoul"},{"name":"projects/employee-manager-a2c73/locations/asia-south1","locationId":"asia-south1","displayName":"Mumbai"},{"name":"projects/employee-manager-a2c73/locations/asia-southeast1","locationId":"asia-southeast1","displayName":"Singapore"},{"name":"projects/employee-manager-a2c73/locations/asia-southeast2","locationId":"asia-southeast2","displayName":"Jakarta"},{"name":"projects/employee-manager-a2c73/locations/australia-southeast1","locationId":"australia-southeast1","displayName":"Sydney"},{"name":"projects/employee-manager-a2c73/locations/australia-southeast2","locationId":"australia-southeast2","displayName":"Melbourne"},{"name":"projects/employee-manager-a2c73/locations/europe-central2","locationId":"europe-central2","displayName":"Warsaw"},{"name":"projects/employee-manager-a2c73/locations/europe-north1","locationId":"europe-north1","displayName":"Finland"},{"name":"projects/employee-manager-a2c73/locations/europe-southwest1","locationId":"europe-southwest1","displayName":"Madrid"},{"name":"projects/employee-manager-a2c73/locations/europe-west1","locationId":"europe-west1","displayName":"Belgium"},{"name":"projects/employee-manager-a2c73/locations/europe-west2","locationId":"europe-west2","displayName":"London"},{"name":"projects/employee-manager-a2c73/locations/europe-west3","locationId":"europe-west3","displayName":"Frankfurt"},{"name":"projects/employee-manager-a2c73/locations/europe-west4","locationId":"europe-west4","displayName":"Netherlands"},{"name":"projects/employee-manager-a2c73/locations/europe-west6","locationId":"europe-west6","displayName":"Zurich"},{"name":"projects/employee-manager-a2c73/locations/europe-west8","locationId":"europe-west8","displayName":"Milan"},{"name":"projects/employee-manager-a2c73/locations/europe-west9","locationId":"europe-west9","displayName":"Paris"},{"name":"projects/employee-manager-a2c73/locations/me-west1","locationId":"me-west1","displayName":"Tel Aviv"},{"name":"projects/employee-manager-a2c73/locations/northamerica-northeast1","locationId":"northamerica-northeast1","displayName":"Montréal"},{"name":"projects/employee-manager-a2c73/locations/northamerica-northeast2","locationId":"northamerica-northeast2","displayName":"Toronto"},{"name":"projects/employee-manager-a2c73/locations/southamerica-east1","locationId":"southamerica-east1","displayName":"São Paulo"},{"name":"projects/employee-manager-a2c73/locations/southamerica-west1","locationId":"southamerica-west1","displayName":"Santiago"},{"name":"projects/employee-manager-a2c73/locations/us-central1","locationId":"us-central1","displayName":"Iowa"},{"name":"projects/employee-manager-a2c73/locations/us-east1","locationId":"us-east1","displayName":"South Carolina"},{"name":"projects/employee-manager-a2c73/locations/us-east4","locationId":"us-east4","displayName":"Northern Virginia"},{"name":"projects/employee-manager-a2c73/locations/us-south1","locationId":"us-south1","displayName":"Dallas"},{"name":"projects/employee-manager-a2c73/locations/us-west1","locationId":"us-west1","displayName":"Oregon"},{"name":"projects/employee-manager-a2c73/locations/us-west2","locationId":"us-west2","displayName":"Los Angeles"},{"name":"projects/employee-manager-a2c73/locations/us-west3","locationId":"us-west3","displayName":"Salt Lake City"},{"name":"projects/employee-manager-a2c73/locations/us-west4","locationId":"us-west4","displayName":"Las Vegas"}]}

@@ -62,15 +62,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/profile" element={<ProfilePage />} />          
-          {/* Grouped Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/employees" element={<EmployeeList />} />
-            <Route path="/add-employee" element={<EmployeeForm />} />
-            <Route path="/reference-names" element={<ReferenceNameManager />} />
-            <Route path="/admin/manage-centers" element={<CenterManager />} />
-          </Route>
-
           <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route */}
         </Routes>
       </Router>
