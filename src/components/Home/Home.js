@@ -82,7 +82,9 @@ const Home = () => {
           <h2>Why Choose AuthExam?</h2>
           <div className="features-grid">
             <div className="feature-item">
-              <div className="feature-icon"> biometric_icon </div> {/* Replace with actual icon/SVG */}
+              <div className="feature-icon">
+                <img src={process.env.PUBLIC_URL + "/biometric_icon.svg"} alt="Biometrics Icon" />
+                </div> {/* Replace with actual icon/SVG */}
               <h3>Robust Biometrics</h3>
               <p>Multi-factor authentication including fingerprint and facial recognition.</p>
             </div>
