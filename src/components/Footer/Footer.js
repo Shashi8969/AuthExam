@@ -14,13 +14,13 @@ const Footer = () => {
           {/* <img src="/path/to/your/logo.png" alt="AuthExam Logo" className="footer-logo"/> */}
           <h3>AuthExam</h3> {/* Or use logo */}
           <p className="brand-description">Your trusted partner in securing exam integrity through advanced biometric authentication.</p>
-          <div className="social-links">
-            {/* Replace '#' with actual URLs */}
+          {/*<div className="social-links">
+            {/* Replace '#' with actual URLs 
             <a href="#" aria-label="Facebook"><FaFacebook /></a>
             <a href="#" aria-label="Twitter"><FaTwitter /></a>
             <a href="#" aria-label="LinkedIn"><FaLinkedin /></a>
             <a href="#" aria-label="Instagram"><FaInstagram /></a>
-          </div>
+          </div>*/}
         </div>
 
         {/* Section 2: Navigation */}

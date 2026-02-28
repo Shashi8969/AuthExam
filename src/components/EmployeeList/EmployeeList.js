@@ -1,6 +1,6 @@
 // src/components/EmployeeList.js
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { onValue, ref, remove, push, query, orderByChild, equalTo, serverTimestamp, get, update as firebaseUpdate } from 'firebase/database'; // Added get, firebaseUpdate
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { onValue, ref, remove, push, query, orderByChild, equalTo, get, update as firebaseUpdate } from 'firebase/database'; // Added get, firebaseUpdate
 import { db } from '../../config/firebase';
 import { ref as dbRef } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';

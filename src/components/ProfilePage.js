@@ -1,7 +1,7 @@
 // c:/Users/DELL/employee-manager/src/components/ProfilePage.js
 import React, { useState, useEffect } from 'react';
-import { getDatabase, ref, get, update as firebaseUpdate, set as firebaseSet } from "firebase/database";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { ref, get, update as firebaseUpdate, set as firebaseSet } from "firebase/database";
+import { onAuthStateChanged } from "firebase/auth";
 import { db as firebaseDB, auth as firebaseAuth, logOut } from '../config/firebase'; // Import real db, auth and logOut
 
 import './ProfilePage.css';
