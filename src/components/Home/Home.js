@@ -10,14 +10,22 @@ const images = ["/banner1.webp", "/banner2.webp", "/banner3.webp", "/banner4.web
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // LCP FIX: Preload banner1 immediately (before React renders)
+  useEffect(() => {
+    // Preload LCP image instantly
+    const lcpImg = new Image();
+    lcpImg.src = '/banner1.webp';
+    lcpImg.fetchpriority = 'high';
+  }, []);
+
   // UseCallback prevents unnecessary re-renders of the interval
   const nextSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
   }, []);
 
-  const prevSlide = () => {
+ const prevSlide = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(nextSlide, 5000);
@@ -32,9 +40,9 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      {/* Hero Section */}
+      {/* LCP-OPTIMIZED Hero Section */}
       <section className="hero-section">
-        <div className="hero-slider">    
+        <div className="hero-slider">     
           {images.map((src, index) => (
             <div
               className={`hero-slide ${index === currentIndex ? 'active' : ''}`}
@@ -42,6 +50,9 @@ const Home = () => {
               style={{ backgroundImage: `url(${src})` }}
               role="img"
               aria-label={`Exam Security Slide ${index + 1}`}
+              // LCP FIX: fetchpriority="high" on first slide only
+              fetchpriority={index === 0 ? "high" : "auto"}
+              loading={index === 0 ? "eager" : "lazy"}
             />
           ))}
         </div>
