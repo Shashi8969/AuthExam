@@ -5,7 +5,7 @@ import { FaFingerprint, FaRobot, FaShieldAlt, FaSync } from 'react-icons/fa'; //
 import Footer from '../Footer/Footer';
 
 // Use simple absolute paths for public folder assets
-const images = ["/banner1.jpg", "/banner2.jpg", "/banner3.jpg"];
+const images = ["/banner1.webp", "/banner2.webp", "/banner3.webp", "/banner4.webp"];
 
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
