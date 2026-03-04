@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,30 +12,24 @@
 
   <link rel="icon" href="/favicon.ico" />
   <link rel="manifest" href="/manifest.json" />
-  
-    <!-- 1. FIREBASE PRECONNECTS (842ms critical path fix) -->
+
+  <!-- 1. FIREBASE PRECONNECTS (Critical - 842ms fix) -->
   <link rel="preconnect" href="https://employee-manager-a2c73.firebaseapp.com" crossorigin>
   <link rel="preconnect" href="https://www.googleapis.com">
 
-  <!-- 2. LCP HERO IMAGES (Document latency fix) -->
-  <link rel="preload" href="/banner1.webp" as="image" fetchpriority="high">
-  <link rel="preload" href="/banner2.webp" as="image">
-  <link rel="preload" href="/banner3.webp" as="image">
-
-  <!-- 3. ASYNC CSS (1,360ms render blocking fix) -->
+  <!-- 2. ASYNC CSS (1,360ms render blocking fix) -->
   <link rel="preload" href="/assets/index-B1rxW9pB.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="stylesheet" href="/assets/index-B1rxW9pB.css" media="print" onload="this.media='all'">
 
-  <!-- 4. ASYNC GOOGLE FONTS -->
+  <!-- 3. ASYNC GOOGLE FONTS (No warnings) -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  
   <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   </noscript>
 
-  <!-- 5. CRITICAL CSS (Above-fold essentials) -->
+  <!-- 4. CRITICAL CSS (Above-fold) -->
   <style>
     body{font-family:'Inter',sans-serif;margin:0;padding:20px;background:#fff;color:#333;line-height:1.5}
     h1,h2,h3{font-weight:600;margin:1.5rem 0 1rem}
@@ -44,31 +37,15 @@
     .hero-slide{background-size:cover;background-position:center;height:60vh}
   </style>
 
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="google-site-verification" content="3_W7lkxKJ5p5rLBijxuUV8Lmlfh3Wh5fgArV5t_HZ0Y" />
-
-<!-- Add BEFORE closing </head> -->
-<link rel="preconnect" href="https://employee-manager-a2c73.firebaseapp.com" crossorigin>
-<link rel="preconnect" href="https://www.googleapis.com">
-<link rel="preload" href="/banner1.webp" as="image" fetchpriority="high">
-
+  <!-- 5. PREFETCH Hero Images (No console warnings) -->
+  <link rel="prefetch" href="/banner1.webp" as="image">
+  <link rel="prefetch" href="/banner2.webp" as="image">
+  <link rel="prefetch" href="/banner3.webp" as="image">
 </head>
-
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
-  <script type="module" src="/src/index.js"></script>
-  <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+  <script fetchpriority="high" type="module" src="/src/index.js"></script>
 </body>
-
 </html>
