@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /login
+Allow: /signup
+Disallow: /admin/
+Disallow: /profile
+Disallow: /employees
+Disallow: /add-employee
+Disallow: /saved-assignments
+Sitemap: https://authexam.vercel.app/sitemap.xml
