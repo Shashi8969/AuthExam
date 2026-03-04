@@ -4,12 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-// Optional: Log a confirmation or a specific key if needed for debugging
-if (process.env.NODE_ENV === 'development') {
-  console.log("[index.js] Firebase API Key Loaded:", !!process.env.REACT_APP_FIREBASE_API_KEY);
+// 1. Updated for Vite: Changed process.env to import.meta.env
+if (import.meta.env.DEV) {
+  console.log("[index.js] Firebase API Key Loaded:", !!import.meta.env.VITE_FIREBASE_API_KEY);
 }
-
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,7 +16,4 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
