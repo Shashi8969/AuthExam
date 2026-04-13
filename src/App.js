@@ -13,6 +13,8 @@ import PleaseLoginPage from './pages/PleaseLoginPage'; // Import the new page
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'; // Import the ProtectedRoute component
 import ViewSavedAssignments from './components/ViewSavedAssignments';
 import ProfilePage from './components/ProfilePage';
+import BlogManager from './components/Blog/BlogManager';
+import BlogPublic from './components/Blog/BlogPublic';
 
 
 
@@ -29,6 +31,9 @@ function App() {
            <Route path="/please-login" element={<PleaseLoginPage />} />
           <Route path="/saved-assignments" element={<ViewSavedAssignments />} />
           <Route path="/profile" element={<ProfilePage />} />
+
+          {/* Public blog/notices page */}
+          <Route path="/notices" element={<BlogPublic />} />
           {/* Protected Routes */}
           <Route
             path="/employees"
@@ -59,6 +64,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <CenterManager />
+              </ProtectedRoute>
+            }
+          />
+          {/* Admin-only blog management */}
+          <Route
+            path="/admin/blog"
+            element={
+              <ProtectedRoute>
+                <BlogManager />
               </ProtectedRoute>
             }
           />

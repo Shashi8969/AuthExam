@@ -5,7 +5,6 @@ import { getStorage } from "firebase/storage";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 const firebaseConfig = {
-  // Change process.env.REACT_APP_ to import.meta.env.VITE_
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
@@ -17,14 +16,14 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
-const db = getDatabase(app);
-const storage = getStorage(app);
+export const db = getDatabase(app);
+export const storage = getStorage(app);
 
 // Refs exported for direct use
-const employeesRef = ref(db, 'Employees');
-const referenceNamesRef = ref(db, 'ReferenceNames');
-export { db, storage, employeesRef, referenceNamesRef };
+export const employeesRef = ref(db, 'Employees');
+export const referenceNamesRef = ref(db, 'ReferenceNames');
 
 // Auth functions
 export const signUp = (email, password) => createUserWithEmailAndPassword(auth, email, password);

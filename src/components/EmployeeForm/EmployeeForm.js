@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react'; // Added useMemo
 import useForm from '../../hooks/useForm';
 import FileUpload from './FileUpload';
+import BulkEmployeeUpload from './BulkEmployeeUpload';
 import { formFields as initialFormFieldsConfig } from '../../constants/formFields'; // Renamed for clarity
 import { imageUploadFields } from '../../constants/imageUploadFields';
 import { ref, onValue, push, set, query, orderByChild, equalTo, get, serverTimestamp } from 'firebase/database'; // Import Firebase functions, added serverTimestamp
@@ -17,6 +18,7 @@ const EmployeeForm = () => {
   const [referenceNameOptions, setReferenceNameOptions] = useState([{ value: '', label: 'Loading references...' }]);
   const [rawReferenceNames, setRawReferenceNames] = useState({}); // Store raw data for easier checking
   const [makeReferencable, setMakeReferencable] = useState(false);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
   // This ID is used for grouping uploaded files for a new, unsaved employee.
   const [formSessionId, setFormSessionId] = useState(null);
   const { user: authUser, isAdmin } = useAuth(); // Get user and isAdmin status
@@ -189,8 +191,29 @@ const EmployeeForm = () => {
 
   return (
     <div className="employee-form-container"> {/* Added a container div */}
+      <div className="employee-form-top-bar">
+        <h2 style={{ margin: 0 }}>Add New Operator</h2>
+        <button
+          type="button"
+          className="btn-bulk-upload-trigger"
+          onClick={() => setShowBulkUpload(true)}
+          disabled={loading}
+        >
+          📊 Bulk Upload (Excel)
+        </button>
+      </div>
+
+      {showBulkUpload && (
+        <BulkEmployeeUpload
+          onClose={() => setShowBulkUpload(false)}
+          onSuccess={(count) => {
+            alert(`${count} employee(s) added successfully via bulk upload!`);
+            setShowBulkUpload(false);
+          }}
+        />
+      )}
+
       <form onSubmit={handleSubmit} className="employee-form">
-        <h2>Add New Operator</h2>
 
         {formFields.map((field) => (
           <div key={field.name} className="form-group">

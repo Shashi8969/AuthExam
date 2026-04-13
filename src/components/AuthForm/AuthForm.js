@@ -1,27 +1,24 @@
-// src/components/AuthForm.js
-import { useState, useEffect } from 'react'; // Import useEffect
-import { signUp as firebaseSignUp, logIn, db, auth } from '../../config/firebase'; // Import auth for deleteUser and auth object
-import { deleteUser, sendPasswordResetEmail } from 'firebase/auth'; // Import deleteUser and sendPasswordResetEmail
-import { ref, set } from 'firebase/database'; // Import the necessary database functions
-import { useAuth } from '../../context/AuthContext'; // Import useAuth
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Import useLocation
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './AuthForm.css';
 
 const AuthForm = ({ type }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // For signup
-  const [name, setName] = useState(''); // New state for name
-  const [phone, setPhone] = useState(''); // New state for phone number
-  const [address, setAddress] = useState(''); // New state for address
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
-  const location = useLocation(); // Get location object
-  const { user: currentUser, loading: authLoading } = useAuth(); // Get current user from AuthContext
-  // Determine where to redirect after login/signup
-  const from = location.state?.from?.pathname || '/'; // Default to homepage
+  const location = useLocation();
+  const { user: currentUser, loading: authLoading } = useAuth();
+
+  const from = location.state?.from?.pathname || '/';
 
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
@@ -29,23 +26,20 @@ const AuthForm = ({ type }) => {
   const [resetError, setResetError] = useState('');
 
   useEffect(() => {
-    // If auth is not loading and a user is already logged in,
-    // redirect them from login/signup pages to the home page.
     if (!authLoading && currentUser) {
-      console.log('AuthForm: User already logged in, redirecting to home.');
       navigate('/', { replace: true });
     }
   }, [currentUser, authLoading, navigate]);
 
   const handleForgotPasswordClick = () => {
     setIsForgotPassword(true);
-    setError(''); // Clear any existing login errors
+    setError('');
   };
 
   const handleResetEmailChange = (e) => {
     setResetEmail(e.target.value);
-    setResetError(''); // Clear any reset email errors
-    setResetMessage(''); // Clear any previous reset messages
+    setResetError('');
+    setResetMessage('');
   };
 
   const handleResetPasswordSubmit = async (e) => {
@@ -53,74 +47,72 @@ const AuthForm = ({ type }) => {
     setResetError('');
     setResetMessage('');
     setLoading(true);
+
     try {
+      // Dynamic imports to reduce unused JS on initial load
+      const { getAuth, sendPasswordResetEmail } = await import('firebase/auth');
+      const { app } = await import('../../config/firebase');
+      const auth = getAuth(app);
+      
       await sendPasswordResetEmail(auth, resetEmail);
       setResetMessage('Password reset link sent to your email address.');
-    } catch (resetError) {
-      setResetError(resetError.message);
+    } catch (err) {
+      setResetError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      // Dynamic imports: Only fetch these when user clicks Submit
+      const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser } = await import('firebase/auth');
+      const { getDatabase, ref, set } = await import('firebase/database');
+      const { app } = await import('../../config/firebase');
+      
+      const auth = getAuth(app);
+      const db = getDatabase(app);
+
       if (type === 'signup') {
         if (password !== confirmPassword) {
           setError("Passwords do not match.");
+          setLoading(false);
           return;
         }
-        const userCredential = await firebaseSignUp(email, password);
-        if (userCredential && userCredential.user) {
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        if (userCredential?.user) {
           const userId = userCredential.user.uid;
           try {
             await set(ref(db, 'users/' + userId), {
-              userId: userId,
-              name: name,
-              email: email,
-              phone: phone,
-              address: address,
+              userId, name, email, phone, address,
             });
             navigate(from, { replace: true });
           } catch (dbError) {
-            console.error("Error saving user data to database:", dbError);
-            // Delete the user if database write fails
-            await deleteUser(userCredential.user)
-              .then(() => {
-                console.log("User account deleted due to database error.");
-                setError("Signup failed due to a server issue. Please try again.");
-                // No need to navigate here, as signup failed
-              })
-              .catch((deleteError) => {
-                console.error("Error deleting user account:", deleteError);
-                setError("Signup failed. Please try again. (Could not rollback user creation)");
-              });
+            console.error("Error saving user data:", dbError);
+            await deleteUser(userCredential.user);
+            setError("Signup failed due to a server issue. Please try again.");
           }
         }
       } else {
-        console.log('AuthForm: Attempting Firebase login...');
-        const userCredential = await logIn(email, password);
-        console.log('AuthForm: Firebase login successful. UserCredential:', userCredential);
-        // Navigate to the 'from' location or home page after successful login
+        await signInWithEmailAndPassword(auth, email, password);
         navigate(from, { replace: true });
       }
     } catch (authError) {
-      console.error('AuthForm: Firebase login error:', authError);
+      console.error('Auth Error:', authError);
       setError(authError.message || `An error occurred during ${type}.`);
     } finally {
       setLoading(false);
     }
   };
 
-  // If auth is still loading or user is already logged in (and useEffect will redirect),
-  // you might want to show a loading spinner or null to prevent form flash.
   if (authLoading || (!authLoading && currentUser)) {
-    return <div className="auth-container"><p>Loading...</p></div>; // Or some other loading indicator
+    return <div className="auth-container"><p>Loading...</p></div>;
   }
 
   return (
@@ -164,42 +156,38 @@ const AuthForm = ({ type }) => {
         ) : (
           <form onSubmit={handleSubmit} className="auth-form">
             {type === 'signup' && (
-              <div className="input-group">
-                <FaUser className="input-icon" />
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-            )}
-
-            {type === 'signup' && (
-              <div className="input-group">
-                <FaPhone className="input-icon" />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  required
-                />
-              </div>
-            )}
-
-            {type === 'signup' && (
-              <div className="input-group">
-                <FaMapMarkerAlt className="input-icon" />
-                <input
-                  type="text"
-                  placeholder="Address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  required
-                />
-              </div>
+              <>
+                <div className="input-group">
+                  <FaUser className="input-icon" />
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <FaPhone className="input-icon" />
+                  <input
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-group">
+                  <FaMapMarkerAlt className="input-icon" />
+                  <input
+                    type="text"
+                    placeholder="Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    required
+                  />
+                </div>
+              </>
             )}
 
             <div className="input-group">

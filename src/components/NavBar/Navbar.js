@@ -15,13 +15,15 @@ import {
   FaUsersCog,
   FaSignInAlt,
   FaCaretDown,
+  FaBullhorn,
+  FaNewspaper,
 } from 'react-icons/fa';
 
 import './Navbar.css';
 import '../../App.css';
 
 const Navbar = () => {
-  const { user, profileName } = useAuth(); // Get user and profileName from context
+  const { user, profileName, isAdmin } = useAuth(); // Get user, profileName and isAdmin from context
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -86,6 +88,13 @@ const Navbar = () => {
             </Link>
           </li>
 
+          {/* Notices link visible to everyone */}
+          <li className="nav-item">
+            <Link to="/notices" className="nav-links" onClick={closeAllMenus}>
+              <FaNewspaper style={{ marginRight: '8px' }} /> Notices
+            </Link>
+          </li>
+
           {user && (
             <>
               <li className="nav-item">
@@ -137,6 +146,13 @@ const Navbar = () => {
                         <FaListAlt style={{ marginRight: '8px' }} /> Saved Assignment
                     </Link>
                     </li>
+                    {isAdmin && (
+                      <li>
+                        <Link to="/admin/blog" onClick={closeAllMenus}>
+                          <FaBullhorn style={{ marginRight: '8px' }} /> Manage Blog
+                        </Link>
+                      </li>
+                    )}
                     <li>
                       <button
                         onClick={handleLogout} // handleLogout now also closes menus

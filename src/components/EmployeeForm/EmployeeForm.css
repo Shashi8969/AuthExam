@@ -185,3 +185,41 @@
   border-radius: 4px;
   background-color: #fff;
 }
+
+
+/* Bulk Upload trigger bar */
+.employee-form-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.employee-form-top-bar h2 {
+  text-align: left;
+  margin-bottom: 0 !important;
+}
+
+.btn-bulk-upload-trigger {
+  padding: 0.6rem 1.2rem;
+  background: var(--secondary-color, #10B981);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-bulk-upload-trigger:hover:not(:disabled) {
+  background: var(--secondary-color-darker, #059669);
+}
+
+.btn-bulk-upload-trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
