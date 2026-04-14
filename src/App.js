@@ -15,6 +15,8 @@ import ViewSavedAssignments from './components/ViewSavedAssignments';
 import ProfilePage from './components/ProfilePage';
 import BlogManager from './components/Blog/BlogManager';
 import BlogPublic from './components/Blog/BlogPublic';
+import PendingApprovals from './components/Approvals/PendingApprovals';
+import InvoiceManager from './components/Invoices/InvoiceManager';
 
 
 
@@ -67,12 +69,38 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* Admin-only approvals */}
+          <Route
+            path="/admin/approvals"
+            element={
+              <ProtectedRoute>
+                <PendingApprovals />
+              </ProtectedRoute>
+            }
+          />
           {/* Admin-only blog management */}
           <Route
             path="/admin/blog"
             element={
               <ProtectedRoute>
                 <BlogManager />
+              </ProtectedRoute>
+            }
+          />
+          {/* Admin-only approvals */}
+          <Route
+            path="/admin/approvals"
+            element={
+              <ProtectedRoute>
+                <PendingApprovals />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/invoices"
+            element={
+              <ProtectedRoute>
+                <InvoiceManager />
               </ProtectedRoute>
             }
           />

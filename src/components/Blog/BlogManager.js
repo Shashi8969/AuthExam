@@ -88,9 +88,10 @@ const BlogManager = () => {
       }
       resetForm();
       setTimeout(() => setSuccessMsg(''), 3000);
-    } catch (err) {
-      setError('Failed to save post. Please try again.');
-    }
+    }catch (err) {
+  console.error(err); // 👈 IMPORTANT
+  setError(err.message || 'Failed to save post.');
+}
     setSubmitting(false);
   };
 

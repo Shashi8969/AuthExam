@@ -1,0 +1,88 @@
+{
+  "rules": {
+    "Admin": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && root.child('Admin').child(auth.uid).exists() && $uid === auth.uid"
+      }
+    },
+    "Supervisors": {
+      ".read": "auth != null && root.child('Admin').child(auth.uid).exists()",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('Admin').child(auth.uid).exists())",
+        ".write": "auth != null && root.child('Admin').child(auth.uid).exists()"
+      }
+    },
+    "Employees": {
+      ".indexOn": ["createdBy", "phoneNo", "addharNo"],
+      ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || root.child('Supervisors').child(auth.uid).exists())",
+      "$empId": {
+        ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || root.child('Supervisors').child(auth.uid).exists() || (data.exists() && data.child('createdBy').val() === auth.uid))",
+        ".write": "auth != null && (root.child('Admin').child(auth.uid).exists() || (newData.exists() && !data.exists() && newData.child('createdBy').val() === auth.uid) || (newData.exists() && data.exists() && data.child('createdBy').val() === auth.uid && newData.child('createdBy').val() === auth.uid && newData.child('empId').val() === data.child('empId').val()) || (newData.exists() && data.exists() && root.child('Admin').child(auth.uid).exists()))",
+        ".validate": "newData.hasChildren(['name', 'phoneNo', 'addharNo', 'address', 'createdBy', 'empId']) && newData.child('createdBy').isString() && newData.child('createdBy').val().length > 0 && newData.child('name').isString() && newData.child('phoneNo').isString() && newData.child('addharNo').isString() && newData.child('address').isString() && newData.child('empId').isString()"
+      }
+    },
+    "PendingApprovals": {
+      ".read": "auth != null && root.child('Admin').child(auth.uid).exists()",
+      "$id": {
+        ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (data.exists() && data.child('requestedBy').val() === auth.uid))",
+        ".write": "auth != null && (root.child('Admin').child(auth.uid).exists() || root.child('Supervisors').child(auth.uid).exists() || (data.exists() && data.child('requestedBy').val() === auth.uid))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['employeeId','oldData','newData','requestedBy','requestedAt']) && newData.child('requestedBy').isString())"
+      }
+    },
+    "ReferenceNames": {
+      ".indexOn": ["createdBy"],
+      ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (query.orderByChild === 'createdBy' && query.equalTo === auth.uid))",
+      "$refId": {
+        ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (data.exists() && data.child('createdBy').val() === auth.uid))",
+        ".write": "auth != null && ((root.child('Admin').child(auth.uid).exists()) || (newData.exists() && !data.exists() && newData.child('createdBy').val() === auth.uid) || (newData.exists() && data.exists() && data.child('createdBy').val() === auth.uid && newData.child('createdBy').val() === auth.uid) || (data.exists() && !newData.exists() && data.child('createdBy').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['name', 'createdBy']) && newData.child('name').isString() && newData.child('createdBy').isString() && newData.child('createdBy').val().length > 0"
+      }
+    },
+    "PredefinedCenters": {
+      ".indexOn": ["createdBy"],
+      ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (query.orderByChild === 'createdBy' && query.equalTo === auth.uid))",
+      "$centerCode": {
+        ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (data.exists() && data.child('createdBy').val() === auth.uid))",
+        ".write": "auth != null && (root.child('Admin').child(auth.uid).exists() || (newData.exists() && !data.exists() && newData.child('createdBy').val() === auth.uid) || (newData.exists() && data.exists() && data.child('createdBy').val() === auth.uid && newData.child('createdBy').val() === auth.uid) || (!newData.exists() && data.exists() && data.child('createdBy').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['name', 'count', 'createdBy', 'createdByName']) && newData.child('name').isString() && newData.child('count').isNumber() && newData.child('createdBy').isString() && newData.child('createdBy').val().length > 0 && newData.child('createdByName').isString()"
+      }
+    },
+    "SavedAssignmentLists": {
+      ".indexOn": ["createdBy"],
+      ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (query.orderByChild === 'createdBy' && query.equalTo === auth.uid))",
+      "$listId": {
+        ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (query.orderByChild === 'createdBy' && query.equalTo === auth.uid))",
+        ".write": "auth != null && ((root.child('Admin').child(auth.uid).exists()) || (newData.exists() && !data.exists() && newData.child('createdBy').val() === auth.uid) || (newData.exists() && data.exists() && data.child('createdBy').val() === auth.uid && newData.child('createdBy').val() === auth.uid) || (data.exists() && !newData.exists() && data.child('createdBy').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['name', 'timestamp', 'assignments', 'createdBy']) && newData.child('createdBy').isString() && newData.child('createdBy').val().length > 0 && newData.child('name').isString()"
+      }
+    },
+    "BlogPosts": {
+      ".read": true,
+      "$postId": {
+        ".read": true,
+        ".write": "auth != null && root.child('Admin').child(auth.uid).exists()"
+      },
+      ".write": "auth != null && root.child('Admin').child(auth.uid).exists()"
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('Admin').child(auth.uid).exists())",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.hasChildren(['name', 'email', 'userId', 'phone', 'address']) && newData.child('email').isString() && newData.child('name').isString() && newData.child('userId').isString() && newData.child('phone').isString() && newData.child('address').isString()"
+      }
+    },
+    "Invoices": {
+      ".indexOn": ["createdBy", "createdAt"],
+      ".read": "auth != null && root.child('Admin').child(auth.uid).exists()",
+      "$invoiceId": {
+        ".read": "auth != null && (root.child('Admin').child(auth.uid).exists() || (data.exists() && data.child('createdBy').val() === auth.uid))",
+        ".write": "auth != null && (root.child('Admin').child(auth.uid).exists() || (newData.exists() && newData.child('createdBy').val() === auth.uid) || (data.exists() && data.child('createdBy').val() === auth.uid))"
+      }
+    },
+    "_tempKeys": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}

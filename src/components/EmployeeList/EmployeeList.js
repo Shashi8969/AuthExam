@@ -24,7 +24,7 @@ const EmployeeList = () => {
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
   const [sortColumn, setSortColumn] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
-  const { user: currentUser, isAdmin, loading: authLoading } = useAuth();
+  const { user: currentUser, isAdmin, isSupervisor, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [selectedOperators, setSelectedOperators] = useState([]);
@@ -55,12 +55,13 @@ const EmployeeList = () => {
     }
 
     let employeesQuery;
-    if (isAdmin) {
+    if (isAdmin || isSupervisor) {
+      // Admin and supervisors see ALL employees
       employeesQuery = ref(db, 'Employees');
     } else if (currentUser) {
+      // Regular users see only their own employees
       employeesQuery = query(ref(db, 'Employees'), orderByChild('createdBy'), equalTo(currentUser.uid));
     } else {
-      // No user, or not admin and no specific query, clear employees and stop loading
       setEmployees([]);
       setLoading(false);
       return;
@@ -80,7 +81,7 @@ const EmployeeList = () => {
     return () => {
       unsubscribeEmployees();
     };
-  }, [authLoading, currentUser, navigate, isAdmin]);
+  }, [authLoading, currentUser, navigate, isAdmin, isSupervisor]);
 
   // Effect to fetch reference names for the filter dropdown
   useEffect(() => {
@@ -255,7 +256,7 @@ const EmployeeList = () => {
   };
 
   const deleteEmployee = (employeeId) => {
-    if (!isAdmin) {
+    if (!isAdmin && !isSupervisor) {
       alert("You do not have permission to delete employees.");
       return;
     }

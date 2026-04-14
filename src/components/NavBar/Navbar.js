@@ -1,7 +1,8 @@
 // src/components/Navbar.js
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { logOut } from '../../config/firebase'; // auth is not needed directly if using context
+import { logOut, db } from '../../config/firebase';
+import { ref as dbRef, onValue as dbOnValue } from 'firebase/database'; // auth is not needed directly if using context
 import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import {
   FaUserCircle,
@@ -17,17 +18,31 @@ import {
   FaCaretDown,
   FaBullhorn,
   FaNewspaper,
+  FaBell,
+  FaClipboardCheck,
+  FaFileInvoiceDollar,
 } from 'react-icons/fa';
 
 import './Navbar.css';
 import '../../App.css';
 
 const Navbar = () => {
-  const { user, profileName, isAdmin } = useAuth(); // Get user, profileName and isAdmin from context
+  const { user, profileName, isAdmin, isSupervisor, pendingCount } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+
+  // Count pending approvals for admin badge
+  useEffect(() => {
+    if (!isAdmin || !user) { setPendingCount(0); return; }
+    const appRef = dbRef(db, 'PendingApprovals');
+    const unsub = dbOnValue(appRef, (snap) => {
+      const data = snap.val();
+      setPendingCount(data ? Object.keys(data).length : 0);
+    });
+    return () => unsub();
+  }, [isAdmin, user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -146,10 +161,54 @@ const Navbar = () => {
                         <FaListAlt style={{ marginRight: '8px' }} /> Saved Assignment
                     </Link>
                     </li>
+                    <li>
+                      <Link to="/invoices" onClick={closeAllMenus}>
+                        <FaFileInvoiceDollar style={{ marginRight: '8px' }} /> Invoices
+                      </Link>
+                    </li>
+                    {isAdmin && (
+                      <>
+                        <li>
+                          <Link to="/admin/blog" onClick={closeAllMenus}>
+                            <FaBullhorn style={{ marginRight: '8px' }} /> Manage Blog
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/admin/approvals" onClick={closeAllMenus} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                            <FaBell style={{ marginRight: '8px' }} /> Approvals
+                            {pendingCount > 0 && (
+                              <span style={{
+                                marginLeft: '8px', background: '#ef4444', color: '#fff',
+                                borderRadius: '50%', width: '18px', height: '18px',
+                                fontSize: '0.7rem', fontWeight: '700', display: 'inline-flex',
+                                alignItems: 'center', justifyContent: 'center'
+                              }}>{pendingCount}</span>
+                            )}
+                          </Link>
+                        </li>
+                      </>
+                    )}
+                    {isSupervisor && !isAdmin && (
+                      <li>
+                        <Link to="/employees" onClick={closeAllMenus}>
+                          <FaListAlt style={{ marginRight: '8px' }} /> All Employees
+                        </Link>
+                      </li>
+                    )}
                     {isAdmin && (
                       <li>
-                        <Link to="/admin/blog" onClick={closeAllMenus}>
-                          <FaBullhorn style={{ marginRight: '8px' }} /> Manage Blog
+                        <Link to="/admin/approvals" onClick={closeAllMenus} className="nav-approvals-link">
+                          <FaClipboardCheck style={{ marginRight: '8px' }} /> Approvals
+                          {pendingCount > 0 && (
+                            <span className="nav-approval-badge">{pendingCount}</span>
+                          )}
+                        </Link>
+                      </li>
+                    )}
+                    {isSupervisor && !isAdmin && (
+                      <li>
+                        <Link to="/employees" onClick={closeAllMenus}>
+                          <FaListAlt style={{ marginRight: '8px' }} /> All Operators
                         </Link>
                       </li>
                     )}

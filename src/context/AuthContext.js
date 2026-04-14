@@ -1,70 +1,116 @@
 // src/context/AuthContext.js
 import { createContext, useContext, useEffect, useState } from 'react';
-import { auth, db } from '../config/firebase'; // Import db for Realtime Database
-import { ref, get } from 'firebase/database'; // Import Realtime Database functions
+import { auth, db } from '../config/firebase';
+import { ref, get, query, orderByChild, equalTo } from 'firebase/database';
 
 const AuthContext = createContext();
 
 export function useAuth() {
   return useContext(AuthContext);
 }
+
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [profileName, setProfileName] = useState(''); // To store user's full name
-  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser]   = useState(null);
+  const [isAdmin, setIsAdmin]           = useState(false);
+  const [isSupervisor, setIsSupervisor] = useState(false);
+  const [supervisorData, setSupervisorData] = useState(null); // full supervisor record
+  const [profileName, setProfileName]   = useState('');
+  const [loading, setLoading]           = useState(true);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      // console.log('AuthContext - onAuthStateChanged fired. User object:', user);
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       setCurrentUser(user);
+
       if (user) {
         let fetchedName = '';
+        let detectedAdmin = false;
+        let detectedSupervisor = false;
+        let svData = null;
+
         try {
-          // Check if the user is an admin and fetch their name
-          const adminRef = ref(db, `Admin/${user.uid}`);
-          const adminSnap = await get(adminRef);
-          if (adminSnap.exists()){
-            setIsAdmin(true);
-            const adminData = adminSnap.val();
-            // Admin might have 'userName' (from ProfilePage logic) or 'name'
-            fetchedName = adminData.userName || adminData.name;
-            // console.log('AuthContext - User is admin:', user.uid);
-          } else {
-            setIsAdmin(false);
-            // If not admin, fetch regular user's name
-            const userRef = ref(db, `users/${user.uid}`);
-            const userSnap = await get(userRef);
-            if (userSnap.exists()) {
-              fetchedName = userSnap.val().name;
-            }
-            // console.log('AuthContext - User is NOT admin:', user.uid);
+          // 1. Check Admin
+          const adminSnap = await get(ref(db, `Admin/${user.uid}`));
+          if (adminSnap.exists()) {
+            detectedAdmin = true;
+            const d = adminSnap.val();
+            fetchedName = d.userName || d.name || '';
           }
-        } catch (error) {
-          console.error("AuthContext - Error fetching profile name from DB:", error);
-          // Error in DB fetch, isAdmin might be set based on previous logic or default to false
+
+          // 2. If not admin, check Supervisors table (by uid)
+          if (!detectedAdmin) {
+            const svSnap = await get(ref(db, `Supervisors/${user.uid}`));
+            if (svSnap.exists()) {
+              detectedSupervisor = true;
+              svData = svSnap.val();
+              fetchedName = svData.name || '';
+            }
+          }
+
+          // 3. If not admin or supervisor, check regular users table
+          if (!detectedAdmin && !detectedSupervisor) {
+            const userSnap = await get(ref(db, `users/${user.uid}`));
+            if (userSnap.exists()) {
+              fetchedName = userSnap.val().name || '';
+            }
+          }
+
+          // 4. Auto-detect supervisor: check if user's email/phone matches an Employee record
+          //    (phone stored in users table, matched against Employees.phoneNo OR addharNo)
+          if (!detectedAdmin && !detectedSupervisor) {
+            const userSnap = await get(ref(db, `users/${user.uid}`));
+            if (userSnap.exists()) {
+              const userData = userSnap.val();
+              const userPhone = String(userData.phone || '').trim();
+
+              if (userPhone) {
+                const phoneQuery = query(
+                  ref(db, 'Employees'),
+                  orderByChild('phoneNo'),
+                  equalTo(userPhone)
+                );
+                const phoneSnap = await get(phoneQuery);
+                if (phoneSnap.exists()) {
+                  detectedSupervisor = true;
+                  // Build supervisor data from matched employee record
+                  const empKey = Object.keys(phoneSnap.val())[0];
+                  const empData = phoneSnap.val()[empKey];
+                  svData = {
+                    name: empData.name,
+                    phoneNo: empData.phoneNo,
+                    addharNo: empData.addharNo,
+                    matchedEmpId: empKey,
+                    uid: user.uid,
+                  };
+                  fetchedName = empData.name || fetchedName;
+                }
+              }
+            }
+          }
+
+        } catch (err) {
+          console.error('AuthContext: role detection error', err);
         }
-        // Fallback logic for profileName: DB name > Auth displayName > email prefix > empty string
-        setProfileName(fetchedName || user.displayName || (user.email ? user.email.split('@')[0] : ''));
+
+        setIsAdmin(detectedAdmin);
+        setIsSupervisor(detectedSupervisor);
+        setSupervisorData(svData);
+        setProfileName(
+          fetchedName || user.displayName || (user.email ? user.email.split('@')[0] : '')
+        );
       } else {
         setIsAdmin(false);
-        setProfileName(''); // Clear name when logged out
-        // console.log('AuthContext - No user, isAdmin set to false.');
+        setIsSupervisor(false);
+        setSupervisorData(null);
+        setProfileName('');
       }
+
       setLoading(false);
     });
     return unsubscribe;
   }, []);
 
-  const value = {
-    user: currentUser,
-    isAdmin,
-    profileName, // Provide the fetched profile name
-    loading,
-  };
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user: currentUser, isAdmin, isSupervisor, supervisorData, profileName, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
