@@ -27,7 +27,8 @@ import './Navbar.css';
 import '../../App.css';
 
 const Navbar = () => {
-  const { user, profileName, isAdmin, isSupervisor, pendingCount } = useAuth();
+  const { user, profileName, isAdmin, isSupervisor } = useAuth();
+  const [pendingCount, setPendingCount] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();

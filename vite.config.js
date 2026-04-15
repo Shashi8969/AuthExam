@@ -30,5 +30,8 @@ export default defineConfig({
       },
     },
   },  
-  server: { port: 3000 }
+  server: {
+    port: 3000,
+    historyApiFallback: true,  // Fix direct URL access in dev
+  }
 });

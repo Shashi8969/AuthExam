@@ -10,9 +10,12 @@
 
 # production
 /build
+/dist
 
 # Environment variables
 .env
+.env.*.local
+.firebase
 
 # misc
 .DS_Store
