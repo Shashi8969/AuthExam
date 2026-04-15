@@ -41,15 +41,23 @@ const emptyForm    = ()=>({
   signatureUrl:'', signatureName:'',
   watermarkText:'',
   items:[emptyItem()], payments:[],
+  discountType:'percent',  // 'percent' or 'flat'
+  discountValue:'',
+  taxPercent:'',           // GST/tax %
 });
 
 const fmt  = n=>'₹'+Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2});
 const fmtN = n=>Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2});
 
 const calcBalance = inv=>{
-  const total=(inv.items   ||[]).reduce((s,i)=>s+(Number(i.amount)||0),0);
+  const subtotal=(inv.items   ||[]).reduce((s,i)=>s+(Number(i.amount)||0),0);
+  const dv=Number(inv.discountValue)||0;
+  const discount=inv.discountType==='flat' ? dv : (subtotal*dv/100);
+  const afterDiscount=subtotal-discount;
+  const tax=afterDiscount*(Number(inv.taxPercent)||0)/100;
+  const total=afterDiscount+tax;
   const paid =(inv.payments||[]).reduce((s,p)=>s+(Number(p.amount)||0),0);
-  return {total,paid,balance:total-paid};
+  return {subtotal,discount,tax,total,paid,balance:total-paid};
 };
 const deriveStatus = inv=>{
   if (inv.status==='cancelled') return 'cancelled';
@@ -60,7 +68,7 @@ const deriveStatus = inv=>{
 };
 
 // ── Template renderers ───────────────────────────────────────────────────────
-function TemplateModern({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
+function TemplateModern({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
   return (
     <div className="inv-print-area tmpl-modern">
       <div className="tmpl-modern-bar"/>
@@ -93,13 +101,13 @@ function TemplateModern({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,n
         <span className="tmpl-status-badge" style={{background:sc.bg,color:sc.color}}>{sc.label}</span>
       </div>
       <InvTable inv={inv}/>
-      <InvFooter inv={inv} sc={sc} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint}/>
+      <InvFooter inv={inv} sc={sc} subtotal={subtotal} discount={discount} tax={tax} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint}/>
       {inv.watermarkText&&<div className="tmpl-watermark">{inv.watermarkText}</div>}
     </div>
   );
 }
 
-function TemplateClassic({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
+function TemplateClassic({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
   return (
     <div className="inv-print-area tmpl-classic">
       <div className="tmpl-classic-header">
@@ -129,13 +137,13 @@ function TemplateClassic({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,
         {inv.billedToGST&&<div className="tmpl-sub-c">GSTIN: {inv.billedToGST}</div>}
       </div>
       <InvTable inv={inv} style="classic"/>
-      <InvFooter inv={inv} sc={sc} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="classic"/>
+      <InvFooter inv={inv} sc={sc} subtotal={subtotal} discount={discount} tax={tax} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="classic"/>
       {inv.watermarkText&&<div className="tmpl-watermark">{inv.watermarkText}</div>}
     </div>
   );
 }
 
-function TemplateMinimal({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
+function TemplateMinimal({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
   return (
     <div className="inv-print-area tmpl-minimal">
       <div className="tmpl-minimal-header">
@@ -160,13 +168,13 @@ function TemplateMinimal({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,
         {inv.projectName&&<div className="tmpl-minimal-project">{inv.projectName}</div>}
       </div>
       <InvTable inv={inv} style="minimal"/>
-      <InvFooter inv={inv} sc={sc} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="minimal"/>
+      <InvFooter inv={inv} sc={sc} subtotal={subtotal} discount={discount} tax={tax} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="minimal"/>
       {inv.watermarkText&&<div className="tmpl-watermark">{inv.watermarkText}</div>}
     </div>
   );
 }
 
-function TemplateWatermark({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
+function TemplateWatermark({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
   return (
     <div className="inv-print-area tmpl-watermark-wrap">
       {inv.watermarkText&&<div className="tmpl-wm-stamp">{inv.watermarkText||sc.label.toUpperCase()}</div>}
@@ -192,12 +200,12 @@ function TemplateWatermark({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPa
         <span className="tmpl-status-badge" style={{background:sc.bg,color:sc.color}}>{sc.label}</span>
       </div>
       <InvTable inv={inv} style="watermark"/>
-      <InvFooter inv={inv} sc={sc} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="watermark"/>
+      <InvFooter inv={inv} sc={sc} subtotal={subtotal} discount={discount} tax={tax} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="watermark"/>
     </div>
   );
 }
 
-function TemplateCorporate({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
+function TemplateCorporate({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint}){
   return (
     <div className="inv-print-area tmpl-corp">
       <div className="tmpl-corp-header">
@@ -229,7 +237,7 @@ function TemplateCorporate({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPa
         </div>
       </div>
       <InvTable inv={inv} style="corporate"/>
-      <InvFooter inv={inv} sc={sc} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="corporate"/>
+      <InvFooter inv={inv} sc={sc} subtotal={subtotal} discount={discount} tax={tax} total={total} paid={paid} balance={balance} onEditPay={onEditPay} onDelPay={onDelPay} onAddPay={onAddPay} noprint={noprint} style="corporate"/>
       {inv.watermarkText&&<div className="tmpl-watermark corp">{inv.watermarkText}</div>}
     </div>
   );
@@ -262,7 +270,7 @@ function InvTable({inv,style}){
 }
 
 // ── Shared InvFooter ─────────────────────────────────────────────────────────
-function InvFooter({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint,style}){
+function InvFooter({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,onDelPay,onAddPay,noprint,style}){
   return (
     <>
       <div className={`inv-doc-footer-grid ${style?'fg-'+style:''}`}>
@@ -311,7 +319,9 @@ function InvFooter({inv,sc,total,paid,balance,onEditPay,onDelPay,onAddPay,noprin
         </div>
 
         <div className="inv-doc-totals">
-          <div className="inv-tl"><span>Subtotal</span><span>{fmt(total)}</span></div>
+          <div className="inv-tl"><span>Subtotal</span><span>{fmt(subtotal)}</span></div>
+          {discount>0&&<div className="inv-tl" style={{color:'#dc2626'}}><span>Discount {inv.discountType==='percent'?`(${inv.discountValue}%)`:''}</span><span>− {fmt(discount)}</span></div>}
+          {tax>0&&<div className="inv-tl" style={{color:'#059669'}}><span>Tax / GST ({inv.taxPercent}%)</span><span>+ {fmt(tax)}</span></div>}
           <div className="inv-tl grand"><span>Grand Total</span><span>{fmt(total)}</span></div>
           {paid>0&&<div className="inv-tl paid"><span>Total Paid</span><span>− {fmt(paid)}</span></div>}
           <div className="inv-tl balance" style={{color:balance>0?'#dc2626':'#059669'}}>
@@ -409,8 +419,13 @@ export default function InvoiceManager(){
   };
   const addItem=()=>setForm(f=>({...f,items:[...f.items,emptyItem()]}));
   const removeItem=idx=>setForm(f=>({...f,items:f.items.filter((_,i)=>i!==idx)}));
-  const totalAmount=form.items.reduce((s,i)=>s+(Number(i.amount)||0),0);
-
+// Calculate live totals for the form
+const { 
+  subtotal: formSubtotal, 
+  discount: formDiscount, 
+  tax: formTax, 
+  total: totalAmount 
+} = calcBalance(form);
   // ── Save invoice ──────────────────────────────────────────────────────────
   const handleSave=async()=>{
     if(!form.billedByName.trim()||!form.billedToName.trim()||!form.invoiceNo.trim()){alert('Fill: Invoice No, Billed By, Billed To.');return;}
@@ -659,7 +674,31 @@ export default function InvoiceManager(){
               </table>
             </div>
             <button className="inv-add-item-btn" onClick={addItem}>+ Add Line Item</button>
-            <div className="inv-total-row"><span>Total Amount</span><span className="inv-total-amount">{fmt(totalAmount)}</span></div>
+            <div className="inv-subtotal-block">
+              <div className="inv-subtotal-line">
+                <span>Subtotal</span><span>{fmt(formSubtotal)}</span>
+              </div>
+              <div className="inv-subtotal-line discount-row">
+                <div className="inv-discount-inputs">
+                  <span>Discount</span>
+                  <input className="inv-inline-num" type="number" min="0" value={form.discountValue||''} onChange={e=>setForm(f=>({...f,discountValue:e.target.value}))} placeholder="0"/>
+                  <select className="inv-inline-select" value={form.discountType} onChange={e=>setForm(f=>({...f,discountType:e.target.value}))}>
+                    <option value="percent">%</option>
+                    <option value="flat">₹ flat</option>
+                  </select>
+                </div>
+                <span className="inv-discount-amt" style={{color:'#dc2626'}}>− {fmt(formDiscount)}</span>
+              </div>
+              <div className="inv-subtotal-line">
+                <div className="inv-discount-inputs">
+                  <span>Tax / GST</span>
+                  <input className="inv-inline-num" type="number" min="0" value={form.taxPercent||''} onChange={e=>setForm(f=>({...f,taxPercent:e.target.value}))} placeholder="0"/>
+                  <span className="inv-inline-label">%</span>
+                </div>
+                <span style={{color:'#059669'}}>+ {fmt(formTax)}</span>
+              </div>
+            </div>
+            <div className="inv-total-row"><span>Grand Total</span><span className="inv-total-amount">{fmt(totalAmount)}</span></div>
           </>
         )}
         {formTab==='bank'&&(
@@ -728,7 +767,8 @@ export default function InvoiceManager(){
     const sc=STATUS_CONFIG[inv._derived]||STATUS_CONFIG.pending;
     const tmpl=inv.template||'modern';
 
-    const templateProps={inv,sc,total,paid,balance,
+    const {subtotal,discount,tax}=calcBalance(inv);
+    const templateProps={inv,sc,subtotal,discount,tax,total,paid,balance,
       onEditPay:openEditPayment,onDelPay:i=>setConfirmDelPay(i),onAddPay:openAddPayment,noprint:true};
 
     return(
