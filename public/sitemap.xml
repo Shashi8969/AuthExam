@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://employee-manager-a2c73.web.app/</loc>
+    <loc>https://authexam.vercel.app/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://employee-manager-a2c73.web.app/notices</loc>
+    <loc>https://authexam.vercel.app/notices</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://employee-manager-a2c73.web.app/signup</loc>
+    <loc>https://authexam.vercel.app/signup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://employee-manager-a2c73.web.app/login</loc>
+    <loc>https://authexam.vercel.app/login</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

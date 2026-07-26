@@ -128,12 +128,22 @@ firebase.json         # Firebase Hosting/Database/Storage config
 
 ## Deployment
 
-This project deploys to Firebase Hosting:
+The app is hosted on [Vercel](https://vercel.com) at
+**[authexam.vercel.app](https://authexam.vercel.app)** as a static Vite build
+(`npm run build` producing `dist/`, auto-detected by Vercel's build system).
+
+Firebase is used only for backend services (Authentication, Realtime
+Database, Storage) — not for hosting. Database and Storage security rules
+are deployed straight to those services, independent of where the frontend
+is hosted:
 
 ```bash
-npm run build
-firebase deploy
+firebase deploy --only database,storage
 ```
 
-Hosting config (cache headers, rewrites) lives in `firebase.json`; the
-default project is set in `.firebaserc`.
+The default Firebase project is set in `.firebaserc`. `firebase.json` also
+contains a `hosting` block (cache headers, rewrites) kept for local preview
+via `firebase serve`/`firebase deploy --only hosting`, but production
+traffic is served by Vercel, so keep `authexam.vercel.app` (referenced in
+`index.html`, `robots.txt`, and `sitemap.xml`) in sync if that domain ever
+changes.

@@ -12,4 +12,4 @@ Disallow: /invoices
 Disallow: /saved-assignments
 Disallow: /please-login
 
-Sitemap: https://employee-manager-a2c73.web.app/sitemap.xml
+Sitemap: https://authexam.vercel.app/sitemap.xml
