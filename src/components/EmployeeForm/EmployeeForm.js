@@ -141,11 +141,9 @@ const EmployeeForm = () => {
       });
 
       const dataToSave = employeeToSave.toFirebase();
-      console.log('[EmployeeForm] Auth User for submission:', authUser);
-      console.log('[EmployeeForm] Data being saved to Firebase:', dataToSave);
 
       if (!dataToSave.createdBy || dataToSave.createdBy !== authUser.uid) {
-        console.error("[EmployeeForm] CRITICAL: 'createdBy' field is missing or incorrect in the data to save!", dataToSave);
+        console.error("[EmployeeForm] 'createdBy' field is missing or incorrect in the data to save.");
         throw new Error("'createdBy' field is missing or incorrect. Cannot save employee.");
       }
       await set(newEmployeeRef, dataToSave);

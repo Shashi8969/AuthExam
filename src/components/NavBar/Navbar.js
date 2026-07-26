@@ -18,7 +18,6 @@ import {
   FaCaretDown,
   FaBullhorn,
   FaNewspaper,
-  FaBell,
   FaClipboardCheck,
   FaFileInvoiceDollar,
 } from 'react-icons/fa';
@@ -175,36 +174,14 @@ const Navbar = () => {
                           </Link>
                         </li>
                         <li>
-                          <Link to="/admin/approvals" onClick={closeAllMenus} style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-                            <FaBell style={{ marginRight: '8px' }} /> Approvals
+                          <Link to="/admin/approvals" onClick={closeAllMenus} className="nav-approvals-link">
+                            <FaClipboardCheck style={{ marginRight: '8px' }} /> Approvals
                             {pendingCount > 0 && (
-                              <span style={{
-                                marginLeft: '8px', background: '#ef4444', color: '#fff',
-                                borderRadius: '50%', width: '18px', height: '18px',
-                                fontSize: '0.7rem', fontWeight: '700', display: 'inline-flex',
-                                alignItems: 'center', justifyContent: 'center'
-                              }}>{pendingCount}</span>
+                              <span className="nav-approval-badge">{pendingCount}</span>
                             )}
                           </Link>
                         </li>
                       </>
-                    )}
-                    {isSupervisor && !isAdmin && (
-                      <li>
-                        <Link to="/employees" onClick={closeAllMenus}>
-                          <FaListAlt style={{ marginRight: '8px' }} /> All Employees
-                        </Link>
-                      </li>
-                    )}
-                    {isAdmin && (
-                      <li>
-                        <Link to="/admin/approvals" onClick={closeAllMenus} className="nav-approvals-link">
-                          <FaClipboardCheck style={{ marginRight: '8px' }} /> Approvals
-                          {pendingCount > 0 && (
-                            <span className="nav-approval-badge">{pendingCount}</span>
-                          )}
-                        </Link>
-                      </li>
                     )}
                     {isSupervisor && !isAdmin && (
                       <li>

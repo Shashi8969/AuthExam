@@ -4,7 +4,6 @@ import './AdminProfile.css'; // Import CSS for this component
 import { FaEnvelope, FaUser } from 'react-icons/fa';
 
 const AdminProfile = ({ adminData }) => {
-  console.log("AdminData received by AdminProfile:", adminData); // Add this line
   const adminId = Object.keys(adminData)[0];
   const adminInfo = adminData[adminId];
 

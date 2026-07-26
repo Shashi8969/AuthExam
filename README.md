@@ -1,70 +1,139 @@
-# Getting Started with Create React App
+# AuthExam
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A workforce management platform for field operators: onboarding, ID
+verification, service-center assignment, invoicing, notices, and a
+role-based approval workflow for admins and supervisors.
 
-## Available Scripts
+Built with React 18, React Router, and Firebase (Authentication, Realtime
+Database, Storage), bundled with Vite.
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- **Operator onboarding** &mdash; add field operators with photo ID capture and
+  cropping, phone/Aadhaar validation, and reusable reference names.
+- **Center assignment** &mdash; assign operators to service centers and save
+  assignment lists for reuse (with Excel export).
+- **Invoicing** &mdash; create, template, and track invoices tied to assignments.
+- **Notices/Blog** &mdash; publish public notices; managed by admins.
+- **Approvals** &mdash; supervisor-submitted changes require admin approval
+  before they take effect.
+- **Role-based access** &mdash; separate Admin, Supervisor, and member roles,
+  enforced both in the UI and in Firebase security rules.
+- **Dedicated admin sign-in** &mdash; admins authenticate through `/admin/login`,
+  a route kept separate from the public member login/signup flow.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Tech Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- [React 18](https://react.dev/) + [React Router 7](https://reactrouter.com/)
+- [Vite](https://vitejs.dev/) for dev server and bundling
+- [Firebase](https://firebase.google.com/) (Auth, Realtime Database, Storage)
+- [react-icons](https://react-icons.github.io/react-icons/), [react-image-crop](https://github.com/DominicTobias/react-image-crop)
+- [SheetJS (xlsx)](https://sheetjs.com/) for spreadsheet export
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+- Node.js 18+
+- A Firebase project with Authentication (Email/Password), Realtime Database,
+  and Storage enabled
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git clone <this-repo-url>
+cd AuthExam
+npm install
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Copy `.env.example` to `.env` and fill in your Firebase project's web app
+credentials (Firebase Console > Project Settings > General > Your apps):
 
-### `npm run eject`
+```bash
+cp .env.example .env
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Run the dev server:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+The app runs at `http://localhost:3000`.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Build
 
-## Learn More
+```bash
+npm run build    # production build to dist/
+npm run preview  # preview the production build locally
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Roles & Access
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+| Role       | How it's granted                                   | Access |
+|------------|-----------------------------------------------------|--------|
+| Admin      | A record under `Admin/{uid}` in the Realtime Database | Full access: manage operators, centers, references, invoices, blog/notices, and approve supervisor changes. Signs in at `/admin/login`. |
+| Supervisor | A record under `Supervisors/{uid}`, or auto-detected by matching phone number to an operator record | Can manage their own operators/centers/references; edits to existing records route through admin approval. |
+| Member     | Any signed-up account (`/signup`)                   | Can view public pages (Home, Notices) and their own profile. |
 
-### Code Splitting
+Admins and members both sign in with Firebase Email/Password auth, but through
+separate routes and separate forms: `/admin/login` for admins and `/login`
+for everyone else. Route protection is enforced with `ProtectedRoute`
+(`adminOnly` prop for admin-only pages), and mirrored server-side in
+`database.rules.json` and `storage.rules` so the UI checks are a UX
+convenience, not the security boundary.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Security Notes
 
-### Analyzing the Bundle Size
+- All Firebase credentials are read from environment variables
+  (`VITE_FIREBASE_*`); none are hardcoded in source. See `.env.example`.
+- `database.rules.json` enforces per-node, per-role read/write access and
+  data validation; it is the actual authorization boundary, independent of
+  any client-side role checks.
+- `storage.rules` restricts image uploads to authenticated users, image
+  content types, and a 5 MB size limit. Known limitation: Storage rules
+  cannot query the Realtime Database, so they can't yet distinguish
+  Admin/Supervisor from a plain member account for write access to a given
+  employee's images. Closing that gap requires either mirroring the `Admin`
+  set into Firestore (queryable from Storage rules) or issuing
+  `isAdmin`/`isSupervisor` as Firebase Auth custom claims from a trusted
+  backend (e.g. a Cloud Function), then checking `request.auth.token` in
+  `storage.rules`.
+- Do not commit a real `.env` file, service account keys, or any Firebase
+  Admin SDK credentials to this repository.
+- `react-router-dom` is pinned to `^7.18.1`, which fixes every published
+  advisory except one high-severity CSRF issue scoped to React Router's RSC
+  ("framework mode") server actions
+  ([GHSA-qwww-vcr4-c8h2](https://github.com/advisories/GHSA-qwww-vcr4-c8h2)),
+  not yet patched in any 7.x/8.x release. This app only uses classic
+  client-side routing (`BrowserRouter`, `Routes`, `Link`, `useNavigate`) and
+  never enables RSC/framework mode, so that advisory's attack surface isn't
+  reachable here. Re-check `npm audit` when upgrading this package.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Project Structure
 
-### Making a Progressive Web App
+```
+src/
+  components/     # Feature components (EmployeeForm, EmployeeList, Invoices, Blog, ...)
+  config/         # Firebase initialization (src/config/firebase.js)
+  context/        # AuthContext (current user, role detection)
+  hooks/          # Shared hooks
+  models/         # Data models
+  pages/          # Standalone pages (404, please-login)
+public/           # Static assets, robots.txt, sitemap.xml, manifest.json
+database.rules.json  # Realtime Database security rules
+storage.rules        # Firebase Storage security rules
+firebase.json         # Firebase Hosting/Database/Storage config
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Deployment
 
-### Advanced Configuration
+This project deploys to Firebase Hosting:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+```bash
+npm run build
+firebase deploy
+```
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Hosting config (cache headers, rewrites) lives in `firebase.json`; the
+default project is set in `.firebaserc`.

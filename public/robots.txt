@@ -1,9 +1,15 @@
 User-agent: *
+Allow: /
 Allow: /login
 Allow: /signup
+Allow: /notices
 Disallow: /admin/
 Disallow: /profile
 Disallow: /employees
 Disallow: /add-employee
+Disallow: /reference-names
+Disallow: /invoices
 Disallow: /saved-assignments
-Sitemap: https://authexam.vercel.app/sitemap.xml
+Disallow: /please-login
+
+Sitemap: https://employee-manager-a2c73.web.app/sitemap.xml

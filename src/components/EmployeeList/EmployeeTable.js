@@ -81,7 +81,7 @@ const EmployeeTable = ({
                                         alt={employee.name}
                                         className="thumbnail"
                                         onError={(e) => {
-                                            e.target.src = 'https://www.ncenet.com/wp-content/uploads/2020/04/no-image-png-2.png';
+                                            e.target.src = '/no-image-png-2.webp';
                                         }}
                                     />
                                 )}

@@ -60,7 +60,7 @@ const EmployeeDetails = ({ employeeId, onClose }) => {
               alt={`${employee.name}'s profile`}
               className={styles.largeProfileImage}
               onError={(e) => {
-                e.target.src = 'https://www.ncenet.com/wp-content/uploads/2020/04/no-image-png-2.png';
+                e.target.src = '/no-image-png-2.webp';
               }}
             />
             <a
@@ -94,7 +94,7 @@ const EmployeeDetails = ({ employeeId, onClose }) => {
                     alt="Aadhar Card Front"
                     className={styles.aadharImage}
                     onError={(e) => {
-                      e.target.src = 'https://www.ncenet.com/wp-content/uploads/2020/04/no-image-png-2.png';
+                      e.target.src = '/no-image-png-2.webp';
                     }}
                   />
                   <a
@@ -116,7 +116,7 @@ const EmployeeDetails = ({ employeeId, onClose }) => {
                     alt="Aadhar Card Back"
                     className={styles.aadharImage}
                     onError={(e) => {
-                      e.target.src = 'https://www.ncenet.com/wp-content/uploads/2020/04/no-image-png-2.png';
+                      e.target.src = '/no-image-png-2.webp';
                     }}
                   />
                   <a
