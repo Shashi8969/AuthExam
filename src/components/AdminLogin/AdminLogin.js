@@ -6,6 +6,7 @@ import { get, ref } from 'firebase/database';
 import { auth, db } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { FaEnvelope, FaLock, FaShieldAlt, FaArrowRight } from 'react-icons/fa';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import '../AuthForm/AuthForm.css';
 import './AdminLogin.css';
 
@@ -21,6 +22,8 @@ const AdminLogin = () => {
 
   const navigate = useNavigate();
   const { user, isAdmin, loading } = useAuth();
+
+  useDocumentMeta({ title: 'Admin Sign In', noindex: true });
 
   useEffect(() => {
     if (!loading && user && isAdmin) {

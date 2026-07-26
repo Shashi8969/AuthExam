@@ -4,8 +4,10 @@ import { ref, push, onValue, remove, query, orderByChild, equalTo } from 'fireba
 import { db } from '../../config/firebase';
 import './ReferenceNameManager.css'; // Import the CSS file
 import { useAuth } from '../../context/AuthContext'; // Import useAuth
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 
 const ReferenceNameManager = () => {
+  useDocumentMeta({ title: 'Reference Names', noindex: true });
   const [newReferenceName, setNewReferenceName] = useState('');
   const [referenceNames, setReferenceNames] = useState({});
   const [error, setError] = useState(null);

@@ -363,6 +363,62 @@ h2::after {
     width: 10px;
   }
 }
+/* Latest Notices Section */
+.notices-preview-section {
+  padding: 70px 20px;
+  background-color: var(--bg-white);
+  text-align: center;
+}
+
+.notices-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+  text-align: left;
+}
+
+.notice-preview-card {
+  display: block;
+  background-color: var(--bg-light);
+  border-radius: var(--border-radius-md);
+  padding: 22px;
+  text-decoration: none;
+  color: var(--text-color);
+  box-shadow: var(--box-shadow-light);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notice-preview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-medium);
+}
+
+.notice-preview-date {
+  font-size: 0.8em;
+  color: var(--text-color-light);
+}
+
+.notice-preview-card h3 {
+  font-size: 1.15em;
+  color: var(--secondary-color);
+  margin: 8px 0;
+}
+
+.notice-preview-card p {
+  font-size: 0.95em;
+  color: var(--text-color-light);
+  margin: 0;
+}
+
+.notices-preview-cta {
+  margin-top: 35px;
+}
+
+.notices-preview-cta .cta-button.primary {
+  color: var(--bg-white);
+}
+
 /* Downloadables Section */
 .downloadables-section {
   background-color: var(--bg-white);

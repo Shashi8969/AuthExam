@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ref, onValue, update, remove, serverTimestamp, get } from 'firebase/database';
 import { db } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import './PendingApprovals.css';
 
 const FIELDS = [
@@ -14,6 +15,7 @@ const FIELDS = [
 ];
 
 const PendingApprovals = () => {
+  useDocumentMeta({ title: 'Pending Approvals', noindex: true });
   const { isAdmin } = useAuth();
   const [approvals, setApprovals] = useState([]);
   const [loading, setLoading]     = useState(true);

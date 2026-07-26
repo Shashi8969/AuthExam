@@ -21,6 +21,7 @@ const ViewSavedAssignments = lazy(() => import('./components/ViewSavedAssignment
 const ProfilePage = lazy(() => import('./components/ProfilePage'));
 const BlogManager = lazy(() => import('./components/Blog/BlogManager'));
 const BlogPublic = lazy(() => import('./components/Blog/BlogPublic'));
+const BlogPostDetail = lazy(() => import('./components/Blog/BlogPostDetail'));
 const PendingApprovals = lazy(() => import('./components/Approvals/PendingApprovals'));
 const InvoiceManager = lazy(() => import('./components/Invoices/InvoiceManager'));
 
@@ -40,8 +41,9 @@ function App() {
             <Route path="/saved-assignments" element={<ViewSavedAssignments />} />
             <Route path="/profile" element={<ProfilePage />} />
 
-            {/* Public blog/notices page */}
+            {/* Public blog/notices pages */}
             <Route path="/notices" element={<BlogPublic />} />
+            <Route path="/notices/:slug" element={<BlogPostDetail />} />
 
             {/* Protected Routes (any signed-in member) */}
             <Route

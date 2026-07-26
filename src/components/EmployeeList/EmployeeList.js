@@ -13,9 +13,11 @@ import Employee from '../../models/Employee';
 import EmployeeTable from './EmployeeTable'; // Import new component
 import AssignmentControls from './AssignmentControls'; // Import new component
 import AssignmentPreview from './AssignmentPreview'; // Import new component
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 
 
 const EmployeeList = () => {
+  useDocumentMeta({ title: 'Operators', noindex: true });
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingEmployee, setEditingEmployee] = useState(null);

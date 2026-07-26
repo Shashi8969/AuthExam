@@ -1,13 +1,16 @@
 // src/components/Blog/BlogManager.js
 import React, { useState, useEffect } from 'react';
-import { ref, push, onValue, remove, update, serverTimestamp, get } from 'firebase/database';
+import { ref, push, set, onValue, remove, update, serverTimestamp } from 'firebase/database';
 import { db } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
+import { slugify } from '../../utils/slug';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import './BlogManager.css';
 
 const CATEGORIES = ['Notice', 'Announcement', 'Update', 'General'];
 
 const BlogManager = () => {
+  useDocumentMeta({ title: 'Manage Notices', noindex: true });
   const { user, isAdmin } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,8 +81,11 @@ const BlogManager = () => {
         });
         setSuccessMsg('Post updated successfully!');
       } else {
-        await push(ref(db, 'BlogPosts'), {
+        const newPostRef = push(ref(db, 'BlogPosts'));
+        const slug = `${slugify(form.title)}-${newPostRef.key.slice(-6)}`;
+        await set(newPostRef, {
           ...form,
+          slug,
           createdAt: serverTimestamp(),
           createdBy: user.uid,
           authorName: user.displayName || user.email?.split('@')[0] || 'Admin',

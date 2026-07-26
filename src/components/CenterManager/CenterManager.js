@@ -4,9 +4,11 @@ import { ref, set, onValue, remove, get, query, orderByChild, equalTo } from 'fi
 import { db } from '../../config/firebase';
 import './CenterManager.css'; // Import the CSS file
 import { useAuth } from '../../context/AuthContext'; // Import useAuth
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 
 
 const CenterManager = () => {
+  useDocumentMeta({ title: 'Manage Centers', noindex: true });
   const [centerCode, setCenterCode] = useState('');
   const [centerName, setCenterName] = useState('');
   const [operatorCount, setOperatorCount] = useState('');

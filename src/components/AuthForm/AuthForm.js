@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import './AuthForm.css';
 
 const AuthForm = ({ type }) => {
@@ -19,6 +20,14 @@ const AuthForm = ({ type }) => {
   const { user: currentUser, loading: authLoading } = useAuth();
 
   const from = location.state?.from?.pathname || '/';
+
+  useDocumentMeta({
+    title: type === 'signup' ? 'Sign Up' : 'Login',
+    description: type === 'signup'
+      ? 'Create an AuthExam account to onboard operators and track assignments.'
+      : 'Log in to your AuthExam account.',
+    noindex: true,
+  });
 
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState('');

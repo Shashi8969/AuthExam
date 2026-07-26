@@ -4,6 +4,7 @@ import { ref, push, onValue, update, remove, serverTimestamp } from 'firebase/da
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import './InvoiceManager.css';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -360,6 +361,7 @@ function InvFooter({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,on
 
 // ── Main component ───────────────────────────────────────────────────────────
 export default function InvoiceManager(){
+  useDocumentMeta({ title: 'Invoices', noindex: true });
   const {user,isAdmin}=useAuth();
   const [view,setView]         = useState('list');
   const [invoices,setInvoices] = useState([]);

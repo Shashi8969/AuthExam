@@ -59,6 +59,7 @@
     },
     "BlogPosts": {
       ".read": true,
+      ".indexOn": ["createdAt"],
       "$postId": {
         ".read": true,
         ".write": "auth != null && root.child('Admin').child(auth.uid).exists()"

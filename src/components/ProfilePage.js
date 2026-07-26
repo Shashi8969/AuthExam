@@ -6,8 +6,10 @@ import { db as firebaseDB, auth as firebaseAuth, logOut } from '../config/fireba
 
 import './ProfilePage.css';
 import { useNavigate } from 'react-router-dom'; // For navigation after logout
+import useDocumentMeta from '../hooks/useDocumentMeta';
 
 const ProfilePage = () => {
+  useDocumentMeta({ title: 'My Profile', noindex: true });
   const [currentUser, setCurrentUser] = useState(null);
   const [profileData, setProfileData] = useState(null);
   const [initialProfileData, setInitialProfileData] = useState(null);

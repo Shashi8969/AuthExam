@@ -10,11 +10,13 @@ import Employee from '../../models/Employee'; // Import Employee model
 import './EmployeeForm.css'; // Import the new CSS file
 import { db } from '../../config/firebase'; // Your Firebase configuration
 import { useAuth } from '../../context/AuthContext'; // Import useAuth
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 
 // Helper to generate a unique key for form sessions or new entities
 const generateUniqueKey = () => push(ref(db, '_tempKeys')).key; // Using a dummy path for key generation
 
 const EmployeeForm = () => {
+  useDocumentMeta({ title: 'Add Operator', noindex: true });
   const [referenceNameOptions, setReferenceNameOptions] = useState([{ value: '', label: 'Loading references...' }]);
   const [rawReferenceNames, setRawReferenceNames] = useState({}); // Store raw data for easier checking
   const [makeReferencable, setMakeReferencable] = useState(false);

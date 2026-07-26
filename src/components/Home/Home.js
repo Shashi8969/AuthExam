@@ -1,20 +1,49 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './Home.css';
 import { Link } from 'react-router-dom';
+import { ref, query, orderByChild, limitToLast, onValue } from 'firebase/database';
 import { FaUserPlus, FaMapMarkedAlt, FaFileInvoiceDollar, FaBullhorn } from 'react-icons/fa';
+import { db } from '../../config/firebase';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import Footer from '../Footer/Footer';
 
 // Use simple absolute paths for public folder assets
 const images = ["/banner1.webp", "/banner2.webp", "/banner3.webp", "/banner4.webp"];
 
+const formatDate = (ts) => {
+  if (!ts) return '';
+  return new Date(typeof ts === 'object' ? Date.now() : ts).toLocaleDateString('en-IN', {
+    day: '2-digit', month: 'short', year: 'numeric',
+  });
+};
+
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [latestNotices, setLatestNotices] = useState([]);
+
+  useDocumentMeta({ path: '/' });
 
   // LCP FIX: Preload banner1 immediately (before React renders)
   useEffect(() => {
     const lcpImg = new Image();
     lcpImg.src = '/banner1.webp';
     lcpImg.fetchpriority = 'high';
+  }, []);
+
+  useEffect(() => {
+    const postsQuery = query(ref(db, 'BlogPosts'), orderByChild('createdAt'), limitToLast(3));
+    const unsubscribe = onValue(postsQuery, (snapshot) => {
+      const data = snapshot.val();
+      const loaded = [];
+      if (data) {
+        Object.keys(data).forEach((key) => {
+          if (data[key].isPublished !== false) loaded.push({ id: key, ...data[key] });
+        });
+        loaded.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      }
+      setLatestNotices(loaded);
+    });
+    return () => unsubscribe();
   }, []);
 
   const nextSlide = useCallback(() => {
@@ -121,6 +150,33 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Latest Notices (only shown once there's something to show) */}
+      {latestNotices.length > 0 && (
+        <section id="latest-notices" className="notices-preview-section">
+          <div className="container">
+            <h2>Latest Notices</h2>
+            <div className="notices-preview-grid">
+              {latestNotices.map((post) => (
+                <Link
+                  key={post.id}
+                  to={`/notices/${post.slug || post.id}`}
+                  className="notice-preview-card"
+                >
+                  <span className="notice-preview-date">{formatDate(post.createdAt)}</span>
+                  <h3>{post.title}</h3>
+                  <p>
+                    {post.content.length > 120 ? post.content.slice(0, 120) + '...' : post.content}
+                  </p>
+                </Link>
+              ))}
+            </div>
+            <div className="notices-preview-cta">
+              <Link to="/notices" className="cta-button primary">View All Notices</Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>

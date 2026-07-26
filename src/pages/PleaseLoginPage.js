@@ -2,12 +2,15 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaSignInAlt } from 'react-icons/fa';
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './PleaseLoginPage.css';
 
 const PleaseLoginPage = () => {
   const location = useLocation();
   // The 'from' state is passed by ProtectedRoute if user was redirected
   const fromPath = location.state?.from?.pathname || '/';
+
+  useDocumentMeta({ title: 'Login Required', noindex: true });
 
   return (
     <div className="please-login-container">

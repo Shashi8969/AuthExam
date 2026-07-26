@@ -5,9 +5,11 @@ import * as XLSX from 'xlsx'; // For Excel export
 import Employee from '../models/Employee'; // Import Employee model
 import { useNavigate } from 'react-router-dom'; // For navigation
 import { useAuth } from '../context/AuthContext'; // Import useAuth
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './ViewSavedAssignments.css'; // We'll create this CSS file
 
 const ViewSavedAssignments = () => {
+  useDocumentMeta({ title: 'Saved Assignments', noindex: true });
   const [savedLists, setSavedLists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
