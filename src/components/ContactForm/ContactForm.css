@@ -1,0 +1,113 @@
+/* src/components/ContactForm/ContactForm.css */
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.contact-form-alert {
+  padding: 12px 16px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.contact-form-alert.success {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.contact-form-alert.error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.contact-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-input-group {
+  position: relative;
+  flex: 1;
+}
+
+.contact-input-icon {
+  position: absolute;
+  left: 14px;
+  top: 18px;
+  color: var(--text-color-light);
+  font-size: 0.9rem;
+}
+
+.contact-input-group input,
+.contact-input-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 14px 14px 40px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--dark-gray);
+  background: var(--bg-white);
+  transition: var(--transition);
+}
+
+.contact-input-group.textarea-group textarea {
+  padding-left: 14px;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.contact-input-group input:focus,
+.contact-input-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+}
+
+.contact-submit-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 30px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.contact-submit-btn:hover:not(:disabled) {
+  background: var(--primary-color-darker);
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-medium);
+}
+
+.contact-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Tablet and up: name/email and phone/org side-by-side */
+@media (min-width: 640px) {
+  .contact-form-row {
+    flex-direction: row;
+  }
+  .contact-submit-btn {
+    align-self: flex-end;
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "AuthExam",
+  "name": "AuthExam - Secure Online Exam Authentication Platform",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,18 +8,18 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo.jpg",
-      "type": "image/jpg",
+      "src": "logo.webp",
+      "type": "image/webp",
       "sizes": "192x192"
     },
     {
-      "src": "logo.jpg",
-      "type": "image/jpg",
+      "src": "logo.webp",
+      "type": "image/webp",
       "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
+  "theme_color": "#1D4ED8",
   "background_color": "#ffffff"
 }

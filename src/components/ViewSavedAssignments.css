@@ -221,3 +221,30 @@
   background-color: #004085; /* Even darker blue when clicked */
   border-color: #004085;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .view-saved-assignments-container {
+    padding: 16px;
+  }
+  .view-saved-assignments-container h2 {
+    font-size: 1.6em;
+  }
+  .saved-list-item {
+    padding: 14px 16px;
+  }
+  .list-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .assignments-table-summary {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  .list-rename-section {
+    flex-wrap: wrap;
+  }
+}

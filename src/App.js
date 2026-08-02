@@ -1,5 +1,6 @@
 // src/App.js
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
 import Navbar from './components/NavBar/Navbar';
 import AuthForm from './components/AuthForm/AuthForm';
 import EmployeeList from './components/EmployeeList/EmployeeList';
@@ -11,6 +12,8 @@ import CenterManager from './components/CenterManager/CenterManager';
 import NotFoundPage from './pages/NotFoundPage'; // Assuming this is already created
 import PleaseLoginPage from './pages/PleaseLoginPage'; // Import the new page
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'; // Import the ProtectedRoute component
+import AdminRoute from './components/ProtectedRoute/AdminRoute';
+import AdminLogin from './pages/AdminLogin';
 import ViewSavedAssignments from './components/ViewSavedAssignments';
 import ProfilePage from './components/ProfilePage';
 import BlogManager from './components/Blog/BlogManager';
@@ -36,6 +39,8 @@ function App() {
 
           {/* Public blog/notices page */}
           <Route path="/notices" element={<BlogPublic />} />
+          {/* Dedicated admin portal login */}
+          <Route path="/admin/login" element={<AdminLogin />} />
           {/* Protected Routes */}
           <Route
             path="/employees"
@@ -64,36 +69,27 @@ function App() {
           <Route
             path="/admin/manage-centers"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <CenterManager />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           {/* Admin-only approvals */}
           <Route
             path="/admin/approvals"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <PendingApprovals />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           {/* Admin-only blog management */}
           <Route
             path="/admin/blog"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <BlogManager />
-              </ProtectedRoute>
-            }
-          />
-          {/* Admin-only approvals */}
-          <Route
-            path="/admin/approvals"
-            element={
-              <ProtectedRoute>
-                <PendingApprovals />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route

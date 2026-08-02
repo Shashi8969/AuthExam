@@ -1,19 +1,60 @@
 /* src/App.css */
+/*
+ * Single source of truth for design tokens.
+ * Home.css and Navbar.css previously declared their own conflicting :root
+ * blocks, which silently overrode these values depending on CSS load order.
+ * Every token below is now canonical - do not redeclare :root vars elsewhere.
+ */
 :root {
-  --primary-color: #3B82F6; /* Tailwind Blue-500 */
-  --primary-color-darker: #2563EB; /* Tailwind Blue-600 */
-  --secondary-color: #10B981; /* Tailwind Emerald-500 */
-  --secondary-color-darker: #059669; /* Tailwind Emerald-600 */
-  --accent-color: #F43F5E; /* Tailwind Rose-500 */
-  --accent-color-darker: #E11D48; /* Tailwind Rose-600 */
-  --light-gray: #F9FAFB; /* Tailwind Gray-50 */
-  --medium-gray: #E5E7EB; /* Tailwind Gray-200 */
-  --dark-gray: #374151; /* Tailwind Gray-700 */
-  --text-color: #4B5563; /* Tailwind Gray-600 */
-  --border-color: #D1D5DB; /* Tailwind Gray-300 */
-  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --border-radius: 0.5rem; /* Tailwind Rounded-md */
+  /* Brand - deep trust blue + premium gold accent (security + exclusivity) */
+  --primary-color: #1D4ED8;         /* Blue-700 */
+  --primary-color-darker: #1E3A8A;  /* Blue-900 */
+  --primary-color-light: #3B82F6;   /* Blue-500 */
+  --secondary-color: #0F172A;       /* Slate-900 - headings, dark sections */
+  --secondary-color-darker: #020617;
+  --accent-color: #F59E0B;          /* Amber-500 - premium CTA accent */
+  --accent-color-darker: #D97706;   /* Amber-600 */
+  --teal-color: #0D9488;            /* Teal-600 - secondary accent */
+  --success-color: #10B981;
+  --danger-color: #EF4444;
+
+  /* Neutrals */
+  --bg-white: #FFFFFF;
+  --bg-light: #F8FAFC;              /* Slate-50 */
+  --light-gray: #F8FAFC;
+  --medium-gray: #E2E8F0;           /* Slate-200 */
+  --dark-gray: #1E293B;             /* Slate-800 */
+  --text-color: #374151;            /* Gray-700 */
+  --text-color-light: #64748B;      /* Slate-500 */
+  --border-color: #E2E8F0;
+
+  /* Elevation & shape */
+  --box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  --box-shadow-light: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --box-shadow-medium: 0 8px 24px rgba(15, 23, 42, 0.1);
+  --box-shadow-hover: 0 16px 36px rgba(15, 23, 42, 0.16);
+  --border-radius: 0.6rem;
+  --border-radius-sm: 0.4rem;
+  --border-radius-md: 0.75rem;
+  --border-radius-lg: 1.25rem;
   --transition: all 0.2s ease-in-out;
+  --font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Navbar (mapped onto the tokens above so header stays in sync with brand) */
+  --bg-navbar: var(--bg-white);
+  --text-navbar: var(--dark-gray);
+  --bg-navbar-hover: var(--light-gray);
+  --text-navbar-accent: var(--primary-color);
+  --bg-dropdown: var(--bg-white);
+  --text-dropdown: var(--dark-gray);
+  --bg-dropdown-hover: var(--light-gray);
+  --shadow-dropdown: var(--box-shadow-medium);
+  --bg-signup: var(--accent-color);
+  --text-signup: #1F2937;
+  --bg-signup-hover: var(--accent-color-darker);
+  --text-signup-hover: #ffffff;
+  --text-logo: var(--secondary-color);
+  --transition-speed: 0.25s;
 }
 
 * {

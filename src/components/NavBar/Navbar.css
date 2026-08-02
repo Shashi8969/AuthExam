@@ -1,27 +1,4 @@
-/* Root mode transitions and CSS Variables */
-:root {
-  /* Color Palette - Light & Professional Theme */
-  --bg-navbar: #ffffff;
-  --text-navbar: #333333; /* Slightly softer black for text */
-  --bg-navbar-hover: #f0f0f0; /* Light gray for general hover */
-  --text-navbar-accent: #007bff; /* Professional blue for accents */
-
-  --bg-dropdown: #ffffff;
-  --text-dropdown: #333333;
-  --bg-dropdown-hover: #f0f0f0;
-  --shadow-dropdown: 0 2px 8px rgba(0, 0, 0, 0.1); /* Softer shadow for dropdown */
-
-  --bg-signup: #007bff; /* Using accent blue for signup */
-  --text-signup: white;
-  --bg-signup-hover: #0056b3; /* Darker blue for hover */
-  --text-signup-hover: white;
-
-  --text-logo: #2c3e50; /* Darker, distinct color for logo text */
-
-  /* Transitions */
-  --transition-speed: 0.3s;
-  transition: background-color var(--transition-speed), color var(--transition-speed);
-}
+/* Navbar color/transition tokens (--bg-navbar, --text-navbar, etc.) live in src/App.css */
 
 body,
 html {
@@ -125,7 +102,6 @@ html {
   position: absolute;
   top: 55px;
   right: 0;
-  background-color: #2a2a3b;
   background-color: var(--bg-dropdown);
   border-radius: 8px;
   min-width: 180px;
@@ -174,6 +150,10 @@ html {
   color: var(--text-navbar-accent); /* Or a specific logout hover color */
 }
 
+.nav-menu-backdrop {
+  display: none;
+}
+
 /* Responsive */
 @media screen and (max-width: 768px) {
   .menu-icon {
@@ -187,22 +167,58 @@ html {
     position: fixed; /* Fixed position to slide over content */
     top: 0;
     left: 0;
-    width: 50vw; /* Set to half viewport width */
+    width: 82vw; /* Wide enough to be usable on small phones */
+    max-width: 320px;
     height: 100vh; /* Ensure full viewport height */
     box-sizing: border-box; /* Ensure padding is included in the width/height */
     background-color: var(--bg-navbar);
-    padding: 20px; /* Adjust padding for side menu */
+    padding: 84px 20px 20px; /* Clear the fixed top bar */
     transform: translateX(-100%); /* Initially off-screen to the left */
     transition: transform var(--transition-speed) ease-in-out;
     z-index: 1010; /* Above main navbar and page content */
     box-shadow: 2px 0 5px rgba(0,0,0,0.15); /* Shadow for the side menu */
-    gap: 1rem; /* Vertical spacing for menu items */
+    gap: 0.25rem; /* Vertical spacing for menu items */
     overflow-y: auto; /* Allow scrolling if content exceeds height */
   }
 
   .nav-menu.active {
     transform: translateX(0); /* Slide into view */
     /* No need to repeat display:flex or other properties already on .nav-menu */
+  }
+
+  .nav-links,
+  .logout-button {
+    padding: 14px 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Dropdown becomes an inline expanding panel instead of an absolutely
+     positioned popover, which would otherwise clip/overflow the narrow drawer. */
+  .profile-dropdown {
+    width: 100%;
+  }
+  .dropdown-menu {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    background-color: var(--bg-navbar-hover);
+    border-radius: 8px;
+    margin-top: 4px;
+    animation: none;
+  }
+  .dropdown-menu li a,
+  .dropdown-menu li button {
+    padding: 10px 12px;
+  }
+
+  /* Backdrop behind the slide-in drawer so the page content is clearly inactive */
+  .nav-menu-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 1005;
   }
 }
 /* Logo Container */

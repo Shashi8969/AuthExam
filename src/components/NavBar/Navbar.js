@@ -97,6 +97,10 @@ const Navbar = () => {
           {menuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
+        {menuOpen && (
+          <div className="nav-menu-backdrop" onClick={() => setMenuOpen(false)} aria-hidden="true" />
+        )}
+
         <ul className={`nav-menu ${menuOpen ? 'active' : ''}`} id="main-nav-menu">
           <li className="nav-item">
             <Link to="/" className="nav-links" onClick={closeAllMenus}>

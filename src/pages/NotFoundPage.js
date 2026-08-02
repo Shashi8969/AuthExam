@@ -2,9 +2,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaQuestionCircle } from 'react-icons/fa'; // Example icon
+import useDocumentMeta from '../hooks/useDocumentMeta';
 import './NotFoundPage.css'; // Import the CSS
 
 const NotFoundPage = () => {
+  useDocumentMeta('Page Not Found');
   return (
     <div className="not-found-container">
       <FaQuestionCircle className="not-found-icon" />

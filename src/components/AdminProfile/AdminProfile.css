@@ -84,5 +84,17 @@
     margin-bottom: 8px;
     color: #444;
   }
-  
-  
+
+  @media (max-width: 480px) {
+    .admin-profile-container {
+      padding: 14px;
+    }
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+    }
+    .avatar-container {
+      margin-right: 0;
+      margin-bottom: 12px;
+    }
+  }

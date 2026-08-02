@@ -106,3 +106,17 @@
   .reference-name-list ul li button:hover {
     background-color: var(--accent-color-darker);
   }
+
+  @media (max-width: 480px) {
+    .reference-name-manager {
+      padding: 16px;
+    }
+    .add-reference-name {
+      padding: 14px;
+    }
+    .reference-name-list ul li {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }

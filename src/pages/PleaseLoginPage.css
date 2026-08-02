@@ -47,3 +47,15 @@
 .please-login-button:hover {
   background-color: #218838; /* Darker shade on hover */
 }
+
+@media (max-width: 480px) {
+  .please-login-icon {
+    font-size: 3rem;
+  }
+  .please-login-title {
+    font-size: 1.6rem;
+  }
+  .please-login-message {
+    font-size: 1rem;
+  }
+}

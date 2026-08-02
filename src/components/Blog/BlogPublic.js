@@ -2,11 +2,16 @@
 import React, { useState, useEffect } from 'react';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../config/firebase';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import './BlogPublic.css';
 
 const CATEGORIES = ['All', 'Notice', 'Announcement', 'Update', 'General'];
 
 const BlogPublic = () => {
+  useDocumentMeta(
+    'Notices & Announcements',
+    'Stay up to date with the latest notices, announcements, and updates from AuthExam.'
+  );
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');

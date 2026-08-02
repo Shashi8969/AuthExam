@@ -46,5 +46,17 @@
   background-color: #0056b3; /* Darker shade on hover */
 }
 
+@media (max-width: 480px) {
+  .not-found-icon {
+    font-size: 3.5rem;
+  }
+  .not-found-title {
+    font-size: 1.8rem;
+  }
+  .not-found-message {
+    font-size: 1rem;
+  }
+}
+
 /* You can add a simple SVG or an image here if you prefer */
 /* For example, a magnifying glass with a question mark or a lost robot */

@@ -167,3 +167,20 @@
   margin-bottom: 20px;
   text-align: center;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .profile-page-container {
+    padding: 18px 14px;
+  }
+  .profile-page-container h2 {
+    font-size: 1.7em;
+    margin-bottom: 22px;
+  }
+  .profile-page-container .card {
+    padding: 18px 16px;
+  }
+  .profile-page-container .card h3 {
+    font-size: 1.3em;
+  }
+}

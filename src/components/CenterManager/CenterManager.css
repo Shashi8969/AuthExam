@@ -110,3 +110,26 @@
 .button-primary:hover, .button-secondary:hover, .action-button-edit:hover, .action-button-delete:hover {
   opacity: 0.9;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .center-manager-container {
+    padding: 14px;
+  }
+  .center-form-container {
+    padding: 14px;
+  }
+  /* Let wide tables scroll horizontally instead of squeezing/overflowing the page */
+  .centers-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  .button-primary,
+  .button-secondary {
+    width: 100%;
+    margin: 0 0 8px 0;
+    box-sizing: border-box;
+  }
+}

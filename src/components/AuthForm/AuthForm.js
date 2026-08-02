@@ -2,9 +2,16 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { FaEnvelope, FaLock, FaArrowRight, FaUser, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import useDocumentMeta from '../../hooks/useDocumentMeta';
 import './AuthForm.css';
 
 const AuthForm = ({ type }) => {
+  useDocumentMeta(
+    type === 'signup' ? 'Sign Up' : 'Login',
+    type === 'signup'
+      ? 'Create your AuthExam account to manage exam operators, centers, and biometric verification.'
+      : 'Log in to your AuthExam account.'
+  );
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
