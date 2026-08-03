@@ -13,14 +13,16 @@ import Footer from '../Footer/Footer';
 import ContactForm from '../ContactForm/ContactForm';
 
 // Use simple absolute paths for public folder assets
-const images = ["/banner1.webp", "/banner2.webp", "/banner3.webp", "/banner4.webp"];
+const images = ["/banner1.svg", "/banner2.svg", "/banner3.svg", "/banner4.svg"];
 
 const galleryItems = [
-  { src: '/banner1.webp', caption: 'Field Operations' },
-  { src: '/banner2.webp', caption: 'Service Center Network' },
-  { src: '/banner3.webp', caption: 'Team Coordination' },
-  { src: '/banner4.webp', caption: 'Reporting & Insights' },
+  { src: '/gallery1.svg', caption: 'Field Operations', orient: 'landscape' },
+  { src: '/gallery2.svg', caption: 'Verified Onboarding', orient: 'portrait' },
+  { src: '/gallery3.svg', caption: 'Service Center Network', orient: 'landscape' },
+  { src: '/gallery4.svg', caption: 'Reporting & Invoicing', orient: 'portrait' },
 ];
+const galleryRow1 = [...galleryItems, ...galleryItems];
+const galleryRow2 = [...galleryItems.slice().reverse(), ...galleryItems.slice().reverse()];
 
 const services = [
   { icon: <FaUserPlus />, title: 'Operator Onboarding', desc: 'Add field operators with photo ID capture and cropping, plus phone and Aadhaar validation, in a guided form.' },
@@ -68,7 +70,7 @@ const Home = () => {
 
   useEffect(() => {
     const lcpImg = new Image();
-    lcpImg.src = '/banner1.webp';
+    lcpImg.src = '/banner1.svg';
     lcpImg.fetchpriority = 'high';
   }, []);
 
@@ -218,12 +220,28 @@ const Home = () => {
         <div className="container">
           <span className="section-eyebrow">Gallery</span>
           <h2>Inside AuthExam</h2>
-          <div className="gallery-grid">
-            {galleryItems.map((item) => (
+        </div>
+        <div className="gallery-marquee">
+          <div className="gallery-track">
+            {galleryRow1.map((item, i) => (
               <button
                 type="button"
-                className="gallery-item"
-                key={item.src}
+                className={`gallery-tile ${item.orient}`}
+                key={`r1-${i}`}
+                onClick={() => setLightboxImg(item)}
+                aria-label={`View larger image: ${item.caption}`}
+              >
+                <img src={item.src} alt={item.caption} loading="lazy" />
+                <span className="gallery-caption">{item.caption}</span>
+              </button>
+            ))}
+          </div>
+          <div className="gallery-track reverse">
+            {galleryRow2.map((item, i) => (
+              <button
+                type="button"
+                className={`gallery-tile ${item.orient}`}
+                key={`r2-${i}`}
                 onClick={() => setLightboxImg(item)}
                 aria-label={`View larger image: ${item.caption}`}
               >

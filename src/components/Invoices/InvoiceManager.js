@@ -358,6 +358,40 @@ function InvFooter({inv,sc,subtotal,discount,tax,total,paid,balance,onEditPay,on
   );
 }
 
+// ── Template preview thumbnails ─────────────────────────────────────────────
+const TEMPLATE_COMPONENTS = {
+  modern: TemplateModern, classic: TemplateClassic, minimal: TemplateMinimal,
+  watermark: TemplateWatermark, corporate: TemplateCorporate,
+};
+const PREVIEW_SAMPLE = {
+  inv:{
+    billedByName:'Your Company', billedByPhone:'+91 98765 43210', billedByEmail:'billing@company.com',
+    billedByAddress:'Kurhani, Muzaffarpur, Bihar', billedByGST:'10ABCDE1234F1Z5',
+    billedToName:'Client Pvt. Ltd.', billedToPhone:'+91 91234 56789', billedToAddress:'Patna, Bihar',
+    billedToGST:'10XYZAB5678G1Z2',
+    invoiceNo:'INV-0042', invoiceDate:'2026-08-01', dueDate:'2026-08-15', projectName:'Field Ops',
+    items:[
+      {description:'Operator Single Shift', rate:1200, qty:10, amount:12000},
+      {description:'Supervisor', rate:2000, qty:2, amount:4000},
+    ],
+    payments:[], watermarkText:'SAMPLE',
+  },
+  sc:STATUS_CONFIG.pending,
+  subtotal:16000, discount:0, tax:0, total:16000, paid:0, balance:16000,
+  onEditPay:()=>{}, onDelPay:()=>{}, onAddPay:()=>{}, noprint:false,
+};
+
+function TemplatePreviewThumb({id}){
+  const Cmp = TEMPLATE_COMPONENTS[id];
+  return (
+    <div className="inv-tmpl-thumb-frame">
+      <div className="inv-tmpl-thumb-inner">
+        <Cmp {...PREVIEW_SAMPLE}/>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ───────────────────────────────────────────────────────────
 export default function InvoiceManager(){
   const {user,isAdmin}=useAuth();
@@ -604,13 +638,24 @@ const {
       </div>
 
       {/* Template chooser */}
-      <div className="inv-template-bar">
-        <span className="inv-template-label">Template:</span>
-        {TEMPLATES.map(t=>(
-          <button key={t.id} className={`inv-tmpl-btn ${form.template===t.id?'active':''}`} onClick={()=>setForm(f=>({...f,template:t.id}))}>
-            {t.name}
-          </button>
-        ))}
+      <div className="inv-template-gallery">
+        <span className="inv-template-label">Template</span>
+        <div className="inv-tmpl-cards">
+          {TEMPLATES.map(t=>(
+            <button
+              key={t.id}
+              type="button"
+              className={`inv-tmpl-card ${form.template===t.id?'active':''}`}
+              onClick={()=>setForm(f=>({...f,template:t.id}))}
+              aria-pressed={form.template===t.id}
+            >
+              <TemplatePreviewThumb id={t.id}/>
+              <span className="inv-tmpl-card-name">{t.name}</span>
+              <span className="inv-tmpl-card-desc">{t.desc}</span>
+              {form.template===t.id&&<span className="inv-tmpl-card-check">✓</span>}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Form tabs */}

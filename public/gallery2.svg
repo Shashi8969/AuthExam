@@ -1,0 +1,29 @@
+<svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g2bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E3A8A"/>
+    </linearGradient>
+    <filter id="g2blur"><feGaussianBlur stdDeviation="30"/></filter>
+  </defs>
+  <rect width="600" height="800" fill="url(#g2bg)"/>
+  <circle cx="480" cy="180" r="180" fill="#3B82F6" opacity="0.3" filter="url(#g2blur)"/>
+  <circle cx="140" cy="640" r="160" fill="#F59E0B" opacity="0.18" filter="url(#g2blur)"/>
+
+  <!-- ID card motif: verified onboarding -->
+  <g transform="translate(150,300)">
+    <rect x="0" y="0" width="300" height="200" rx="18" fill="#ffffff" opacity="0.95"/>
+    <circle cx="65" cy="70" r="34" fill="#93C5FD"/>
+    <rect x="120" y="48" width="150" height="14" rx="7" fill="#CBD5E1"/>
+    <rect x="120" y="76" width="110" height="12" rx="6" fill="#E2E8F0"/>
+    <rect x="30" y="140" width="240" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="30" y="160" width="180" height="10" rx="5" fill="#E2E8F0"/>
+    <circle cx="252" cy="168" r="20" fill="#10B981"/>
+    <path d="M243,168 l7,7 l14,-16" stroke="#ffffff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g fill="#ffffff" opacity="0.12">
+    <circle cx="70" cy="100" r="2"/><circle cx="520" cy="700" r="2"/>
+    <circle cx="440" cy="90" r="2"/><circle cx="90" cy="560" r="2"/>
+  </g>
+</svg>

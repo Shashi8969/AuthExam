@@ -1,0 +1,33 @@
+<svg viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g4bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <filter id="g4blur"><feGaussianBlur stdDeviation="30"/></filter>
+  </defs>
+  <rect width="600" height="800" fill="url(#g4bg)"/>
+  <circle cx="120" cy="180" r="170" fill="#0D9488" opacity="0.28" filter="url(#g4blur)"/>
+  <circle cx="470" cy="640" r="150" fill="#3B82F6" opacity="0.25" filter="url(#g4blur)"/>
+
+  <!-- Reporting / invoice card motif -->
+  <g transform="translate(140,260)">
+    <rect x="0" y="0" width="320" height="280" rx="16" fill="#ffffff" opacity="0.96"/>
+    <rect x="28" y="34" width="140" height="16" rx="8" fill="#1D4ED8"/>
+    <rect x="28" y="66" width="90" height="10" rx="5" fill="#CBD5E1"/>
+    <line x1="28" y1="100" x2="292" y2="100" stroke="#E2E8F0" stroke-width="2"/>
+    <rect x="28" y="120" width="180" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="240" y="120" width="52" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="28" y="146" width="180" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="240" y="146" width="52" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="28" y="172" width="180" height="10" rx="5" fill="#E2E8F0"/>
+    <rect x="240" y="172" width="52" height="10" rx="5" fill="#E2E8F0"/>
+    <line x1="28" y1="204" x2="292" y2="204" stroke="#E2E8F0" stroke-width="2"/>
+    <rect x="180" y="222" width="112" height="16" rx="8" fill="#10B981"/>
+  </g>
+
+  <g fill="#ffffff" opacity="0.12">
+    <circle cx="80" cy="90" r="2"/><circle cx="520" cy="120" r="2"/>
+    <circle cx="60" cy="720" r="2"/><circle cx="530" cy="740" r="2"/>
+  </g>
+</svg>

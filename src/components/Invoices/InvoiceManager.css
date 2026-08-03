@@ -57,11 +57,17 @@
 .inv-empty-icon{font-size:3rem;margin-bottom:.75rem;}
 
 /* Template chooser bar */
-.inv-template-bar{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;padding:.75rem 1rem;background:var(--iw);border:1px solid var(--ib);border-radius:10px;}
-.inv-template-label{font-size:.75rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-right:.25rem;}
-.inv-tmpl-btn{padding:.35rem .85rem;border:1.5px solid var(--ib);border-radius:20px;background:var(--iw);color:var(--im);font-size:.78rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;}
-.inv-tmpl-btn:hover{border-color:var(--ia);color:var(--ia);}
-.inv-tmpl-btn.active{background:var(--ia);border-color:var(--ia);color:#fff;font-weight:600;}
+.inv-template-gallery{margin-bottom:1rem;padding:.9rem 1rem 1.1rem;background:var(--iw);border:1px solid var(--ib);border-radius:10px;}
+.inv-template-label{display:block;font-size:.75rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.65rem;}
+.inv-tmpl-cards{display:flex;gap:.85rem;overflow-x:auto;padding-bottom:.25rem;-webkit-overflow-scrolling:touch;}
+.inv-tmpl-card{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;width:150px;padding:.5rem;border:2px solid var(--ib);border-radius:12px;background:var(--ibg);cursor:pointer;font-family:inherit;transition:border-color .15s,box-shadow .15s,transform .15s;position:relative;text-align:left;}
+.inv-tmpl-card:hover{border-color:var(--ia);transform:translateY(-2px);}
+.inv-tmpl-card.active{border-color:var(--ia);box-shadow:0 0 0 3px rgba(30,64,175,.15);}
+.inv-tmpl-card-check{position:absolute;top:.4rem;right:.4rem;width:20px;height:20px;border-radius:50%;background:var(--ia);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25);}
+.inv-tmpl-thumb-frame{width:100%;height:110px;overflow:hidden;border-radius:7px;border:1px solid var(--ib);background:#fff;position:relative;pointer-events:none;}
+.inv-tmpl-thumb-inner{width:780px;transform:scale(0.19);transform-origin:top left;}
+.inv-tmpl-card-name{font-size:.8rem;font-weight:700;color:var(--ii);margin-top:.5rem;}
+.inv-tmpl-card-desc{font-size:.68rem;color:var(--im);line-height:1.35;}
 
 /* Form tabs */
 .inv-form-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem;}

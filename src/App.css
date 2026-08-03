@@ -100,27 +100,6 @@ h2 {
   font-size: 1rem;
 }
 
-/* Home Page Styles */
-.home-container {
-  padding: 40px;
-  text-align: center;
-}
-
-.home-container h1 {
-  color: var(--primary-color);
-  margin-bottom: 20px;
-  font-size: 3.5rem;
-  font-weight: 700;
-}
-
-.home-container p {
-  font-size: 1.125rem; /* Tailwind Text-lg */
-  line-height: 1.75;
-  color: var(--text-color);
-  max-width: 700px;
-  margin: 0 auto;
-}
-
 /* Employee Form Styles (on /add-employee route) */
 .employee-form-container {
   padding: 30px;

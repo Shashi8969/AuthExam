@@ -1,0 +1,28 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <filter id="g1blur"><feGaussianBlur stdDeviation="30"/></filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#g1bg)"/>
+  <circle cx="620" cy="120" r="160" fill="#3B82F6" opacity="0.35" filter="url(#g1blur)"/>
+  <circle cx="120" cy="480" r="140" fill="#0D9488" opacity="0.3" filter="url(#g1blur)"/>
+
+  <!-- Coverage network -->
+  <g stroke="#93C5FD" stroke-width="1.6" opacity="0.5">
+    <path d="M100,420 L280,300 L460,360 L620,220 L720,260" fill="none"/>
+  </g>
+  <g fill="#BFDBFE">
+    <circle cx="100" cy="420" r="7"/><circle cx="280" cy="300" r="8"/>
+    <circle cx="460" cy="360" r="7"/><circle cx="620" cy="220" r="9"/>
+    <circle cx="720" cy="260" r="6"/>
+  </g>
+  <circle cx="620" cy="220" r="3.5" fill="#F59E0B"/>
+
+  <g fill="#ffffff" opacity="0.12">
+    <circle cx="60" cy="80" r="2"/><circle cx="740" cy="500" r="2"/>
+    <circle cx="400" cy="60" r="2"/><circle cx="220" cy="540" r="2"/>
+  </g>
+</svg>

@@ -15,9 +15,9 @@ html {
 .hero-section {
   position: relative;
   width: 100%;
-  height: 85vh; /* Make hero taller */
+  height: clamp(420px, 65vh, 620px);
   overflow: hidden;
-display: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -154,20 +154,17 @@ display: flex;
 }
 
 .features-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
   margin-top: 40px;
 }
 
 .feature-item {
   background-color: var(--bg-light);
-  padding: 30px;
+  padding: 24px 20px;
   border-radius: var(--border-radius-md);
   box-shadow: var(--box-shadow-light);
-  flex-basis: calc(50% - 30px); /* Two items per row on medium screens */
-  max-width: 400px; /* Max width for items */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -323,7 +320,7 @@ h2::after {
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .hero-section {
-    height: 70vh;
+    height: clamp(380px, 60vh, 520px);
   }
   h2 {
     font-size: 2em;
@@ -517,37 +514,61 @@ h2::after {
   line-height: 1.6;
 }
 
-/* ============ Gallery ============ */
+/* ============ Gallery (moving marquee, mixed orientation) ============ */
 .gallery-section {
-  padding: 70px 20px;
+  padding: 70px 0;
   background: var(--bg-light);
   text-align: center;
+  overflow: hidden;
 }
-.gallery-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
+.gallery-marquee {
   margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
 }
-.gallery-item {
+.gallery-track {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: max-content;
+  animation: gallery-scroll 32s linear infinite;
+}
+.gallery-track.reverse {
+  animation-direction: reverse;
+  animation-duration: 38s;
+}
+.gallery-marquee:hover .gallery-track {
+  animation-play-state: paused;
+}
+@keyframes gallery-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.gallery-tile {
   position: relative;
+  flex: 0 0 auto;
+  height: 220px;
   border: none;
   padding: 0;
   cursor: pointer;
   border-radius: var(--border-radius-md);
   overflow: hidden;
   box-shadow: var(--box-shadow-light);
-  aspect-ratio: 4 / 3;
   background: var(--secondary-color);
 }
-.gallery-item img {
+.gallery-tile.landscape { width: 290px; }
+.gallery-tile.portrait { width: 160px; }
+.gallery-tile img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   transition: transform 0.4s ease;
 }
-.gallery-item:hover img {
+.gallery-tile:hover img {
   transform: scale(1.08);
 }
 .gallery-caption {
@@ -746,9 +767,6 @@ h2::after {
   .services-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .blog-preview-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -760,9 +778,6 @@ h2::after {
 @media (min-width: 900px) {
   .services-grid {
     grid-template-columns: repeat(3, 1fr);
-  }
-  .gallery-grid {
-    grid-template-columns: repeat(4, 1fr);
   }
   .blog-preview-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -800,7 +815,6 @@ h2::after {
     font-size: 1.6em;
   }
   .services-section,
-  .gallery-section,
   .audience-section,
   .blog-preview-section,
   .contact-section,
@@ -809,14 +823,31 @@ h2::after {
   .downloadables-section {
     padding: 44px 16px;
   }
+  .gallery-section {
+    padding: 44px 0;
+  }
+  .gallery-tile {
+    height: 160px;
+  }
+  .gallery-tile.landscape { width: 210px; }
+  .gallery-tile.portrait { width: 118px; }
   .contact-form-col {
     padding: 18px;
   }
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
   .feature-item {
-    flex-basis: 100%;
+    padding: 20px 18px;
   }
   .about-pillars {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-track {
+    animation: none;
   }
 }
