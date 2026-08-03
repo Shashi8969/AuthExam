@@ -1,12 +1,21 @@
 rules_version = '2';
 
-// Craft rules based on data in your Firestore database
-// allow write: if firestore.get(
-//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+// NOTE: Firebase Storage rules cannot reference the Realtime Database, so the
+// Admin/Supervisor roles used by database.rules.json can't be checked here
+// directly. Any signed-in user can therefore write to any employeeId path.
+// A durable fix requires either mirroring the Admin set into Firestore (which
+// storage.rules CAN query via firestore.get()/exists()) or assigning
+// isAdmin/isSupervisor as Firebase Auth custom claims via a trusted backend
+// (e.g. a Cloud Function), then checking request.auth.token.isAdmin here.
+// Until that's in place, at minimum restrict uploads to images of a bounded
+// size so this can't be abused to store arbitrary large files.
 service firebase.storage {
   match /b/{bucket}/o {
     match /images/{employeeId}/{imageName} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
     }
   }
 }

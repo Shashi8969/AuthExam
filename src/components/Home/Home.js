@@ -4,55 +4,65 @@ import { Link } from 'react-router-dom';
 import { ref, onValue, query, orderByChild, limitToLast } from 'firebase/database';
 import { db } from '../../config/firebase';
 import {
-  FaFingerprint, FaRobot, FaShieldAlt, FaSync, FaCheckCircle,
+  FaIdCard, FaMapMarkedAlt, FaShieldAlt, FaSync, FaCheckCircle,
   FaUsersCog, FaClipboardCheck, FaFileInvoiceDollar, FaBullhorn,
-  FaUniversity, FaGraduationCap, FaLandmark, FaBriefcase, FaChalkboardTeacher, FaBuilding,
+  FaBuilding, FaStore, FaIndustry, FaHandshake, FaWarehouse, FaUserPlus,
   FaEnvelope, FaPhone, FaMapMarkerAlt, FaArrowRight,
 } from 'react-icons/fa';
 import Footer from '../Footer/Footer';
 import ContactForm from '../ContactForm/ContactForm';
-import useDocumentMeta from '../../hooks/useDocumentMeta';
 
 // Use simple absolute paths for public folder assets
 const images = ["/banner1.webp", "/banner2.webp", "/banner3.webp", "/banner4.webp"];
 
 const galleryItems = [
-  { src: '/banner1.webp', caption: 'Biometric Access Verification' },
-  { src: '/banner2.webp', caption: 'Secure Authentication Network' },
-  { src: '/banner3.webp', caption: 'Encrypted Data Infrastructure' },
-  { src: '/banner4.webp', caption: 'Real-Time Security Monitoring' },
+  { src: '/banner1.webp', caption: 'Field Operations' },
+  { src: '/banner2.webp', caption: 'Service Center Network' },
+  { src: '/banner3.webp', caption: 'Team Coordination' },
+  { src: '/banner4.webp', caption: 'Reporting & Insights' },
 ];
 
 const services = [
-  { icon: <FaFingerprint />, title: 'Biometric Identity Verification', desc: 'Fingerprint-based candidate verification that stops impersonation before it reaches the exam hall.' },
-  { icon: <FaRobot />, title: 'AI-Assisted Proctoring', desc: 'Intelligent monitoring tools that flag irregularities during remote and center-based exams.' },
-  { icon: <FaUsersCog />, title: 'Exam Center & Staff Management', desc: 'Centralized control over operators, centers, and reference records from one dashboard.' },
-  { icon: <FaClipboardCheck />, title: 'Real-Time Approvals Workflow', desc: 'Admins review and approve pending requests instantly, with a live status trail.' },
-  { icon: <FaFileInvoiceDollar />, title: 'Invoicing & Reporting', desc: 'Generate and track invoices tied to exam operations, exportable whenever you need them.' },
-  { icon: <FaBullhorn />, title: 'Notices & Announcements Hub', desc: 'Publish updates once and reach every operator and candidate through a single feed.' },
+  { icon: <FaUserPlus />, title: 'Operator Onboarding', desc: 'Add field operators with photo ID capture and cropping, plus phone and Aadhaar validation, in a guided form.' },
+  { icon: <FaMapMarkedAlt />, title: 'Center Assignment', desc: 'Assign operators to service centers and save reusable assignment lists, exportable to Excel.' },
+  { icon: <FaUsersCog />, title: 'Reference & Staff Records', desc: 'Maintain reusable reference names and centralized staff records from one dashboard.' },
+  { icon: <FaClipboardCheck />, title: 'Approvals Workflow', desc: 'Supervisor-submitted changes route through admin approval before they take effect.' },
+  { icon: <FaFileInvoiceDollar />, title: 'Invoicing', desc: 'Create, template, and track invoices tied to assignments, ready whenever you need them.' },
+  { icon: <FaBullhorn />, title: 'Notices & Announcements', desc: 'Publish updates once and reach every operator through a single notice board.' },
 ];
 
 const audiences = [
-  { icon: <FaUniversity />, label: 'Examination Boards' },
-  { icon: <FaGraduationCap />, label: 'Universities & Colleges' },
-  { icon: <FaChalkboardTeacher />, label: 'Training Institutes' },
-  { icon: <FaLandmark />, label: 'Government Exam Authorities' },
-  { icon: <FaBriefcase />, label: 'Recruitment Agencies' },
-  { icon: <FaBuilding />, label: 'Certification Bodies' },
+  { icon: <FaBuilding />, label: 'Facility Management Companies' },
+  { icon: <FaStore />, label: 'Service Center Networks' },
+  { icon: <FaIndustry />, label: 'Field Service Operations' },
+  { icon: <FaHandshake />, label: 'Franchise Networks' },
+  { icon: <FaWarehouse />, label: 'Logistics & Distribution' },
+  { icon: <FaUsersCog />, label: 'Staffing & Workforce Agencies' },
 ];
 
 const trustPoints = [
-  'Fingerprint-based candidate verification',
-  'Encrypted data at every step',
-  'Built for Indian examination workflows',
-  'Live admin oversight & approvals',
+  'Role-based approvals for every change',
+  'Centralized operator & center records',
+  'Invoicing tied directly to assignments',
+  'Built for Indian field operations',
+];
+
+const steps = [
+  {
+    title: 'Onboard operators',
+    desc: 'Add field operators with verified contact and ID details in a guided form.',
+  },
+  {
+    title: 'Assign to centers',
+    desc: 'Match operators to service centers and track assignments in real time.',
+  },
+  {
+    title: 'Approve & invoice',
+    desc: 'Supervisors submit changes for admin approval, then generate invoices instantly.',
+  },
 ];
 
 const Home = () => {
-  useDocumentMeta(
-    'Secure Online Exam Authentication Platform',
-    'AuthExam provides biometric candidate verification, AI-assisted proctoring, and exam center management for boards, universities, and training institutes.'
-  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxImg, setLightboxImg] = useState(null);
 
@@ -75,12 +85,6 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [nextSlide]);
 
-  const downloadableItems = [
-    { id: 1, title: "Mock Report", description: "Biometric Mock Report.", fileName: "https://drive.google.com/...", icon: "📄" },
-    { id: 2, title: "CSR Report", description: "Biometric Work Standards.", fileName: "Security_Whitepaper.pdf", icon: "🛡️" },
-    { id: 3, title: "User Guide", description: "Admin instructions.", fileName: "User_Guide.pdf", icon: "📖" },
-  ];
-
   return (
     <div className="home-container">
       {/* LCP-OPTIMIZED Hero Section */}
@@ -92,7 +96,7 @@ const Home = () => {
               key={src}
               style={{ backgroundImage: `url(${src})` }}
               role="img"
-              aria-label={`Exam Security Slide ${index + 1}`}
+              aria-label={`Field operator ${index + 1}`}
               fetchpriority={index === 0 ? "high" : "auto"}
               loading={index === 0 ? "eager" : "lazy"}
             />
@@ -100,11 +104,14 @@ const Home = () => {
         </div>
         <div className="hero-overlay"></div>
         <div className="hero-content container">
-          <h1>Secure Your Exams. Ensure Integrity.</h1>
-          <p className="subtitle">Advanced Biometric Authentication for a Fairer Future in Testing.</p>
+          <h1>Run Your Field Workforce With Confidence</h1>
+          <p className="subtitle">
+            Onboard operators, assign service centers, and manage invoices &mdash;
+            all backed by role-based approvals.
+          </p>
           <div className="cta-group">
-            <a href="#services" className="cta-button primary">Explore Services</a>
-            <a href="#contact" className="cta-button secondary">Get in Touch</a>
+            <Link to="/signup" className="cta-button primary">Get Started</Link>
+            <a href="#services" className="cta-button secondary">Explore Services</a>
           </div>
         </div>
         <button className="hero-slider-control prev" onClick={prevSlide} aria-label="Previous Slide">&#10094;</button>
@@ -126,19 +133,18 @@ const Home = () => {
       <section id="about" className="about-section">
         <div className="container about-content">
           <span className="section-eyebrow">About Us</span>
-          <h2>Built for Exam Integrity, End to End</h2>
+          <h2>Built for Field Operations, End to End</h2>
           <p>
-            AuthExam is a biometric exam-authentication platform built to help examination boards,
-            training institutes, and certification bodies verify candidate identity and prevent
-            impersonation - from registration through to the exam hall. Our platform brings
-            fingerprint verification, centralized center &amp; staff management, and real-time
-            approval workflows together in one dashboard, so your team always knows who is
-            testing, where, and when.
+            AuthExam is a workforce management platform built to help organizations onboard
+            field operators, verify their identity documents, and assign them to service
+            centers - all from one dashboard. Reusable reference names, role-based approvals,
+            and invoicing tied directly to assignments mean your team always knows who is
+            deployed, where, and for what.
           </p>
           <div className="about-pillars">
-            <div className="pillar"><FaShieldAlt /><span>Integrity</span></div>
+            <div className="pillar"><FaShieldAlt /><span>Security</span></div>
             <div className="pillar"><FaSync /><span>Reliability</span></div>
-            <div className="pillar"><FaFingerprint /><span>Transparency</span></div>
+            <div className="pillar"><FaIdCard /><span>Transparency</span></div>
             <div className="pillar"><FaCheckCircle /><span>Accountability</span></div>
           </div>
         </div>
@@ -148,13 +154,29 @@ const Home = () => {
       <section id="services" className="services-section">
         <div className="container">
           <span className="section-eyebrow">Our Services</span>
-          <h2>Everything You Need to Run Secure Exams</h2>
+          <h2>Everything You Need to Manage Your Field Workforce</h2>
           <div className="services-grid">
             {services.map((s) => (
               <div className="service-card" key={s.title}>
                 <div className="service-icon">{s.icon}</div>
                 <h3>{s.title}</h3>
                 <p>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="how-it-works" className="works-section">
+        <div className="container">
+          <span className="section-eyebrow">Process</span>
+          <h2>How It Works</h2>
+          <div className="works-grid">
+            {steps.map((step, i) => (
+              <div className="work-item" key={step.title}>
+                <h3>{`${i + 1}. ${step.title}`}</h3>
+                <p>{step.desc}</p>
               </div>
             ))}
           </div>
@@ -168,24 +190,24 @@ const Home = () => {
           <h2>Why Choose AuthExam?</h2>
           <div className="features-grid">
             <FeatureItem
-              icon={<FaFingerprint />}
-              title="Robust Biometrics"
-              desc="Multi-factor authentication including fingerprint and facial recognition."
+              icon={<FaIdCard />}
+              title="Verified Onboarding"
+              desc="Photo ID capture and cropping with phone and Aadhaar validation built in."
             />
             <FeatureItem
-              icon={<FaRobot />}
-              title="AI Proctoring"
-              desc="Intelligent monitoring for remote exams to detect malpractice."
+              icon={<FaMapMarkedAlt />}
+              title="Center Assignment"
+              desc="Assign operators to service centers and reuse saved assignment lists."
             />
             <FeatureItem
               icon={<FaShieldAlt />}
-              title="Unmatched Security"
-              desc="End-to-end encryption compliant with global standards."
+              title="Role-Based Access"
+              desc="Separate Admin, Supervisor, and member roles, enforced in the UI and Firebase rules."
             />
             <FeatureItem
               icon={<FaSync />}
-              title="LMS Integration"
-              desc="Seamlessly connect with Moodle, Canvas, and more."
+              title="Real-Time Approvals"
+              desc="Supervisor changes route to admins instantly, with a live status trail."
             />
           </div>
         </div>
@@ -223,7 +245,7 @@ const Home = () => {
       <section id="clients" className="audience-section">
         <div className="container">
           <span className="section-eyebrow">Who We Serve</span>
-          <h2>Trusted Across the Exam Ecosystem</h2>
+          <h2>Trusted Across Field Operations</h2>
           <div className="audience-grid">
             {audiences.map((a) => (
               <div className="audience-chip" key={a.label}>
@@ -238,41 +260,16 @@ const Home = () => {
       {/* Blog / Notices Preview */}
       <BlogPreview />
 
-      {/* Downloadables */}
-      <section id="downloads" className="downloadables-section">
-        <div className="container">
-          <span className="section-eyebrow">Resources</span>
-          <h2>Important Resources</h2>
-          <div className="downloadables-grid">
-            {downloadableItems.map(item => (
-              <a
-                href={item.fileName.startsWith('http') ? item.fileName : `/downloads/${item.fileName}`}
-                download
-                key={item.id}
-                className="download-item"
-              >
-                <div className="download-icon">{item.icon}</div>
-                <div className="download-info">
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                </div>
-                <div className="download-arrow">↓</div>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
       <section id="contact" className="contact-section">
         <div className="container contact-section-inner">
           <div className="contact-info-col">
             <span className="section-eyebrow light">Get In Touch</span>
-            <h2>Let's Talk About Your Exams</h2>
+            <h2>Let's Talk About Your Operations</h2>
             <p>Have a question about our platform or want a walkthrough? Send us a message and our team will get back to you.</p>
             <ul className="contact-details">
               <li><FaEnvelope /> info@authexam.com</li>
-              <li><FaPhone /> +91 9801902516</li>
+              <li><FaPhone /> +91 98019 02516</li>
               <li><FaMapMarkerAlt /> Kurhani, Muzaffarpur, Bihar, India</li>
             </ul>
             <Link to="/signup" className="cta-button secondary light-outline">

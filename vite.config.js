@@ -9,12 +9,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'], 
+          vendor: ['react', 'react-dom'],
           firebase: ['firebase/app', 'firebase/auth', 'firebase/database']
         }
-      },
-      chunkSizeWarningLimit: 1000
+      }
     },
+    chunkSizeWarningLimit: 1000,
     sourcemap: false // Reduce bundle size
   },
 

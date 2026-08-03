@@ -45,8 +45,6 @@ const FileUpload = ({ label, onUpload, employeeId, cropType = 'profile' }) => {
 
   const onImageLoad = (img) => {
     imgRef.current = img;
-    console.log("Crop Type:", cropType); // Add this line
-    console.log("Crop Dimensions:", cropDimensions[cropType]); // Add this line
     const { width, height, aspect } = cropDimensions[cropType];
     const initialCropWidth = Math.min(width, img.width);
     const initialCropHeight = Math.min(height, img.height);
@@ -59,7 +57,6 @@ const FileUpload = ({ label, onUpload, employeeId, cropType = 'profile' }) => {
       y: (img.height - initialCropHeight) / 2,
       aspect
     };
-    console.log("Initial Crop:", initialCrop); // Add this line
     setCrop(initialCrop);
   };
 

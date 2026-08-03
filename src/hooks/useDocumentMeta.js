@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-const DEFAULT_TITLE = 'AuthExam - Secure Online Exam Authentication Platform';
-const DEFAULT_DESCRIPTION = "AuthExam offers a robust and secure platform for online exam authentication, biometric verification, and exam center management.";
+const DEFAULT_TITLE = 'AuthExam - Field Operator & Workforce Management';
+const DEFAULT_DESCRIPTION = 'AuthExam is a workforce management platform for onboarding field operators, assigning service centers, tracking invoices, and managing approvals.';
 
 // Updates the tab title / meta description per route for an SPA with no SSR.
 export default function useDocumentMeta(title, description) {

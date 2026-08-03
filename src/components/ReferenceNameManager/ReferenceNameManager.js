@@ -59,7 +59,6 @@ const ReferenceNameManager = () => {
 
     const referenceNamesRef = ref(db, 'ReferenceNames');
     try {
-      console.log('[ReferenceNameManager] Adding reference name with data:', referenceData);
       await push(referenceNamesRef, referenceData);
       setNewReferenceName('');
     } catch (e) {

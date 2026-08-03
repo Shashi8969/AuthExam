@@ -1,18 +1,13 @@
 // src/components/ProtectedRoute/ProtectedRoute.js
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'; // Adjust path if your AuthContext is elsewhere
+import { useAuth } from '../../context/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth(); // Assuming your AuthContext provides 'user' and 'loading'
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+  const { user, isAdmin, loading } = useAuth();
   const location = useLocation();
 
-    console.log('ProtectedRoute - loading:', loading, 'user:', user); // Add this line
-
-
   if (loading) {
-    // Show a loading indicator while authentication status is being determined
-    // You can replace this with a more sophisticated spinner component
     return <div style={{ textAlign: 'center', marginTop: '50px', fontSize: '1.2em' }}>Loading authentication status...</div>;
   }
 
@@ -22,7 +17,11 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/please-login" state={{ from: location }} replace />;
   }
 
-  // User is authenticated, render the child components
+  if (adminOnly && !isAdmin) {
+    // Authenticated but lacks admin privileges for this route
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 };
 

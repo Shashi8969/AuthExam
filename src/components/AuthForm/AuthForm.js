@@ -9,7 +9,7 @@ const AuthForm = ({ type }) => {
   useDocumentMeta(
     type === 'signup' ? 'Sign Up' : 'Login',
     type === 'signup'
-      ? 'Create your AuthExam account to manage exam operators, centers, and biometric verification.'
+      ? 'Create your AuthExam account to manage field operators, service centers, and invoices.'
       : 'Log in to your AuthExam account.'
   );
   const [email, setEmail] = useState('');
